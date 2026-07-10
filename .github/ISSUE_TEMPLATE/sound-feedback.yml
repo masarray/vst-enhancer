@@ -1,0 +1,72 @@
+name: Sound and preset feedback
+description: Share listening impressions and suggestions for ArSonKuPik presets or DSP behaviour.
+title: "[Beta Feedback] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Feedback is most useful when the source, monitoring system, preset, and comparison method are described clearly.
+  - type: input
+    id: version
+    attributes:
+      label: ArSonKuPik version
+      placeholder: v0.5.0
+    validations:
+      required: true
+  - type: input
+    id: context
+    attributes:
+      label: Production context
+      placeholder: Master bus, mix bus, vocal track, playback enhancement
+    validations:
+      required: true
+  - type: input
+    id: material
+    attributes:
+      label: Music or source type
+      placeholder: Pop master, EDM, acoustic, male vocal, podcast
+    validations:
+      required: true
+  - type: input
+    id: monitoring
+    attributes:
+      label: Monitoring system
+      placeholder: Headphones, studio monitors, audio interface, room
+  - type: input
+    id: preset
+    attributes:
+      label: Preset and macro positions
+      placeholder: Mas Ari Signature, Smart Bass 55%, Smart Treble 48%
+    validations:
+      required: true
+  - type: dropdown
+    id: comparison
+    attributes:
+      label: Comparison method
+      options:
+        - Active versus true bypass at default output
+        - Manually gain-matched active versus bypass
+        - Both
+    validations:
+      required: true
+  - type: textarea
+    id: positive
+    attributes:
+      label: What improved?
+      placeholder: Body, clarity, bass impact, vocal presence, depth, stereo image, excitement
+  - type: textarea
+    id: problem
+    attributes:
+      label: What should be improved?
+      placeholder: Harsh treble, muddy low-mid, pumping, clipping, weak transient, excessive width
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: Suggested direction
+  - type: checkboxes
+    id: permission
+    attributes:
+      label: Public feedback
+      options:
+        - label: This feedback may be referenced in development notes without exposing personal information.
+          required: true
