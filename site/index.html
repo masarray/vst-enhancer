@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>ArSonKuPik VST — Smart DAW Audio Enhancer</title>
+  <meta name="description" content="ArSonKuPik VST is a smart Windows VST3 and standalone audio enhancer for mastering, mix bus, tracks, and creative enhancement.">
+  <meta name="theme-color" content="#0d0b12">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="nav">
+    <div class="container nav-inner">
+      <a class="brand" href="./"><span class="brand-mark">A</span><span>ARSON<em>KUPIK</em></span></a>
+      <nav aria-label="Main navigation">
+        <a href="#features">Features</a>
+        <a href="#presets">Presets</a>
+        <a href="#download">Download</a>
+        <a href="https://github.com/masarray/vst-enhancer/releases">Releases</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <span class="eyebrow">Windows VST3 + Standalone</span>
+          <h1>Enhance a mix without losing its soul.</h1>
+          <p class="lead">ArSonKuPik adds musical body, controlled low end, vocal presence, 3D stereo life, and context-aware loudness while protecting the processing chain from hot input.</p>
+          <div class="actions" id="download">
+            <a class="button primary" id="installer-link" href="https://github.com/masarray/vst-enhancer/releases/latest">Download Windows installer</a>
+            <a class="button secondary" id="release-link" href="https://github.com/masarray/vst-enhancer/releases">View releases</a>
+          </div>
+          <div class="release-line">
+            <span id="release-version">Public preview</span>
+            <span>Windows x64</span>
+            <span>VST3 + Standalone</span>
+            <span>Unsigned</span>
+          </div>
+          <p class="note">macOS and VST2 are intentionally not included. Windows SmartScreen may show a warning because current packages are unsigned.</p>
+        </div>
+
+        <div class="console-preview" aria-label="Stylised ArSonKuPik interface preview">
+          <div class="console-top"><span class="console-mark">A</span><strong>ARSON<span>KUPIK</span></strong><small>SMART DAW ENHANCER</small></div>
+          <div class="console-body">
+            <div class="knob-stack"><i></i><b>INPUT</b><small>0.0 dB</small></div>
+            <div class="orb"><span>MAS ARI<br><strong>SIGNATURE</strong></span></div>
+            <div class="knob-stack"><i></i><b>OUTPUT</b><small>0.0 dB</small></div>
+          </div>
+          <div class="console-strip"><span>ENHANCE</span><span>SMART BASS</span><span>SMART TREBLE</span><span>VOCAL BODY</span><span>STEREO MAGIC</span></div>
+          <div class="console-footer"><span>TRUE BYPASS</span><span>A&nbsp;&nbsp;|&nbsp;&nbsp;B</span><span>SMART PROTECT</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="features" class="section">
+      <div class="container">
+        <div class="section-heading">
+          <span class="eyebrow">Smart enhancement chain</span>
+          <h2>Obvious improvement. Controlled gain.</h2>
+        </div>
+        <div class="feature-grid">
+          <article><h3>Pre-chain headroom</h3><p>Hot input is controlled before EQ, compression, colour, excitation, and stereo processing instead of being repaired after distortion occurs.</p></article>
+          <article><h3>DAW context policies</h3><p>Master, Mix Bus, Track, and Creative presets use different headroom, loudness, stereo, makeup, and protection behaviour.</p></article>
+          <article><h3>Mas Ari Signature</h3><p>The default signature keeps the luxurious, lively, 3D, ear-tickling identity with a controlled WOW target when headroom permits.</p></article>
+          <article><h3>Independent utility trims</h3><p>Input and Output remain centred at 0 dB and stay independent from preset recall and A/B creative snapshots.</p></article>
+          <article><h3>True bypass</h3><p>Bypass returns raw audio while active processing is designed to feel clearly more alive, polished, and finished.</p></article>
+          <article><h3>Windows-only certainty</h3><p>The first public line focuses on a reliable Windows x64 VST3 and Standalone build instead of uncertain VST2 or macOS distribution.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section id="presets" class="section alt">
+      <div class="container preset-layout">
+        <div>
+          <span class="eyebrow">Factory contexts</span>
+          <h2>Choose where the plugin sits.</h2>
+          <p class="section-lead">The preset bank is organised by production role rather than a flat list of colours.</p>
+        </div>
+        <div class="preset-list">
+          <div><strong>Signature</strong><span>Mas Ari Signature</span></div>
+          <div><strong>Master</strong><span>Clean, Modern, Warm, Open 3D, Low-End Control, Vocal Focus, Streaming Safe, Dynamic</span></div>
+          <div><strong>Mix Bus</strong><span>Glue, Punch, Depth, Air, Warmth, Clean-Up</span></div>
+          <div><strong>Track</strong><span>Vocal Polish, Drum Punch, Bass Tight, Guitar/Synth Width, Acoustic Natural, Podcast</span></div>
+          <div><strong>Creative</strong><span>Max Enhancer, SonKu Deep Chest, Movie Sub, Night Listening, Open Air</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container install-layout">
+        <div>
+          <span class="eyebrow">Installation</span>
+          <h2>One installer, two formats.</h2>
+        </div>
+        <div class="install-copy">
+          <p><strong>VST3:</strong> installs to <code>C:\Program Files\Common Files\VST3\</code>.</p>
+          <p><strong>Standalone:</strong> installs to <code>C:\Program Files\ArSonKuPik\</code>.</p>
+          <p>Manual VST3 and Standalone ZIP packages are included in every GitHub Release.</p>
+          <a id="checksums-link" href="https://github.com/masarray/vst-enhancer/releases/latest">Verify SHA-256 checksums</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer><div class="container">© 2026 Tutorial Mas Ari / MasArray. ArSonKuPik VST for Windows DAW and standalone use.</div></footer>
+  <script src="app.js"></script>
+</body>
+</html>
