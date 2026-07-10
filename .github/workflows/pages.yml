@@ -27,13 +27,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Validate required site files
+      - name: Validate landing page and binary assets
         shell: bash
         run: |
           test -f site/index.html
           test -f site/styles.css
           test -f site/app.js
           test -f site/release.json
+          test -s site/assets/arsonkupik-vst-ui-v050.webp
+          test -s site/assets/arsonkupik-vst-favicon.ico
+          test -s site/assets/arsonkupik-vst-favicon-96.png
+          file site/assets/arsonkupik-vst-ui-v050.webp | grep -qi webp
+          file site/assets/arsonkupik-vst-favicon-96.png | grep -qi png
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
