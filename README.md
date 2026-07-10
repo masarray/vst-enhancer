@@ -2,6 +2,10 @@
 
 Public distribution repository for **ArSonKuPik**, a smart Windows VST3 and standalone audio enhancer for mastering, mix bus, tracks, and creative processing.
 
+<p align="center">
+  <img src="site/assets/arsonkupik-vst-ui.webp" width="960" alt="ArSonKuPik VST interface showing Mas Ari Signature preset, smart enhancement controls, A/B comparison, true bypass, input and output meters">
+</p>
+
 The DSP and application source remain private in `masarray/askp-vst`. This public repository contains only:
 
 - GitHub Pages landing site
@@ -19,7 +23,7 @@ macOS and VST2 are intentionally not distributed.
 
 ## Download
 
-Use the latest GitHub Release or the project landing page after GitHub Pages deployment is enabled.
+Use the latest GitHub Release or the project landing page.
 
 ## Unsigned preview
 
