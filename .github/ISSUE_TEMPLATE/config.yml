@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Download the current public beta
+    url: https://github.com/masarray/vst-enhancer/releases/tag/v0.5.0
+    about: Use the current Windows VST3 and Standalone public-beta build before reporting an issue.
