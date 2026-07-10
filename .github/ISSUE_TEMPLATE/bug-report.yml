@@ -1,0 +1,88 @@
+name: Public beta bug report
+description: Report a reproducible ArSonKuPik VST or Standalone problem.
+title: "[Beta Bug] "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for testing ArSonKuPik. Please include enough detail for the issue to be reproduced.
+  - type: input
+    id: version
+    attributes:
+      label: ArSonKuPik version
+      placeholder: v0.5.0
+    validations:
+      required: true
+  - type: dropdown
+    id: format
+    attributes:
+      label: Format
+      options:
+        - VST3
+        - Standalone
+        - Both
+    validations:
+      required: true
+  - type: input
+    id: daw
+    attributes:
+      label: DAW and version
+      placeholder: FL Studio 2025, Reaper 7.x, Cubase 14, Ableton Live 12
+    validations:
+      required: true
+  - type: input
+    id: windows
+    attributes:
+      label: Windows version
+      placeholder: Windows 11 24H2 x64
+    validations:
+      required: true
+  - type: input
+    id: audio
+    attributes:
+      label: Audio interface, driver, sample rate, and buffer
+      placeholder: ASIO, 48 kHz, 256 samples
+  - type: input
+    id: preset
+    attributes:
+      label: Preset and macro positions
+      placeholder: Mas Ari Signature, defaults
+  - type: textarea
+    id: steps
+    attributes:
+      label: Reproduction steps
+      placeholder: |
+        1. Insert the VST3 on the master bus
+        2. Select ...
+        3. Play ...
+        4. Observe ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behaviour
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behaviour
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Additional information
+      description: CPU use, screenshots, short audio examples, crash logs, or whether bypass removes the problem.
+  - type: checkboxes
+    id: confirmation
+    attributes:
+      label: Confirmation
+      options:
+        - label: I tested with the current public-beta release.
+          required: true
+        - label: I removed confidential project information before attaching files.
+          required: true
