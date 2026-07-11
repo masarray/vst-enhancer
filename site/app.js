@@ -4,15 +4,19 @@
     if (!response.ok) return;
 
     const release = await response.json();
-    const versionLabel = release.channel === 'public-beta'
-      ? `${release.version} Public Beta`
-      : release.version;
-
-    if (versionLabel) document.getElementById('release-version').textContent = versionLabel;
-    if (release.installerUrl) document.getElementById('installer-link').href = release.installerUrl;
-    if (release.releaseUrl) document.getElementById('release-link')?.setAttribute('href', release.releaseUrl);
-    if (release.checksumsUrl) document.getElementById('checksums-link').href = release.checksumsUrl;
+    if (release.version) {
+      const version = document.getElementById('release-version');
+      if (version) version.textContent = release.version;
+    }
+    if (release.installerUrl) {
+      document.getElementById('installer-link')?.setAttribute('href', release.installerUrl);
+      document.getElementById('installer-link-bottom')?.setAttribute('href', release.installerUrl);
+    }
+    if (release.releaseUrl)
+      document.getElementById('release-link')?.setAttribute('href', release.releaseUrl);
+    if (release.checksumsUrl)
+      document.getElementById('checksums-link')?.setAttribute('href', release.checksumsUrl);
   } catch (_) {
-    // Static v0.5.1 public-beta links remain available.
+    // Static release links remain available when metadata cannot be loaded.
   }
 })();
