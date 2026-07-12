@@ -1,5 +1,5 @@
 {
-  "version": "v0.5.4",
+  "version": "v0.5.5",
   "channel": "public-beta",
   "editableBetaDays": 365,
   "readOnlyAfterBeta": true,
@@ -7,11 +7,11 @@
   "offlineActivation": true,
   "keyActivatorDistributedPublicly": false,
   "activationCodeProvider": "Mas Ari",
-  "publishedAt": "2026-07-11T05:12:41Z",
-  "releaseUrl": "https://github.com/masarray/vst-enhancer/releases/tag/v0.5.4",
-  "installerUrl": "https://github.com/masarray/vst-enhancer/releases/download/v0.5.4/ArSonKuPik-v0.5.4-Windows-x64-Setup.exe",
-  "vst3Url": "https://github.com/masarray/vst-enhancer/releases/download/v0.5.4/ArSonKuPik-v0.5.4-Windows-x64-VST3.zip",
-  "standaloneUrl": "https://github.com/masarray/vst-enhancer/releases/download/v0.5.4/ArSonKuPik-v0.5.4-Windows-x64-Standalone.zip",
-  "checksumsUrl": "https://github.com/masarray/vst-enhancer/releases/download/v0.5.4/SHA256SUMS.txt",
+  "publishedAt": "2026-07-12T08:17:26Z",
+  "releaseUrl": "https://github.com/masarray/vst-enhancer/releases/tag/v0.5.5",
+  "installerUrl": "https://github.com/masarray/vst-enhancer/releases/download/v0.5.5/ArSonKuPik-v0.5.5-Windows-x64-Setup.exe",
+  "vst3Url": "https://github.com/masarray/vst-enhancer/releases/download/v0.5.5/ArSonKuPik-v0.5.5-Windows-x64-VST3.zip",
+  "standaloneUrl": "https://github.com/masarray/vst-enhancer/releases/download/v0.5.5/ArSonKuPik-v0.5.5-Windows-x64-Standalone.zip",
+  "checksumsUrl": "https://github.com/masarray/vst-enhancer/releases/download/v0.5.5/SHA256SUMS.txt",
   "unsigned": true
 }
