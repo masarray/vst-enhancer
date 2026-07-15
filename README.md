@@ -1,6 +1,6 @@
 # ArSonKuPik VST — One-Year Free Public Beta
 
-**ArSonKuPik v0.5.10** provides 365 days of full editing from first launch on each computer. No account, internet connection, or audio watermark is required.
+**ArSonKuPik v0.5.11** provides 365 days of full editing from first launch on each computer. No account, internet connection, or audio watermark is required.
 
 <p align="center">
   <img src="site/assets/arsonkupik-vst-ui-v050.webp" width="1080" alt="ArSonKuPik VST interface showing the Mas Ari Signature preset, smart enhancement controls, A/B comparison, bypass, protect, and input-output meters">
@@ -32,7 +32,7 @@ The private **Key Activator** and RSA private signing key are intentionally not 
 
 ## Download
 
-- [Download ArSonKuPik v0.5.10 Public Beta](https://github.com/masarray/vst-enhancer/releases/tag/v0.5.10)
+- [Download ArSonKuPik v0.5.11 Public Beta](https://github.com/masarray/vst-enhancer/releases/tag/v0.5.11)
 - [Open the product landing page](https://masarray.github.io/vst-enhancer/)
 
 Verify every download against `SHA256SUMS.txt` from the same GitHub Release.
