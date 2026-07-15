@@ -7,7 +7,7 @@
     "offlineActivation":  true,
     "keyActivatorDistributedPublicly":  false,
     "activationCodeProvider":  "Mas Ari",
-    "publishedAt":  "2026-07-14T23:32:35Z",
+    "publishedAt":  "2026-07-15T13:53:32Z",
     "releaseUrl":  "https://github.com/masarray/vst-enhancer/releases/tag/v0.5.10",
     "installerUrl":  "https://github.com/masarray/vst-enhancer/releases/download/v0.5.10/ArSonKuPik-v0.5.10-Windows-x64-Setup.exe",
     "vst3Url":  "https://github.com/masarray/vst-enhancer/releases/download/v0.5.10/ArSonKuPik-v0.5.10-Windows-x64-VST3.zip",
