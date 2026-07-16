@@ -2,7 +2,9 @@
 
 **ArSonKuPik v0.5.11** provides 365 days of full editing from first launch on each computer. No account, permanent internet connection, or audio watermark is required.
 
+<!-- DISTRIBUTION_STATUS_START -->
 > **Distribution safety notice:** direct downloads are temporarily paused while a fresh Windows build is prepared from the reviewed JUCE 8.0.14 dependency and repackaged with the complete EULA and third-party notices. Earlier beta binaries remain unsupported evaluation builds and should not be mirrored or redistributed. The next published release will restore the download buttons after the self-hosted Windows QA gate passes.
+<!-- DISTRIBUTION_STATUS_END -->
 
 <p align="center">
   <img src="site/assets/arsonkupik-vst-ui-v050.webp" width="1080" alt="ArSonKuPik VST interface showing the Mas Ari Signature preset, smart enhancement controls, A/B comparison, bypass, protect, and input-output meters">
@@ -52,12 +54,10 @@ Public legal documents:
 
 ## Release status
 
-The previous v0.5.11 page remains available for historical checksums and issue references, but direct redistribution is paused pending the JUCE 8.0.14 compliance rebuild:
-
-- [View release status](https://github.com/masarray/vst-enhancer/releases)
+- [View official releases and current distribution status](https://github.com/masarray/vst-enhancer/releases)
 - [Open the product landing page](https://masarray.github.io/vst-enhancer/)
 
-Only download files from this repository after the landing page reports that distribution is enabled. Verify every enabled download against `SHA256SUMS.txt` from the same GitHub Release.
+Only download files after the landing page reports that distribution is enabled. Verify every enabled download against `SHA256SUMS.txt` from the same GitHub Release.
 
 ## Send beta feedback
 
