@@ -3,7 +3,7 @@
 **ArSonKuPik v0.5.11** provides 365 days of full editing from first launch on each computer. No account, permanent internet connection, or audio watermark is required.
 
 <!-- DISTRIBUTION_STATUS_START -->
-> **Distribution safety notice:** direct downloads are temporarily paused while a fresh Windows build is prepared from the reviewed JUCE 8.0.14 dependency and repackaged with the complete EULA and third-party notices. Earlier beta binaries remain unsupported evaluation builds and should not be mirrored or redistributed. The next published release will restore the download buttons after the self-hosted Windows QA gate passes.
+> **Distribution safety:** use a download only when the official landing page reports that distribution is enabled. Every newly published binary must come from the reviewed JUCE 8.0.14 dependency, pass the self-hosted Windows QA gate, and include the complete EULA and third-party notices. Older or superseded beta binaries are unsupported and must not be mirrored or redistributed.
 <!-- DISTRIBUTION_STATUS_END -->
 
 <p align="center">
