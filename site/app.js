@@ -19,6 +19,17 @@
     }
   };
 
+  const enableDownloads = (installerUrl) => {
+    installerButtons.forEach((button) => {
+      button.setAttribute('href', installerUrl);
+      button.textContent = 'Download ArSonKuPik';
+      button.setAttribute('aria-label', 'Download the current ArSonKuPik Windows installer');
+    });
+
+    const status = document.getElementById('distribution-status');
+    if (status) status.hidden = true;
+  };
+
   try {
     const response = await fetch('./release.json', { cache: 'no-store' });
     if (!response.ok) return;
@@ -32,7 +43,7 @@
     if (release.distributionEnabled === false) {
       pauseDownloads(release.releaseUrl);
     } else if (release.installerUrl) {
-      installerButtons.forEach((button) => button.setAttribute('href', release.installerUrl));
+      enableDownloads(release.installerUrl);
     }
 
     if (release.releaseUrl)
