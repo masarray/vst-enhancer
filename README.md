@@ -1,61 +1,81 @@
-# ArSonKuPik VST — One-Year Free Evaluation
+# ArSonKuPik VST — Public Download, Documentation, and Legal Repository
 
-**ArSonKuPik v0.5.12** provides 365 days of full editing from first launch on each computer. No payment card, account, permanent internet connection, subscription, automatic charge, or audio watermark is required.
+[![Website](https://img.shields.io/badge/Website-ArSonKuPik-9b68ff)](https://masarray.github.io/vst-enhancer/)
+[![Platform](https://img.shields.io/badge/Platform-Windows%2010%2F11-5b8def)](#compatibility)
+[![Formats](https://img.shields.io/badge/Formats-VST3%20%2B%20Standalone-c5a0ff)](#compatibility)
+[![Evaluation](https://img.shields.io/badge/Evaluation-365%20days-5bd49a)](#evaluation--evaluasi)
+[![Licence](https://img.shields.io/badge/Product-Proprietary-ef7c8f)](EULA.txt)
 
-<!-- DISTRIBUTION_STATUS_START -->
-> **Distribution safety:** v0.5.12 downloads remain disabled until the reviewed JUCE 8.0.14 source passes the self-hosted Windows QA gate and every package contains the complete EULA, purchase terms, and third-party notices. Older or superseded beta binaries are unsupported and must not be mirrored or redistributed.
-<!-- DISTRIBUTION_STATUS_END -->
+**English:** ArSonKuPik is a smart audio enhancer for mastering, mix bus, tracks, vocals, podcasts, and creative processing. This public repository contains the bilingual landing page, release metadata, public legal documents, checksums, and supported Windows downloads when distribution is enabled.
+
+**Bahasa Indonesia:** ArSonKuPik adalah audio enhancer cerdas untuk mastering, mix bus, track, vokal, podcast, dan pemrosesan kreatif. Repository publik ini berisi landing page dwibahasa, metadata rilis, dokumen legal publik, checksum, serta unduhan Windows yang didukung ketika distribusi sudah diaktifkan.
+
+> **Distribution safety / Keamanan distribusi:** Download only when the [official landing page](https://masarray.github.io/vst-enhancer/) reports that distribution is enabled. Unduh hanya ketika landing page resmi menyatakan distribusi aktif. Do not use mirrors or re-uploaded packages. Verify `SHA256SUMS.txt` from the same GitHub Release.
 
 <p align="center">
-  <img src="site/assets/arsonkupik-vst-ui-v050.webp" width="1080" alt="ArSonKuPik VST interface showing the Mas Ari Signature preset, smart enhancement controls, A/B comparison, bypass, protect, and input-output meters">
+  <a href="https://masarray.github.io/vst-enhancer/">
+    <img src="site/assets/arsonkupik-vst-ui-v050.webp" width="1080" alt="ArSonKuPik VST interface showing the Mas Ari Signature preset and smart enhancement controls">
+  </a>
 </p>
 
-ArSonKuPik is a smart audio enhancer for mastering, mix bus, tracks, and creative processing. The DSP and application source remain private in `masarray/askp-vst`; this public repository contains the landing site, public documentation, release metadata, legal notices, and downloadable Windows binaries when distribution is enabled.
+## Quick links / Tautan cepat
 
-## One-year evaluation behaviour
+- **[Open the bilingual product website / Buka website produk dwibahasa](https://masarray.github.io/vst-enhancer/)**
+- **[Official releases / Rilis resmi](https://github.com/masarray/vst-enhancer/releases)**
+- **[Report a reproducible issue / Laporkan masalah](https://github.com/masarray/vst-enhancer/issues/new/choose)**
+- **[EULA](EULA.txt)** · **[Purchase terms](PURCHASE_TERMS.txt)** · **[Privacy](PRIVACY.txt)** · **[Third-party notices](THIRD_PARTY_NOTICES.txt)**
 
-- 365 days of full preset and control editing from first launch
-- No payment card required to begin
-- No automatic charge or automatic renewal
-- No subscription
-- No login or online licence validation
-- No audio watermark
-- Windows 10/11 x64 VST3 and Standalone application
-- Unsigned build; Windows SmartScreen may show a warning
+## Evaluation / Evaluasi
 
-After 365 days, the plugin enters **project-safe read-only mode**:
+| English | Bahasa Indonesia |
+|---|---|
+| 365 days of full preset and control editing from first launch on each computer. | 365 hari akses penuh ke preset dan kontrol sejak pertama kali dijalankan pada tiap komputer. |
+| No payment card, account, subscription, automatic charge, or audio watermark is required to begin. | Tidak memerlukan kartu pembayaran, akun, langganan, tagihan otomatis, atau watermark audio untuk memulai. |
+| Personal and commercial audio-production use is permitted during evaluation, subject to the EULA. | Penggunaan produksi audio personal dan komersial diizinkan selama evaluasi, tunduk pada EULA. |
+| After evaluation, projects and saved processing are designed to continue in project-safe read-only mode. | Setelah evaluasi, project dan pemrosesan tersimpan dirancang tetap berjalan dalam mode project-safe read-only. |
+| Buying an activation is optional. | Pembelian aktivasi bersifat opsional. |
 
-- Existing projects continue to open and sound normally
-- Current processing and saved parameter values remain active
-- Input/output meters and automation playback continue working
-- Presets, knobs, A/B, bypass, and editing controls require activation
-- Activation remains offline and hardware-bound
-- Buying an activation is optional
+The published standard offer for the v0.5 evaluation cohort is a **USD 25 perpetual editing activation**, before applicable tax, with no subscription or automatic renewal. One purchase may be used on up to two active customer-owned or customer-controlled computers. Final seller, currency, tax, payment, and refund information will be shown before payment.
 
-The plugin does not intentionally mute, inject noise, or force true bypass solely because the full-editing evaluation ends.
+Penawaran standar yang dipublikasikan untuk pengguna evaluasi v0.5 adalah **aktivasi editing perpetual USD 25**, sebelum pajak yang berlaku, tanpa langganan atau perpanjangan otomatis. Satu pembelian dapat digunakan pada maksimal dua komputer aktif milik atau di bawah kendali pelanggan. Informasi penjual, mata uang, pajak, pembayaran, dan refund final akan ditampilkan sebelum pembayaran.
 
-## Optional perpetual activation
+## Compatibility
 
-- Standard activation price for ArSonKuPik v0.5 evaluation users: **USD 25** before tax required at checkout
-- One-time perpetual editing activation
-- No subscription and no automatic renewal
-- Up to two active computers owned or controlled by the customer
-- Each activation code is bound to one Computer Request ID
-- Final tax, currency, refund, payment, and Merchant of Record terms will be shown before payment
+- Windows 10/11, 64-bit
+- VST3 plug-in
+- Standalone application
+- macOS, Linux, VST2, AAX, and Audio Unit are not currently distributed
+- Compatibility varies by DAW, driver, device, sample rate, and buffer configuration; evaluate before critical use
 
-The payment button must remain disabled until an approved Merchant of Record checkout is configured. Read [Commercial Activation Terms](PURCHASE_TERMS.txt) before purchase.
+## Beginner installation / Instalasi untuk pemula
 
-The private **Key Activator**, RSA private signing key, proprietary source code, and customer activation records are intentionally excluded from this public repository and from public downloads. Customers receive only the hardware-bound activation code generated through the authorised fulfilment process.
+1. Open the [official release page](https://github.com/masarray/vst-enhancer/releases).
+2. Download only after the landing page reports that distribution is enabled.
+3. Verify the file against `SHA256SUMS.txt` from the same release:
 
-## Legal and dependency basis
+```powershell
+Get-FileHash .\ArSonKuPik-Setup.exe -Algorithm SHA256
+```
 
-ArSonKuPik VST is **proprietary closed-source software**, licensed rather than sold. It is built with JUCE 8 under an active JUCE licence held by Tutorial Mas Ari / MasArray. New proprietary distributions use the reviewed JUCE 8.0.14 dependency, whose bundled Steinberg VST3 SDK is MIT licensed.
+4. Run the installer. The current build is unsigned, so Windows SmartScreen may show a reputation warning.
+5. In your DAW, open the plug-in manager and rescan VST3 plug-ins.
+6. Keep backups and verify final renders before delivery or broadcast.
 
-The DSP lineage includes material from the author's separately published `masarray/ArSonkuPik` project, which remains available under the MIT License. Its required notice is retained. That separate MIT project does not make the proprietary ArSonKuPik VST product open source.
+Panduan lengkap dalam Bahasa Indonesia dan English tersedia pada [landing page](https://masarray.github.io/vst-enhancer/#getting-started).
 
-The embedded Plus Jakarta Sans font remains under the SIL Open Font License 1.1. All binary packages must contain the complete EULA, purchase terms, and third-party licence texts.
+## Privacy summary / Ringkasan privasi
 
-Public legal documents:
+ArSonKuPik processes audio locally. It does not intentionally transmit audio, DAW projects, preset selections, licence codes, crash analytics, or usage analytics. No permanent connection is required for normal processing or offline activation. A network request occurs only when the user manually requests an update check. See [PRIVACY.txt](PRIVACY.txt).
+
+ArSonKuPik memproses audio secara lokal. Software tidak secara sengaja mengirim audio, project DAW, pilihan preset, kode lisensi, crash analytics, atau usage analytics. Tidak diperlukan koneksi permanen untuk pemrosesan normal maupun aktivasi offline. Permintaan jaringan hanya terjadi saat pengguna melakukan update check secara manual. Lihat [PRIVACY.txt](PRIVACY.txt).
+
+## Public repository scope
+
+This repository is public for product information, distribution, release metadata, checksums, feedback, and required legal notices. The proprietary DSP implementation, preset recipes, application source, private RSA signing key, Key Activator, and customer activation records are not included.
+
+Repository ini bersifat publik untuk informasi produk, distribusi, metadata rilis, checksum, feedback, dan pemberitahuan legal wajib. Implementasi DSP proprietary, recipe preset, source aplikasi, private RSA signing key, Key Activator, dan catatan aktivasi pelanggan tidak disertakan.
+
+## Legal documents
 
 - [End User Licence Agreement](EULA.txt)
 - [Commercial Activation Terms](PURCHASE_TERMS.txt)
@@ -66,29 +86,14 @@ Public legal documents:
 - [Plus Jakarta Sans OFL 1.1](Plus-Jakarta-Sans-OFL-1.1.txt)
 - [Public Repository Notice](LICENSE.txt)
 
-## Release status
+The bilingual website and this README provide plain-language explanations. The controlling EULA, purchase terms, checkout terms, receipt terms, and mandatory applicable consumer law govern actual use and transactions.
 
-- [View official releases and current distribution status](https://github.com/masarray/vst-enhancer/releases)
-- [Open the product landing page](https://masarray.github.io/vst-enhancer/)
+Konten dwibahasa pada website dan README ini adalah penjelasan dengan bahasa sederhana. Penggunaan dan transaksi sebenarnya diatur oleh EULA, ketentuan pembelian, ketentuan checkout, ketentuan receipt, dan hukum perlindungan konsumen wajib yang berlaku.
 
-Only download files after the landing page reports that distribution is enabled. Verify every enabled download against `SHA256SUMS.txt` from the same GitHub Release.
+## Safe feedback / Feedback yang aman
 
-## Send evaluation feedback
+Include DAW and version, Windows version, audio interface, sample rate, buffer size, preset, plug-in format, and reproduction steps. **Never post activation codes, Computer Request IDs, private projects, customer audio, or personal information in a public issue.**
 
-Please include:
+Sertakan DAW dan versinya, versi Windows, audio interface, sample rate, buffer size, preset, format plug-in, dan langkah reproduksi. **Jangan memposting kode aktivasi, Computer Request ID, project privat, audio pelanggan, atau informasi pribadi pada issue publik.**
 
-- DAW and version
-- Windows version
-- Audio interface, sample rate, and buffer size
-- Preset used
-- Whether the issue occurs in VST3, Standalone, or both
-- Reproduction steps
-- CPU behaviour, clipping, pumping, scan failure, or sound-quality observations
-
-Do not post activation codes, Computer Request IDs, private projects, customer audio, or personal information in a public issue.
-
-[Report a bug or send evaluation feedback](https://github.com/masarray/vst-enhancer/issues/new/choose)
-
-macOS and VST2 are intentionally not distributed.
-
-Copyright (C) 2026 Tutorial Mas Ari / MasArray. All rights reserved. Binary use is governed by `EULA.txt` and `PURCHASE_TERMS.txt`; third-party components remain governed by their own licence terms.
+Copyright (C) 2026 Tutorial Mas Ari / MasArray. All rights reserved. ArSonKuPik VST is proprietary software licensed under `EULA.txt`; third-party components remain governed by their own licence terms.
