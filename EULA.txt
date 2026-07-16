@@ -1,0 +1,136 @@
+ARSONKUPIK VST PUBLIC BETA END USER LICENCE AGREEMENT
+
+Effective date: 16 July 2026
+Copyright (C) 2026 Tutorial Mas Ari / MasArray. All rights reserved.
+
+PLEASE READ THIS AGREEMENT BEFORE INSTALLING OR USING ARSONKUPIK. BY INSTALLING,
+COPYING, OR USING THE SOFTWARE, YOU ACCEPT THIS AGREEMENT. IF YOU DO NOT ACCEPT
+IT, DO NOT INSTALL OR USE THE SOFTWARE.
+
+1. PRODUCT AND LICENSOR
+
+"ArSonKuPik" or the "Software" means the ArSonKuPik Windows VST3 plug-in,
+Standalone application, presets, documentation, updates, and activation data
+supplied by Tutorial Mas Ari / MasArray (the "Licensor"). The Software is
+licensed, not sold.
+
+2. PUBLIC BETA LICENCE GRANT
+
+During the 365-day editable public-beta period measured from first launch on a
+computer, the Licensor grants you a limited, non-exclusive, non-transferable,
+revocable licence to install and use the Software on computers that you own or
+control for personal and commercial audio-production work. You retain all
+rights in audio and projects that you create with the Software.
+
+3. END OF EDITABLE BETA
+
+After the 365-day editable period, the Software is designed to enter
+project-safe read-only mode. Existing projects, saved parameter values, meters,
+automation playback, and audio processing may continue to operate. Preset
+selection and editing controls require a valid activation. The Software does
+not intentionally mute audio, inject noise, or force bypass solely because the
+editable beta has ended.
+
+4. OFFLINE ACTIVATION
+
+A paid or otherwise authorised activation may restore editing according to the
+purchase or activation terms offered by the Licensor at that time. Activation
+codes are generated for a specific Computer Request ID. They may not be shared,
+resold, forged, modified, or generated without authorisation. Reissue or transfer
+to another computer is at the Licensor's discretion and may require reasonable
+proof of purchase and deactivation of the previous computer.
+
+5. OWNERSHIP
+
+The Licensor retains all rights in the proprietary Software, including its DSP
+implementation, preset recipes, interface, artwork, activation system, and
+confidential source code. No ownership of the Software or source code is
+transferred to you. Third-party components remain owned by their respective
+copyright holders and are governed by their own licence terms.
+
+6. RESTRICTIONS
+
+Except where applicable law expressly overrides a restriction, you may not:
+
+- redistribute, upload, mirror, resell, rent, lease, sublicense, or commercially
+  provide copies of the Software;
+- include the Software in another software package, hardware product, download
+  bundle, or service without written permission;
+- reverse engineer, decompile, disassemble, bypass activation, extract protected
+  presets or code, or attempt to discover the private signing key;
+- remove or alter copyright, trademark, licence, or attribution notices; or
+- use the Software or activation system for unlawful activity.
+
+You may make reasonable backup copies solely for your own permitted use.
+
+7. UPDATES AND FUTURE RELEASES
+
+Public-beta software may change. Future versions, stable releases, upgrades,
+support plans, prices, and licence terms may differ. Installing a future version
+may require acceptance of updated terms. The Licensor is not required to provide
+updates, compatibility fixes, or support for every host, operating system, or
+hardware configuration.
+
+8. PRIVACY AND NETWORK USE
+
+No account or permanent internet connection is required for normal processing
+or offline activation. The Software does not intentionally transmit audio,
+project data, licence codes, or analytics. A network request is made only when
+you manually request an update check. The hosting provider may process ordinary
+connection data such as an IP address under its own privacy terms. Computer
+Request IDs are generated locally and are shared only when you choose to copy
+and send them to the Licensor.
+
+9. THIRD-PARTY COMPONENTS
+
+ArSonKuPik is built with JUCE 8 under an active JUCE licence and includes
+components governed by separate terms, including the Steinberg VST3 SDK and
+Plus Jakarta Sans. The complete notices supplied with the Software are part of
+this distribution. Nothing in this Agreement grants rights to use JUCE or any
+third-party SDK separately from the Software.
+
+The DSP lineage includes material from the author's separately published
+MIT-licensed ArSonKuPik project. The required MIT notice is retained in the
+third-party notices. The separately published MIT project remains available
+under its original terms; this does not make the proprietary VST product open
+source.
+
+10. WARRANTY DISCLAIMER
+
+THE SOFTWARE IS PROVIDED "AS IS" AND "AS AVAILABLE", WITHOUT WARRANTY OF ANY
+KIND TO THE MAXIMUM EXTENT PERMITTED BY LAW. PUBLIC-BETA SOFTWARE MAY CONTAIN
+DEFECTS OR BE INCOMPATIBLE WITH A DAW, PLUG-IN HOST, DRIVER, OR DEVICE. KEEP
+BACKUPS OF IMPORTANT PROJECTS AND VERIFY RESULTS BEFORE DELIVERY OR BROADCAST.
+
+11. LIMITATION OF LIABILITY
+
+TO THE MAXIMUM EXTENT PERMITTED BY LAW, THE LICENSOR SHALL NOT BE LIABLE FOR
+INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, LOST WORK,
+LOST DATA, LOST REVENUE, BUSINESS INTERRUPTION, OR LOSS OF OPPORTUNITY ARISING
+FROM USE OR INABILITY TO USE THE SOFTWARE. WHERE LIABILITY CANNOT LAWFULLY BE
+EXCLUDED, THE LICENSOR'S TOTAL LIABILITY SHALL NOT EXCEED THE AMOUNT YOU PAID
+FOR THE SOFTWARE. NOTHING IN THIS AGREEMENT EXCLUDES RIGHTS OR LIABILITY THAT
+CANNOT BE EXCLUDED UNDER APPLICABLE LAW.
+
+12. TERMINATION
+
+This licence terminates automatically if you materially breach this Agreement.
+On termination, you must stop using and delete distributed copies of the
+Software, except where applicable law provides otherwise. Sections concerning
+ownership, restrictions, warranty, liability, and third-party rights survive.
+
+13. GOVERNING LAW
+
+This Agreement is governed by the laws of the Republic of Indonesia, without
+regard to conflict-of-law principles, subject to mandatory consumer protections
+that apply in your place of residence.
+
+14. COMPLETE AGREEMENT
+
+This Agreement, the applicable purchase or activation terms, and the supplied
+third-party notices form the complete agreement for your use of this version of
+the Software. If any provision is unenforceable, the remaining provisions remain
+in effect.
+
+Product and support information:
+https://github.com/masarray/vst-enhancer
