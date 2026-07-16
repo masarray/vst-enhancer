@@ -1,8 +1,15 @@
-# ArSonKuPik VST v0.5.0 — YouTube Public Beta Launch Kit
+# ArSonKuPik VST — YouTube Public Beta Launch Kit
+
+## Publication status
+
+Do not publish a new download announcement until the landing page confirms that
+distribution is enabled and the JUCE 8.0.14 compliance rebuild has passed the
+self-hosted Windows QA gate. Earlier beta files should not be mirrored or
+redistributed.
 
 ## Recommended video title
 
-**VST Enhancer Gratis 1 Tahun — ArSonKuPik v0.5 Public Beta | VST3 + Standalone**
+**VST Enhancer Gratis Editing 1 Tahun — ArSonKuPik Public Beta | VST3 + Standalone**
 
 Alternative:
 
@@ -18,14 +25,18 @@ GRATIS EDITING 1 TAHUN
 Small badge:
 
 ```text
-PUBLIC BETA v0.5
+PUBLIC BETA
 ```
 
 ## Video description — Indonesian
 
-ArSonKuPik VST v0.5.0 kini tersedia sebagai **Free Public Beta** untuk Windows dengan masa full editing selama **365 hari sejak pertama kali dijalankan pada komputer tersebut**.
+ArSonKuPik VST tersedia sebagai **Free Public Beta** untuk Windows dengan masa
+full editing selama **365 hari sejak pertama kali dijalankan pada komputer
+tersebut**.
 
-ArSonKuPik adalah smart audio enhancer untuk membantu audio terasa lebih hidup, mewah, berisi, lebar, dan selesai. Plugin dapat digunakan pada mastering, mix bus, track, maupun untuk creative enhancement.
+ArSonKuPik adalah smart audio enhancer untuk membantu audio terasa lebih hidup,
+mewah, berisi, lebar, dan selesai. Plugin dapat digunakan pada mastering, mix
+bus, track, maupun creative enhancement.
 
 Versi beta ini:
 
@@ -36,13 +47,23 @@ Versi beta ini:
 - Setelah 365 hari, audio dan setting project tetap berjalan dalam read-only mode
 - Aktivasi dilakukan offline menggunakan Computer Request ID dan kode aktivasi hardware-bound
 
-Saat editable beta berakhir, ArSonKuPik tidak memute audio, tidak menyisipkan noise, dan tidak merusak project lama. Plugin tetap memproses suara dengan setting yang tersimpan, tetapi panel gelap menutup kontrol preset dan knob sampai kode aktivasi ditempel.
+Saat editable beta berakhir, ArSonKuPik tidak sengaja memute audio, menyisipkan
+noise, atau merusak project lama. Plugin tetap memproses suara dengan setting
+yang tersimpan, tetapi kontrol editing membutuhkan aktivasi.
 
-Download resmi:
-https://github.com/masarray/vst-enhancer/releases/tag/v0.5.0
+ArSonKuPik VST adalah software proprietary closed-source yang dibangun dengan
+JUCE 8 di bawah lisensi JUCE aktif. Penggunaan binary tunduk pada EULA dan
+komponen pihak ketiga tetap menggunakan lisensinya masing-masing.
+
+Status download resmi:
+https://github.com/masarray/vst-enhancer/releases
 
 Landing page:
 https://masarray.github.io/vst-enhancer/
+
+EULA dan privacy:
+https://github.com/masarray/vst-enhancer/blob/main/EULA.txt
+https://github.com/masarray/vst-enhancer/blob/main/PRIVACY.txt
 
 Kirim laporan bug dan feedback:
 https://github.com/masarray/vst-enhancer/issues/new/choose
@@ -56,36 +77,50 @@ Saat memberikan feedback, sertakan:
 - Masalah terjadi pada VST3, Standalone, atau keduanya
 - Apakah terdengar clipping, pumping, terlalu bass, terlalu tajam, atau ada masalah stereo
 
-Catatan: installer saat ini belum menggunakan code signing. Windows SmartScreen mungkin menampilkan peringatan. Pastikan file hanya diunduh melalui link resmi dan cocokkan SHA-256 pada halaman release.
+Jangan kirim activation code, Computer Request ID, project pelanggan, audio
+rahasia, atau data pribadi melalui issue publik.
+
+Catatan: installer saat ini belum menggunakan code signing. Windows SmartScreen
+mungkin menampilkan peringatan. Unduh hanya ketika landing page menyatakan
+distribusi aktif, gunakan link resmi, baca EULA, dan cocokkan SHA-256 pada release
+yang sama.
 
 ## Short English description
 
-ArSonKuPik VST v0.5.0 is available as a Windows public beta with 365 days of full editing from first launch. After the editable beta ends, existing projects, saved settings, meters, and processed audio continue in project-safe read-only mode. Offline hardware-bound activation unlocks editing again.
+ArSonKuPik VST is a proprietary Windows audio enhancer offered as a public beta
+with 365 days of full editing from first launch. After the editable beta ends,
+existing projects, saved settings, meters, and processed audio continue in
+project-safe read-only mode. Offline hardware-bound activation unlocks editing
+again. Download only when the official landing page reports that distribution is
+enabled.
 
-Official download:
-https://github.com/masarray/vst-enhancer/releases/tag/v0.5.0
+Release status:
+https://github.com/masarray/vst-enhancer/releases
 
 Feedback and bug reports:
 https://github.com/masarray/vst-enhancer/issues/new/choose
 
 ## Pinned comment
 
-Terima kasih sudah mencoba ArSonKuPik VST v0.5 Public Beta 🙏
+Terima kasih sudah mencoba ArSonKuPik VST Public Beta 🙏
 
-Full editing berlaku 365 hari sejak pertama kali dijalankan. Setelah itu project dan suara tetap aman dalam read-only mode, lalu editing dapat dibuka kembali dengan aktivasi offline berdasarkan Computer Request ID.
+Full editing berlaku 365 hari sejak pertama kali dijalankan. Setelah itu project
+dan suara tetap aman dalam read-only mode, lalu editing dapat dibuka kembali
+dengan aktivasi offline berdasarkan Computer Request ID.
 
-Download resmi hanya melalui:
-https://github.com/masarray/vst-enhancer/releases/tag/v0.5.0
+Status download resmi hanya melalui:
+https://github.com/masarray/vst-enhancer/releases
 
-Mohon tuliskan DAW, preset favorit, jenis musik, CPU usage, dan apakah ada clipping/pumping atau masalah scan plugin. Feedback lengkap:
-https://github.com/masarray/vst-enhancer/issues/new/choose
+Mohon tuliskan DAW, preset favorit, jenis musik, CPU usage, dan apakah ada
+clipping/pumping atau masalah scan plugin. Jangan membagikan kode aktivasi atau
+Computer Request ID di ruang publik.
 
 ## Suggested chapters
 
 ```text
 00:00 Intro dan tujuan ArSonKuPik
 01:10 Penjelasan beta 365 hari dan read-only mode
-02:30 Cara download dan instalasi
+02:30 Licence, privacy, dan status download resmi
 04:20 Scan VST3 di DAW
 05:30 True bypass vs active
 07:00 Mas Ari Signature
@@ -104,8 +139,10 @@ https://github.com/masarray/vst-enhancer/issues/new/choose
 
 ## Minimum demonstration checklist
 
+- Confirm that the landing page reports distribution enabled before sharing a download
 - Explain the 365-day full-editing beta clearly
 - Explain that audio/project playback continues after the beta in read-only mode
+- Mention proprietary licence, EULA, privacy, and unsigned Windows status
 - Play the same section in true bypass and active mode
 - Demonstrate default Mas Ari Signature
 - Demonstrate manual Output gain matching
