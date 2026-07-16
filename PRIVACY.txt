@@ -4,20 +4,21 @@ Effective date: 16 July 2026
 
 ArSonKuPik is designed to process audio locally on the user's computer.
 
-1. No automatic telemetry
+1. NO AUTOMATIC TELEMETRY
 
 ArSonKuPik does not intentionally collect or transmit audio, DAW projects,
 parameter values, preset selections, licence codes, crash analytics, advertising
 identifiers, or usage analytics.
 
-2. Offline activation
+2. OFFLINE ACTIVATION
 
 The Computer Request ID is generated locally. It is not transmitted
-automatically. It is shared with Tutorial Mas Ari / MasArray only when the user
-chooses to copy and send it to request an activation code. Activation codes are
-validated locally and no permanent background licence service is required.
+automatically. It is shared with Tutorial Mas Ari / MasArray or an authorised
+activation service only when the user chooses to copy and send it to request an
+activation code. Activation codes are validated locally and no permanent
+background licence service is required.
 
-3. Manual update check
+3. MANUAL UPDATE CHECK
 
 ArSonKuPik makes a network request only when the user manually presses the update
 check control. The request reads a small public release manifest hosted through
@@ -26,7 +27,7 @@ receive ordinary connection information such as an IP address, timestamp, user
 agent, and request path under its own privacy terms. ArSonKuPik does not append
 audio, project, licence, or analytics data to that request.
 
-4. Website downloads and feedback
+4. WEBSITE DOWNLOADS AND FEEDBACK
 
 Downloads, GitHub Pages visits, GitHub Releases, and GitHub Issues are provided
 through GitHub. GitHub may process connection, account, cookie, and activity data
@@ -34,18 +35,33 @@ under its own privacy policy. Public issue reports are visible to other users;
 do not post licence codes, Computer Request IDs, private project files, personal
 information, or confidential customer material in a public issue.
 
-5. Support records
+5. CHECKOUT AND PAYMENT
 
-When a user voluntarily contacts the Licensor, the supplied message, contact
-details, proof of purchase, Computer Request ID, and troubleshooting information
-may be retained as reasonably necessary to provide support, prevent licence
-abuse, and maintain purchase records. Do not send audio or project files unless
-specifically requested and authorised.
+No payment card is required for the 365-day evaluation, and ArSonKuPik cannot
+charge a user automatically when the evaluation ends. The payment button remains
+disabled until an approved Merchant of Record checkout is configured.
 
-6. Contact
+When a user voluntarily purchases an activation, the Merchant of Record will
+process payment details, tax, fraud checks, refunds, receipts, and other data under
+its own terms and privacy notice. Tutorial Mas Ari / MasArray should receive only
+the information reasonably needed for fulfilment and support, such as order ID,
+customer contact information, product, payment status, refund status, and licence
+entitlement. ArSonKuPik and its public repository do not store payment-card data.
+
+6. SUPPORT AND ACTIVATION RECORDS
+
+When a user voluntarily contacts the Licensor or requests activation, the supplied
+message, contact details, proof of purchase, Computer Request ID, activation
+history, and troubleshooting information may be retained as reasonably necessary
+to fulfil the purchase, provide support, prevent licence abuse, maintain accounting
+records, and comply with legal obligations. Do not send audio or project files
+unless specifically requested and authorised.
+
+7. CONTACT
 
 Product and support information:
 https://github.com/masarray/vst-enhancer
 
-This notice may be updated when the product, hosting, sales, or support process
-changes. Material changes will be published with a new effective date.
+This notice may be updated when the product, hosting, sales, activation, or
+support process changes. Material changes will be published with a new effective
+date.
