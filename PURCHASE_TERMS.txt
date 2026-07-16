@@ -1,0 +1,68 @@
+ARSONKUPIK COMMERCIAL ACTIVATION TERMS
+
+Effective date: 16 July 2026
+Copyright (C) 2026 Tutorial Mas Ari / MasArray. All rights reserved.
+
+These terms supplement the ArSonKuPik End User Licence Agreement. The checkout
+page, receipt, and Merchant of Record terms also apply to each purchase.
+
+1. ONE-YEAR FREE EVALUATION
+
+ArSonKuPik provides 365 days of full editing from first launch on each computer.
+No payment card is required to start the evaluation. No payment is collected and
+no automatic charge occurs when the evaluation ends.
+
+After the evaluation, existing projects, saved settings, meters, automation, and
+audio processing are designed to continue in project-safe read-only mode. A
+purchase is optional and is required only to restore editing controls.
+
+2. PRICE AND BILLING MODEL
+
+The standard perpetual activation price for ArSonKuPik v0.5 evaluation users is
+USD 25 before any tax required at checkout. The activation is a one-time purchase,
+not a subscription, and does not renew automatically.
+
+The final amount, currency conversion, tax, payment methods, refund information,
+and seller-of-record identity shown at checkout control the transaction. No sale
+is complete until the checkout provider confirms payment.
+
+3. PERPETUAL EDITING ACTIVATION
+
+A valid purchase authorises perpetual editing for the purchased ArSonKuPik major
+product generation, subject to the EULA. This does not guarantee every future
+major version, operating system, DAW, feature, or compatibility update.
+
+4. COMPUTER ACTIVATIONS
+
+One purchase may be used on up to two active computers owned or controlled by the
+customer. Each activation code is hardware-bound to one Computer Request ID.
+Activation codes may not be shared, resold, published, or used for computers not
+owned or controlled by the customer.
+
+Reasonable reissue for a replacement or repaired computer may be provided after
+proof of purchase and abuse review. The Licensor may deactivate or refuse excess,
+duplicate, fraudulent, refunded, or chargeback-related activations.
+
+5. DELIVERY
+
+The customer receives purchase confirmation from the checkout provider. The
+Computer Request ID is generated locally by ArSonKuPik and is supplied by the
+customer only when requesting an activation. The resulting activation code is
+validated locally; normal audio processing does not require a permanent internet
+connection.
+
+6. REFUNDS AND CHARGEBACKS
+
+Refund eligibility and procedure are presented at checkout by the Merchant of
+Record. A refund or chargeback may terminate the related commercial activation
+entitlement and block new activation or reissue requests, to the extent permitted
+by applicable law.
+
+7. SUPPORT AND CONTACT
+
+Product, release, and support information:
+https://github.com/masarray/vst-enhancer
+
+These commercial terms may be updated for future purchases. Terms accepted and
+shown at the time of a completed purchase govern that transaction, subject to
+mandatory consumer rights that cannot lawfully be excluded.
