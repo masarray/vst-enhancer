@@ -3,6 +3,7 @@
     document.getElementById('installer-link'),
     document.getElementById('installer-link-bottom')
   ].filter(Boolean);
+  const ctaCopy = document.querySelector('.final-cta p');
 
   const pauseDownloads = (releaseUrl) => {
     const safeUrl = releaseUrl || 'https://github.com/masarray/vst-enhancer/releases';
@@ -17,6 +18,8 @@
       status.hidden = false;
       status.textContent = 'Downloads are temporarily paused while the JUCE 8.0.14 compliance rebuild completes Windows QA.';
     }
+    if (ctaCopy)
+      ctaCopy.textContent = 'Downloads return after the JUCE 8.0.14 compliance build passes the self-hosted Windows QA gate.';
   };
 
   const enableDownloads = (installerUrl) => {
@@ -28,6 +31,8 @@
 
     const status = document.getElementById('distribution-status');
     if (status) status.hidden = true;
+    if (ctaCopy)
+      ctaCopy.textContent = 'Download the official release, choose a preset, and hear the difference in seconds.';
   };
 
   try {
