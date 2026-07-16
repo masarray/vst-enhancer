@@ -20,9 +20,10 @@
       enabledMessage: 'Download only from the official GitHub Release and verify its SHA-256 checksum.',
       unknownTitle: 'Release status unavailable',
       unknownMessage: 'Open the official Releases page before downloading.',
-      pausedButton: 'View release status',
+      pausedButton: 'Download ArSonKuPik — QA pending',
+      pausedButtonLabel: 'Download ArSonKuPik is pending Windows QA; open official release status',
       enabledButton: 'Download ArSonKuPik',
-      pausedCta: 'The official download will be enabled only after Windows QA and package verification succeed.',
+      pausedCta: 'The download button remains visible, but the official package will be enabled only after Windows QA and package verification succeed.',
       enabledCta: 'Download the official package, verify its checksum, and evaluate it in your own projects.',
       checkingTitle: 'Release status',
       checkingMessage: 'Checking official distribution status…'
@@ -36,9 +37,10 @@
       enabledMessage: 'Unduh hanya dari GitHub Release resmi dan verifikasi checksum SHA-256.',
       unknownTitle: 'Status rilis tidak tersedia',
       unknownMessage: 'Buka halaman Releases resmi sebelum mengunduh.',
-      pausedButton: 'Lihat status rilis',
+      pausedButton: 'Unduh ArSonKuPik — menunggu QA',
+      pausedButtonLabel: 'Unduhan ArSonKuPik sedang menunggu QA Windows; buka status rilis resmi',
       enabledButton: 'Unduh ArSonKuPik',
-      pausedCta: 'Unduhan resmi hanya akan diaktifkan setelah QA Windows dan verifikasi paket berhasil.',
+      pausedCta: 'Tombol unduh tetap terlihat, tetapi paket resmi baru akan diaktifkan setelah QA Windows dan verifikasi paket berhasil.',
       enabledCta: 'Unduh paket resmi, verifikasi checksum, lalu evaluasi pada project Anda sendiri.',
       checkingTitle: 'Status rilis',
       checkingMessage: 'Memeriksa status distribusi resmi…'
@@ -92,6 +94,7 @@
         button.setAttribute('href', releaseState.installerUrl);
         button.textContent = copy.enabledButton;
         button.setAttribute('aria-label', copy.enabledButton);
+        button.removeAttribute('data-release-pending');
       });
       return;
     }
@@ -104,7 +107,8 @@
       installerButtons.forEach((button) => {
         button.setAttribute('href', safeReleaseUrl);
         button.textContent = copy.pausedButton;
-        button.setAttribute('aria-label', copy.pausedButton);
+        button.setAttribute('aria-label', copy.pausedButtonLabel);
+        button.setAttribute('data-release-pending', 'true');
       });
       return;
     }
@@ -117,6 +121,8 @@
       installerButtons.forEach((button) => {
         button.setAttribute('href', safeReleaseUrl);
         button.textContent = copy.pausedButton;
+        button.setAttribute('aria-label', copy.pausedButtonLabel);
+        button.setAttribute('data-release-pending', 'true');
       });
       return;
     }
