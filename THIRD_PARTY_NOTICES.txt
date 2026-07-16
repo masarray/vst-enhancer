@@ -8,7 +8,7 @@ ArSonKuPik product except for the third-party materials identified below.
 ArSonKuPik is built with the JUCE 8 Framework.
 Copyright (c) Raw Material Software Limited.
 
-The product owner uses JUCE under an active JUCE 8 commercial licence. JUCE is
+The product owner uses JUCE under an active JUCE 8 product licence. JUCE is
 licensed, not sold, by Raw Material Software Limited and is not relicensed to
 ArSonKuPik users under the ArSonKuPik EULA. The JUCE framework itself is not
 distributed as a standalone framework or SDK with ArSonKuPik.
