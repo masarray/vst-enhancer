@@ -1,4 +1,40 @@
 (async () => {
+  const installerButtons = [
+    document.getElementById('installer-link'),
+    document.getElementById('installer-link-bottom')
+  ].filter(Boolean);
+  const ctaCopy = document.querySelector('.final-cta p');
+
+  const pauseDownloads = (releaseUrl) => {
+    const safeUrl = releaseUrl || 'https://github.com/masarray/vst-enhancer/releases';
+    installerButtons.forEach((button) => {
+      button.setAttribute('href', safeUrl);
+      button.textContent = 'Compliance rebuild pending';
+      button.setAttribute('aria-label', 'View ArSonKuPik release and compliance status');
+    });
+
+    const status = document.getElementById('distribution-status');
+    if (status) {
+      status.hidden = false;
+      status.textContent = 'Downloads are temporarily paused while the JUCE 8.0.14 compliance rebuild completes Windows QA.';
+    }
+    if (ctaCopy)
+      ctaCopy.textContent = 'Downloads return after the JUCE 8.0.14 compliance build passes the self-hosted Windows QA gate.';
+  };
+
+  const enableDownloads = (installerUrl) => {
+    installerButtons.forEach((button) => {
+      button.setAttribute('href', installerUrl);
+      button.textContent = 'Download ArSonKuPik';
+      button.setAttribute('aria-label', 'Download the current ArSonKuPik Windows installer');
+    });
+
+    const status = document.getElementById('distribution-status');
+    if (status) status.hidden = true;
+    if (ctaCopy)
+      ctaCopy.textContent = 'Download the official release, choose a preset, and hear the difference in seconds.';
+  };
+
   try {
     const response = await fetch('./release.json', { cache: 'no-store' });
     if (!response.ok) return;
@@ -8,15 +44,20 @@
       const version = document.getElementById('release-version');
       if (version) version.textContent = release.version;
     }
-    if (release.installerUrl) {
-      document.getElementById('installer-link')?.setAttribute('href', release.installerUrl);
-      document.getElementById('installer-link-bottom')?.setAttribute('href', release.installerUrl);
+
+    if (release.distributionEnabled === false) {
+      pauseDownloads(release.releaseUrl);
+    } else if (release.installerUrl) {
+      enableDownloads(release.installerUrl);
     }
+
     if (release.releaseUrl)
       document.getElementById('release-link')?.setAttribute('href', release.releaseUrl);
     if (release.checksumsUrl)
       document.getElementById('checksums-link')?.setAttribute('href', release.checksumsUrl);
+    else
+      document.getElementById('checksums-link')?.setAttribute('href', release.releaseUrl || 'https://github.com/masarray/vst-enhancer/releases');
   } catch (_) {
-    // Static release links remain available when metadata cannot be loaded.
+    // Static release-status links remain available when metadata cannot be loaded.
   }
 })();

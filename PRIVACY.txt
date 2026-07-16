@@ -1,0 +1,51 @@
+ARSONKUPIK PRIVACY NOTICE
+
+Effective date: 16 July 2026
+
+ArSonKuPik is designed to process audio locally on the user's computer.
+
+1. No automatic telemetry
+
+ArSonKuPik does not intentionally collect or transmit audio, DAW projects,
+parameter values, preset selections, licence codes, crash analytics, advertising
+identifiers, or usage analytics.
+
+2. Offline activation
+
+The Computer Request ID is generated locally. It is not transmitted
+automatically. It is shared with Tutorial Mas Ari / MasArray only when the user
+chooses to copy and send it to request an activation code. Activation codes are
+validated locally and no permanent background licence service is required.
+
+3. Manual update check
+
+ArSonKuPik makes a network request only when the user manually presses the update
+check control. The request reads a small public release manifest hosted through
+the project's public website or GitHub infrastructure. The hosting provider may
+receive ordinary connection information such as an IP address, timestamp, user
+agent, and request path under its own privacy terms. ArSonKuPik does not append
+audio, project, licence, or analytics data to that request.
+
+4. Website downloads and feedback
+
+Downloads, GitHub Pages visits, GitHub Releases, and GitHub Issues are provided
+through GitHub. GitHub may process connection, account, cookie, and activity data
+under its own privacy policy. Public issue reports are visible to other users;
+do not post licence codes, Computer Request IDs, private project files, personal
+information, or confidential customer material in a public issue.
+
+5. Support records
+
+When a user voluntarily contacts the Licensor, the supplied message, contact
+details, proof of purchase, Computer Request ID, and troubleshooting information
+may be retained as reasonably necessary to provide support, prevent licence
+abuse, and maintain purchase records. Do not send audio or project files unless
+specifically requested and authorised.
+
+6. Contact
+
+Product and support information:
+https://github.com/masarray/vst-enhancer
+
+This notice may be updated when the product, hosting, sales, or support process
+changes. Material changes will be published with a new effective date.
