@@ -5,8 +5,9 @@ Copyright (C) 2026 Tutorial Mas Ari / MasArray. All rights reserved.
 This public repository contains product documentation, website source, release
 metadata, screenshots, artwork, and distribution materials for the proprietary
 ArSonKuPik software. Publication on GitHub does not place these materials in the
-public domain and does not grant a general licence to copy, republish, mirror,
-resell, sublicense, or create derivative commercial products from them.
+public domain and does not grant a general licence to republish, mirror, resell,
+sublicense, or create derivative commercial products from them, except for the
+limited rights necessarily granted under GitHub's applicable platform terms.
 
 Use of compiled ArSonKuPik binaries is governed by EULA.txt. Third-party
 materials identified in THIRD_PARTY_NOTICES.txt remain governed by their own
