@@ -17,10 +17,10 @@ licensed, not sold.
 2. PUBLIC BETA LICENCE GRANT
 
 During the 365-day editable public-beta period measured from first launch on a
-computer, the Licensor grants you a limited, non-exclusive, non-transferable,
-revocable licence to install and use the Software on computers that you own or
-control for personal and commercial audio-production work. You retain all
-rights in audio and projects that you create with the Software.
+computer, the Licensor grants you a limited, non-exclusive, non-transferable
+licence to install and use the Software on computers that you own or control for
+personal and commercial audio-production work. You retain all rights in audio
+and projects that you create with the Software.
 
 3. END OF EDITABLE BETA
 
