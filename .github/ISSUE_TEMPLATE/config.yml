@@ -1,5 +1,11 @@
 blank_issues_enabled: false
 contact_links:
-  - name: Download the current public beta
-    url: https://github.com/masarray/vst-enhancer/releases/tag/v0.5.0
-    about: Use the current Windows VST3 and Standalone public-beta build before reporting an issue.
+  - name: Download the latest supported release
+    url: https://github.com/masarray/vst-enhancer/releases/latest
+    about: Confirm that you are testing the current official Windows package before reporting a problem.
+  - name: Read the support guide
+    url: https://github.com/masarray/vst-enhancer/blob/main/SUPPORT.md
+    about: Check required diagnostic details and public-data safety rules.
+  - name: Report a security vulnerability privately
+    url: https://github.com/masarray/vst-enhancer/security/advisories/new
+    about: Do not publish exploit details, activation weaknesses, personal data, or suspected key exposure in a public issue.

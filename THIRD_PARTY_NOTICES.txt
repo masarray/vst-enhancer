@@ -1,34 +1,37 @@
 ARSONKUPIK THIRD-PARTY NOTICES
 
+Effective date: 17 July 2026
 Copyright (C) 2026 Tutorial Mas Ari / MasArray. All rights reserved in the
 ArSonKuPik product except for the third-party materials identified below.
 
-1. JUCE 8 Framework
+1. JUCE 8.0.14 FRAMEWORK
 
-ArSonKuPik is built with the JUCE 8 Framework.
+ArSonKuPik is built with JUCE 8.0.14.
 Copyright (c) Raw Material Software Limited.
 
-The product owner uses JUCE under an active JUCE 8 product licence. JUCE is
+The product owner uses JUCE under an active JUCE product licence. JUCE is
 licensed, not sold, by Raw Material Software Limited and is not relicensed to
-ArSonKuPik users under the ArSonKuPik EULA. The JUCE framework itself is not
-distributed as a standalone framework or SDK with ArSonKuPik.
+ArSonKuPik users under the ArSonKuPik EULA. The JUCE framework is not distributed
+as a standalone framework or SDK with ArSonKuPik.
 
-JUCE licence information: https://juce.com/legal/juce-8-licence/
+JUCE licence information:
+https://juce.com/legal/juce-8-licence/
 
-2. Steinberg VST3 SDK
+2. STEINBERG VST3 SDK
 
-New ArSonKuPik proprietary builds use the MIT-licensed VST3 SDK bundled with the
+ArSonKuPik proprietary builds use the MIT-licensed VST3 SDK bundled with the
 reviewed JUCE 8.0.14 dependency. The complete copyright notice and MIT licence
 are supplied in:
 
   Steinberg-VST3-SDK-MIT.txt
 
-VST is a trademark of Steinberg Media Technologies GmbH. Use of the VST name
-does not imply endorsement by Steinberg.
+VST is a trademark of Steinberg Media Technologies GmbH. Use of the VST name,
+format, or trademark does not imply endorsement, sponsorship, or certification
+by Steinberg.
 
-3. Plus Jakarta Sans
+3. PLUS JAKARTA SANS
 
-The product embeds Plus Jakarta Sans font software.
+The product may embed Plus Jakarta Sans font software.
 Copyright 2020 The Plus Jakarta Sans Project Authors.
 
 The font is licensed under the SIL Open Font License, Version 1.1. The complete
@@ -36,7 +39,7 @@ copyright notice and licence are supplied in:
 
   Plus-Jakarta-Sans-OFL-1.1.txt
 
-4. Original ArSonKuPik MIT Project
+4. ORIGINAL ARSONKUPIK MIT PROJECT
 
 Parts of the product lineage originate from the author's separately published
 masarray/ArSonkuPik project. That separately published project is licensed under
@@ -44,11 +47,22 @@ the MIT License. The required notice is supplied in:
 
   ArSonKuPik-MIT.txt
 
-5. Product artwork and presets
+The separate MIT repository remains governed by its original terms. Its
+publication does not place the proprietary ArSonKuPik VST product, DSP recipes,
+activation system, interface, or confidential source code under the MIT licence.
+
+5. PRODUCT ARTWORK, PRESETS, AND DOCUMENTATION
 
 Unless separately identified, ArSonKuPik product artwork, DSP recipes, presets,
-copy, and interface design are proprietary materials of Tutorial Mas Ari /
-MasArray and are not covered by the third-party licences above.
+copy, documentation, screenshots, and interface design are proprietary materials
+of Tutorial Mas Ari / MasArray and are not covered by the third-party licences
+above.
+
+6. NO THIRD-PARTY ENDORSEMENT
+
+References to third-party products, formats, companies, or trademarks describe
+compatibility, components, or attribution only. They do not imply endorsement,
+partnership, sponsorship, or warranty by those third parties.
 
 This notice is informational and does not replace the complete licence texts
 supplied with the product.

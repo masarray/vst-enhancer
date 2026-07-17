@@ -17,5 +17,6 @@ The separately published masarray/ArSonkuPik project remains available under its
 original MIT licence. Rights in that separate repository are not restricted by
 this notice.
 
-No ArSonKuPik proprietary DSP or application source code is distributed from
+No ArSonKuPik proprietary DSP or application source code, private signing
+material, Key Activator, or customer activation records are distributed from
 this repository.

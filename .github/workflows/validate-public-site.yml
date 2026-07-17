@@ -1,113 +1,32 @@
-name: Validate public landing site
+name: Validate public landing and release metadata
 
 on:
-  pull_request:
-    branches:
-      - main
-    paths:
-      - "site/**"
-      - "README.md"
-      - "EULA.txt"
-      - "PURCHASE_TERMS.txt"
-      - "PRIVACY.txt"
-      - "THIRD_PARTY_NOTICES.txt"
-      - "LICENSE.txt"
-      - ".github/workflows/validate-public-site.yml"
   workflow_dispatch:
+    inputs:
+      check_remote:
+        description: Also verify that official release URLs respond
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: read
 
 jobs:
   validate:
-    name: Validate bilingual site and release safety
-    runs-on: ubuntu-latest
+    name: Local self-hosted validation
+    runs-on: self-hosted
     timeout-minutes: 10
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Validate JavaScript syntax
-        run: node --check site/app.js
-
-      - name: Validate HTML, translations, FAQ, legal links, and release metadata
-        shell: python
+      - name: Validate public repository
+        shell: powershell
         run: |
-          import json
-          from collections import Counter
-          from html.parser import HTMLParser
-          from pathlib import Path
-
-          root = Path('.')
-          index = root / 'site' / 'index.html'
-          html = index.read_text(encoding='utf-8')
-
-          class SiteParser(HTMLParser):
-              def __init__(self):
-                  super().__init__()
-                  self.ids = []
-                  self.translated = 0
-                  self.details = 0
-                  self.links = []
-
-              def handle_starttag(self, tag, attrs):
-                  data = dict(attrs)
-                  if 'id' in data:
-                      self.ids.append(data['id'])
-                  if 'data-en' in data or 'data-id' in data:
-                      assert data.get('data-en'), f'Missing data-en on <{tag}>'
-                      assert data.get('data-id'), f'Missing data-id on <{tag}>'
-                      self.translated += 1
-                  if tag == 'details':
-                      self.details += 1
-                  if tag == 'a' and data.get('href'):
-                      self.links.append(data['href'])
-
-          parser = SiteParser()
-          parser.feed(html)
-
-          duplicates = [name for name, count in Counter(parser.ids).items() if count > 1]
-          assert not duplicates, f'Duplicate HTML ids: {duplicates}'
-
-          required_ids = {
-              'main', 'features', 'getting-started', 'evaluation', 'privacy', 'faq',
-              'legal', 'distribution-banner', 'distribution-title',
-              'distribution-message', 'installer-link', 'installer-link-bottom',
-              'release-version', 'release-link', 'checksums-link'
+          $arguments = @()
+          if ("${{ inputs.check_remote }}" -eq "true") {
+            $arguments += "--check-remote"
           }
-          missing = sorted(required_ids.difference(parser.ids))
-          assert not missing, f'Missing required HTML ids: {missing}'
-          assert parser.translated >= 120, f'Only {parser.translated} bilingual elements found'
-          assert parser.details >= 18, f'Only {parser.details} FAQ entries found'
-
-          required_legal = {
-              'EULA.txt', 'PURCHASE_TERMS.txt', 'PRIVACY.txt',
-              'THIRD_PARTY_NOTICES.txt', 'LICENSE.txt'
-          }
-          for filename in required_legal:
-              path = root / filename
-              assert path.is_file() and path.stat().st_size > 0, f'Missing legal file: {filename}'
-              assert any(filename in link for link in parser.links), f'Landing page does not link {filename}'
-
-          release = json.loads((root / 'site' / 'release.json').read_text(encoding='utf-8'))
-          assert isinstance(release.get('distributionEnabled'), bool)
-          assert release.get('version')
-          assert release.get('releaseUrl', '').startswith('https://github.com/masarray/vst-enhancer/releases')
-          if release['distributionEnabled']:
-              assert release.get('installerUrl'), 'Enabled distribution requires installerUrl'
-              assert release.get('checksumsUrl'), 'Enabled distribution requires checksumsUrl'
-          else:
-              assert release.get('distributionStatus'), 'Paused distribution requires a status reason'
-
-          forbidden = ('private-key', 'private_key', 'ArSonKuPikKeyActivator')
-          for token in forbidden:
-              assert token not in html, f'Public site contains prohibited token: {token}'
-
-          print(f'Validated {parser.translated} bilingual elements, {parser.details} FAQs, and release safety metadata.')
-
-      - name: Validate SEO support files
-        run: |
-          test -s site/robots.txt
-          test -s site/sitemap.xml
-          grep -Fq "https://masarray.github.io/vst-enhancer/" site/sitemap.xml
+          python tools/validate-public-release.py @arguments

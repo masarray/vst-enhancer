@@ -1,14 +1,18 @@
 ARSONKUPIK PRIVACY NOTICE
 
-Effective date: 16 July 2026
+Effective date: 17 July 2026
 
-ArSonKuPik is designed to process audio locally on the user's computer.
+Tutorial Mas Ari / MasArray is responsible for personal information that it
+receives directly for ArSonKuPik activation, fulfilment, or support. GitHub and
+any future authorised Merchant of Record process information under their own
+privacy terms for the services they provide.
 
-1. NO AUTOMATIC TELEMETRY
+1. LOCAL AUDIO PROCESSING
 
-ArSonKuPik does not intentionally collect or transmit audio, DAW projects,
-parameter values, preset selections, licence codes, crash analytics, advertising
-identifiers, or usage analytics.
+ArSonKuPik is designed to process audio locally on the user's computer. It does
+not intentionally collect or transmit audio, DAW projects, parameter values,
+preset selections, licence codes, crash analytics, advertising identifiers, or
+usage analytics during normal operation.
 
 2. OFFLINE ACTIVATION
 
@@ -25,43 +29,96 @@ check control. The request reads a small public release manifest hosted through
 the project's public website or GitHub infrastructure. The hosting provider may
 receive ordinary connection information such as an IP address, timestamp, user
 agent, and request path under its own privacy terms. ArSonKuPik does not append
-audio, project, licence, or analytics data to that request.
+audio, project, licence, preset, or analytics data to that request.
 
-4. WEBSITE DOWNLOADS AND FEEDBACK
+4. WEBSITE LANGUAGE PREFERENCE
+
+The public website can store one item in the user's browser local storage:
+
+  askp-language = en or id
+
+This value remembers the selected English or Bahasa Indonesia interface. It is
+not an advertising identifier, is not sent by the website to Tutorial Mas Ari /
+MasArray, and can be removed by clearing site data in the browser. The website
+does not intentionally install advertising or analytics cookies.
+
+5. WEBSITE DOWNLOADS AND PUBLIC FEEDBACK
 
 Downloads, GitHub Pages visits, GitHub Releases, and GitHub Issues are provided
 through GitHub. GitHub may process connection, account, cookie, and activity data
-under its own privacy policy. Public issue reports are visible to other users;
-do not post licence codes, Computer Request IDs, private project files, personal
-information, or confidential customer material in a public issue.
+under its own privacy policy.
 
-5. CHECKOUT AND PAYMENT
+Public issue reports are visible to other users. Do not post activation codes,
+Computer Request IDs, order records, proof-of-purchase documents, private project
+files, customer audio, personal information, or confidential material in a
+public issue. Security vulnerabilities must be reported privately according to
+SECURITY.md.
+
+6. EVALUATION DOWNLOAD AND PAYMENT SEPARATION
 
 No payment card is required for the 365-day evaluation, and ArSonKuPik cannot
-charge a user automatically when the evaluation ends. The payment button remains
-disabled until an approved Merchant of Record checkout is configured.
+charge a user automatically when the evaluation ends. Availability of the public
+evaluation download is separate from availability of paid checkout.
 
-When a user voluntarily purchases an activation, the Merchant of Record will
-process payment details, tax, fraud checks, refunds, receipts, and other data under
-its own terms and privacy notice. Tutorial Mas Ari / MasArray should receive only
-the information reasonably needed for fulfilment and support, such as order ID,
-customer contact information, product, payment status, refund status, and licence
-entitlement. ArSonKuPik and its public repository do not store payment-card data.
+Paid checkout is not enabled until an authorised provider can display the seller
+identity, final amount and currency, tax, payment methods, refund information,
+privacy notice, and provider terms before payment.
 
-6. SUPPORT AND ACTIVATION RECORDS
+When a user voluntarily completes an authorised purchase, the Merchant of Record
+will process payment details, tax, fraud checks, refunds, receipts, and related
+data under its own terms and privacy notice. Tutorial Mas Ari / MasArray should
+receive only information reasonably needed for fulfilment and support, such as
+order ID, customer contact information, product, payment status, refund status,
+and licence entitlement. ArSonKuPik and its public repository do not store
+payment-card data.
 
-When a user voluntarily contacts the Licensor or requests activation, the supplied
-message, contact details, proof of purchase, Computer Request ID, activation
-history, and troubleshooting information may be retained as reasonably necessary
-to fulfil the purchase, provide support, prevent licence abuse, maintain accounting
-records, and comply with legal obligations. Do not send audio or project files
-unless specifically requested and authorised.
+7. SUPPORT AND ACTIVATION RECORDS
 
-7. CONTACT
+When a user voluntarily contacts the Licensor or requests activation, the
+supplied message, contact details, proof of purchase, Computer Request ID,
+activation history, and troubleshooting information may be retained as
+reasonably necessary to:
 
-Product and support information:
+- fulfil the purchase and administer the licence;
+- provide support and investigate reproducible defects;
+- prevent fraud, duplicated entitlement, and licence abuse;
+- maintain accounting and transaction records; and
+- comply with legal obligations or resolve disputes.
+
+Retention depends on the purpose, licence lifetime, support history, transaction
+status, and applicable legal or accounting requirements. Information that is no
+longer reasonably required should be deleted, anonymised, or securely archived
+as appropriate. Do not send audio, projects, identity documents, or other
+sensitive data unless specifically requested and a suitable private transfer
+method has been agreed.
+
+8. INTERNATIONAL SERVICE PROVIDERS
+
+GitHub and any future checkout, email, storage, or support provider may process
+connection or transaction information in countries other than the user's own,
+according to their infrastructure and privacy terms. Any future checkout must
+identify the provider and applicable privacy information before payment.
+
+9. NO AUTOMATED AUDIO PROFILING
+
+ArSonKuPik does not use uploaded audio, project content, or usage analytics to
+build advertising profiles or make automated decisions about users. A future
+Merchant of Record may perform payment-fraud checks under its own disclosed
+terms.
+
+10. USER REQUESTS AND CONTACT
+
+Product and privacy information:
 https://github.com/masarray/vst-enhancer
+
+For a non-confidential privacy question, use the official support information in
+SUPPORT.md. Do not place personal data in a public issue. If private contact is
+needed, request a private contact route without disclosing the underlying
+personal information publicly.
+
+11. CHANGES TO THIS NOTICE
 
 This notice may be updated when the product, hosting, sales, activation, or
 support process changes. Material changes will be published with a new effective
-date.
+date. Transaction-specific provider notices shown at checkout remain applicable
+to the corresponding transaction.

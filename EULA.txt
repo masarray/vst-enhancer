@@ -1,6 +1,6 @@
 ARSONKUPIK VST ONE-YEAR FREE EVALUATION END USER LICENCE AGREEMENT
 
-Effective date: 16 July 2026
+Effective date: 17 July 2026
 Copyright (C) 2026 Tutorial Mas Ari / MasArray. All rights reserved.
 
 PLEASE READ THIS AGREEMENT BEFORE INSTALLING OR USING ARSONKUPIK. BY INSTALLING,
@@ -14,16 +14,20 @@ Standalone application, presets, documentation, updates, and activation data
 supplied by Tutorial Mas Ari / MasArray (the "Licensor"). The Software is
 licensed, not sold.
 
+The public repository is an information and distribution channel. It does not
+contain the proprietary DSP implementation, application source code, private
+signing material, Key Activator, or customer activation records.
+
 2. ONE-YEAR FREE EVALUATION LICENCE
 
-During the 365-day full-editing evaluation period measured from first launch on a
-computer, the Licensor grants you a limited, non-exclusive, non-transferable
+During the 365-day full-editing evaluation period measured from first launch on
+a computer, the Licensor grants you a limited, non-exclusive, non-transferable
 licence to install and use the Software on computers that you own or control for
 personal and commercial audio-production work. You retain all rights in audio
 and projects that you create with the Software.
 
-No payment card is required to start the evaluation. The Software does not
-collect payment and no automatic charge occurs when the evaluation period ends.
+No payment card, account, subscription, automatic renewal, or automatic charge
+is required to start or complete the evaluation.
 
 3. END OF FULL-EDITING EVALUATION
 
@@ -35,22 +39,29 @@ intentionally mute audio, inject noise, or force bypass solely because the
 full-editing evaluation has ended.
 
 Buying an activation is optional. A customer who does not purchase may continue
-to use the project-safe read-only behaviour described above.
+to use the project-safe read-only behaviour described above, subject to this
+Agreement and technical compatibility.
 
 4. COMMERCIAL OFFLINE ACTIVATION
 
 A paid or otherwise authorised activation may restore editing according to the
-purchase terms offered by the Licensor and checkout provider. For the v0.5
-one-year evaluation cohort, the published standard offer is a USD 25 perpetual
+purchase terms offered by the Licensor and an authorised checkout provider. For
+the v0.5 evaluation cohort, the published standard offer is a USD 25 perpetual
 editing activation with no subscription and no automatic renewal, before any tax
-required at checkout. The complete current terms are supplied in
-PURCHASE_TERMS.txt and shown through the official product channel.
+required at checkout.
+
+Publishing a price does not by itself make checkout available, create an order,
+or complete a sale. A purchase can occur only through an authorised checkout
+that displays the seller identity, final price and currency, tax, payment method,
+refund information, privacy notice, and applicable provider terms before payment.
+The complete current terms are supplied in PURCHASE_TERMS.txt and through the
+official product channel.
 
 Activation codes are generated for a specific Computer Request ID. They may not
-be shared, resold, forged, modified, or generated without authorisation. Reissue
-or transfer to another computer may require proof of purchase, deactivation of a
-previous computer, and an abuse review. The applicable purchase terms state the
-number of permitted active computers.
+be shared, resold, published, forged, modified, or generated without
+authorisation. Reissue or transfer to another computer may require proof of
+purchase, deactivation of a previous computer, and an abuse review. The
+applicable purchase terms state the number of permitted active computers.
 
 5. OWNERSHIP
 
@@ -69,37 +80,62 @@ Except where applicable law expressly overrides a restriction, you may not:
 - include the Software in another software package, hardware product, download
   bundle, or service without written permission;
 - reverse engineer, decompile, disassemble, bypass activation, extract protected
-  presets or code, or attempt to discover the private signing key;
-- remove or alter copyright, trademark, licence, or attribution notices; or
+  presets or code, or attempt to discover private signing or activation material;
+- remove or alter copyright, trademark, licence, security, or attribution
+  notices; or
 - use the Software or activation system for unlawful activity.
 
 You may make reasonable backup copies solely for your own permitted use.
+Nothing in this Agreement limits any right that applicable law does not permit
+the Licensor to restrict.
 
-7. UPDATES AND FUTURE RELEASES
+7. OFFICIAL DISTRIBUTION, INTEGRITY, AND UNSIGNED BUILDS
+
+Use only packages linked from the official product website or the official
+GitHub Releases page. Mirrors, modified packages, and third-party re-uploads are
+not supported or authorised by the Licensor.
+
+Current public Windows packages may be distributed without a commercial
+code-signing certificate. Windows SmartScreen or other security software may
+therefore show an unknown-publisher or reputation warning. Before installation,
+verify that the package source is official and compare its SHA-256 hash with
+SHA256SUMS.txt from the same release. A matching checksum confirms file identity
+against the published value but is not a warranty, malware scan, or guarantee of
+compatibility. Keep normal operating-system and endpoint protection enabled.
+
+8. UPDATES AND FUTURE RELEASES
 
 Evaluation software may change. Future versions, stable releases, upgrades,
-support plans, prices, and licence terms may differ. Installing a future version
-may require acceptance of updated terms. The Licensor is not required to provide
-updates, compatibility fixes, or support for every host, operating system, or
-hardware configuration.
+support plans, prices, licence terms, and system requirements may differ.
+Installing a future version may require acceptance of updated terms. The
+Licensor is not required to provide updates, compatibility fixes, or support for
+every host, operating system, driver, or hardware configuration.
 
-8. PRIVACY AND NETWORK USE
+A perpetual editing activation applies to the purchased product generation as
+described in the applicable purchase terms. It does not guarantee every future
+major version, operating system, DAW, feature, or compatibility update.
+
+9. PRIVACY AND NETWORK USE
 
 No account or permanent internet connection is required for normal processing
 or offline activation. The Software does not intentionally transmit audio,
-project data, licence codes, or analytics. A network request is made only when
-you manually request an update check. The hosting provider may process ordinary
-connection data such as an IP address under its own privacy terms. Computer
+project data, parameter values, preset selections, licence codes, crash
+analytics, advertising identifiers, or usage analytics.
+
+A network request is made only when you manually request an update check. The
+hosting provider may process ordinary connection data such as an IP address,
+timestamp, user agent, and request path under its own privacy terms. Computer
 Request IDs are generated locally and are shared only when you choose to copy
-and send them to the Licensor or the authorised activation service.
+and send them to the Licensor or an authorised activation service. See
+PRIVACY.txt for further information.
 
-9. THIRD-PARTY COMPONENTS
+10. THIRD-PARTY COMPONENTS
 
-ArSonKuPik is built with JUCE 8 under an active JUCE licence and includes
-components governed by separate terms, including the Steinberg VST3 SDK and
-Plus Jakarta Sans. The complete notices supplied with the Software are part of
-this distribution. Nothing in this Agreement grants rights to use JUCE or any
-third-party SDK separately from the Software.
+ArSonKuPik is built with JUCE 8.0.14 under an active JUCE product licence and
+includes components governed by separate terms, including the Steinberg VST3
+SDK and Plus Jakarta Sans. The complete notices supplied with the Software are
+part of this distribution. Nothing in this Agreement grants rights to use JUCE
+or any third-party SDK separately from the Software.
 
 The DSP lineage includes material from the author's separately published
 MIT-licensed ArSonKuPik project. The required MIT notice is retained in the
@@ -107,14 +143,25 @@ third-party notices. The separately published MIT project remains available
 under its original terms; this does not make the proprietary VST product open
 source.
 
-10. WARRANTY DISCLAIMER
+11. USER RESPONSIBILITY AND AUDIO RESULTS
+
+Audio results depend on source material, settings, monitoring, gain staging,
+host behaviour, drivers, sample rate, buffer size, and other processing. You are
+responsible for listening, level-matching comparisons, keeping backups, and
+verifying final renders before release, delivery, broadcast, or other critical
+use. Product names such as "Smart Protect" or preset names do not replace final
+metering, true-peak review, loudness compliance, hearing-safety practice, or
+professional judgement.
+
+12. WARRANTY DISCLAIMER
 
 THE SOFTWARE IS PROVIDED "AS IS" AND "AS AVAILABLE", WITHOUT WARRANTY OF ANY
 KIND TO THE MAXIMUM EXTENT PERMITTED BY LAW. EVALUATION SOFTWARE MAY CONTAIN
-DEFECTS OR BE INCOMPATIBLE WITH A DAW, PLUG-IN HOST, DRIVER, OR DEVICE. KEEP
-BACKUPS OF IMPORTANT PROJECTS AND VERIFY RESULTS BEFORE DELIVERY OR BROADCAST.
+DEFECTS OR BE INCOMPATIBLE WITH A DAW, PLUG-IN HOST, DRIVER, DEVICE, SECURITY
+POLICY, OR HARDWARE CONFIGURATION. KEEP BACKUPS OF IMPORTANT PROJECTS AND VERIFY
+RESULTS BEFORE DELIVERY OR BROADCAST.
 
-11. LIMITATION OF LIABILITY
+13. LIMITATION OF LIABILITY
 
 TO THE MAXIMUM EXTENT PERMITTED BY LAW, THE LICENSOR SHALL NOT BE LIABLE FOR
 INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, LOST WORK,
@@ -124,25 +171,35 @@ EXCLUDED, THE LICENSOR'S TOTAL LIABILITY SHALL NOT EXCEED THE AMOUNT YOU PAID
 FOR THE SOFTWARE. NOTHING IN THIS AGREEMENT EXCLUDES RIGHTS OR LIABILITY THAT
 CANNOT BE EXCLUDED UNDER APPLICABLE LAW.
 
-12. TERMINATION
+14. TERMINATION
 
 This licence terminates automatically if you materially breach this Agreement.
 On termination, you must stop using and delete distributed copies of the
 Software, except where applicable law provides otherwise. Sections concerning
-ownership, restrictions, warranty, liability, and third-party rights survive.
+ownership, restrictions, integrity, warranty, liability, privacy, and
+third-party rights survive termination.
 
-13. GOVERNING LAW
+15. GOVERNING LAW
 
 This Agreement is governed by the laws of the Republic of Indonesia, without
 regard to conflict-of-law principles, subject to mandatory consumer protections
 that apply in your place of residence.
 
-14. COMPLETE AGREEMENT
+16. COMPLETE AGREEMENT AND PRECEDENCE
 
 This Agreement, PURCHASE_TERMS.txt, the applicable checkout and receipt terms,
 and the supplied third-party notices form the complete agreement for your use of
-this version of the Software. If any provision is unenforceable, the remaining
-provisions remain in effect.
+this version of the Software. For a completed purchase, the transaction-specific
+checkout and receipt terms control transaction details such as seller identity,
+final price, tax, payment, and refund procedure. If any provision is
+unenforceable, the remaining provisions remain in effect.
 
-Product and support information:
+17. SUPPORT AND SECURITY REPORTING
+
+Product and non-confidential support information:
 https://github.com/masarray/vst-enhancer
+
+Security vulnerabilities must be reported privately according to SECURITY.md.
+Do not publish activation codes, Computer Request IDs, exploit details, private
+projects, customer audio, personal data, or suspected key exposure in a public
+issue.
