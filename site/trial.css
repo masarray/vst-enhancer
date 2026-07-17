@@ -1,0 +1,151 @@
+/* Trial-first conversion layer. Loaded after styles.css. */
+
+.nav-download {
+  border-color: rgba(134, 224, 177, .42);
+  background: rgba(91, 212, 154, .12);
+  color: #d8ffe9;
+}
+
+.trial-hero .hero-copy {
+  align-self: center;
+}
+
+.hero-trust {
+  color: #aaa4b0;
+  font-size: .78rem;
+  letter-spacing: .015em;
+}
+
+.centered-action {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.free-year-mark {
+  display: grid;
+  gap: .45rem;
+  margin-top: 1.5rem;
+  padding: 1.1rem 0 0;
+  border-top: 1px solid rgba(255,255,255,.1);
+}
+
+.free-year-mark strong {
+  color: #f5f1fa;
+  font-size: clamp(1.35rem, 3vw, 2rem);
+  letter-spacing: -.03em;
+}
+
+.free-year-mark span {
+  color: #aaa4b0;
+  font-size: .82rem;
+}
+
+.activation-soft-link {
+  display: inline-flex;
+  margin-top: .85rem;
+  color: #d7c8ff;
+}
+
+.activation-soft-link::after {
+  content: " →";
+}
+
+.activation-page .hero {
+  padding-bottom: 2.5rem;
+}
+
+.activation-page .hero-grid {
+  align-items: center;
+}
+
+.activation-page .price-card {
+  margin-top: 1.2rem;
+}
+
+.activation-page .price-card strong {
+  font-size: clamp(2rem, 5vw, 3.6rem);
+}
+
+.activation-status {
+  display: grid;
+  gap: .5rem;
+  padding: 1rem 1.1rem;
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 14px;
+  background: rgba(255,255,255,.025);
+}
+
+.activation-status strong {
+  color: #f5f1fa;
+}
+
+.activation-status span {
+  color: #aaa4b0;
+  font-size: .82rem;
+  line-height: 1.65;
+}
+
+.support-purpose {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 16px;
+  background: rgba(255,255,255,.08);
+}
+
+.support-purpose article {
+  min-height: 150px;
+  padding: 1.25rem;
+  background: #0b0910;
+}
+
+.support-purpose h3 {
+  margin: .5rem 0 .45rem;
+  color: #f5f1fa;
+  font-size: .96rem;
+}
+
+.support-purpose p {
+  margin: 0;
+  color: #aaa4b0;
+  font-size: .8rem;
+  line-height: 1.7;
+}
+
+.support-purpose span {
+  color: #c5a0ff;
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.activation-note {
+  margin-top: 1.25rem;
+  color: #918b98;
+  font-size: .72rem;
+  line-height: 1.7;
+}
+
+@media (max-width: 860px) {
+  .support-purpose {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .nav-download {
+    display: none;
+  }
+
+  .centered-action .button {
+    width: 100%;
+  }
+
+  .hero-trust {
+    line-height: 1.7;
+  }
+}
