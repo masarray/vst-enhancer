@@ -3,17 +3,12 @@
 
   const STORAGE_KEY = 'askp-language';
   const SUPPORTED_LANGUAGES = ['en', 'id'];
-  const SITE_URL = 'https://masarray.github.io/vst-enhancer/';
   const RELEASE_FALLBACK = 'https://github.com/masarray/vst-enhancer/releases/latest';
   const OFFICIAL_RELEASE_PATH = '/masarray/vst-enhancer/releases';
 
   const languageButtons = [...document.querySelectorAll('[data-lang-button]')];
   const translatableElements = [...document.querySelectorAll('[data-en][data-id]')];
-  const installerButtons = [
-    document.getElementById('installer-link'),
-    document.getElementById('installer-link-bottom'),
-    document.getElementById('installer-link-final')
-  ].filter(Boolean);
+  const installerButtons = [...document.querySelectorAll('[data-installer-cta]')];
 
   const packageLinks = {
     vst3: document.getElementById('vst3-link'),
@@ -23,39 +18,31 @@
 
   const copy = {
     en: {
-      title: 'ArSonKuPik VST3 Audio Enhancer | Free 365-Day Evaluation',
-      description: 'ArSonKuPik is a Windows VST3 and standalone audio enhancer for mastering, mix bus, vocals, tracks and podcasts. Try every preset and control for 365 days, no card.',
-      socialTitle: 'ArSonKuPik VST3 Audio Enhancer',
-      socialDescription: 'A focused Windows VST3 and standalone enhancer with a transparent 365-day evaluation. No card, subscription or automatic charge.',
       checkingTitle: 'Release status',
       checkingMessage: 'Checking official distribution status…',
-      enabledTitle: 'Official evaluation download available',
-      enabledMessage: 'Download only from the official GitHub Release and verify SHA-256 before running the file.',
+      enabledTitle: 'Official free evaluation available',
+      enabledMessage: 'Download from the official GitHub Release. SHA-256 verification is available before installation.',
       pausedTitle: 'Official download temporarily paused',
-      pausedMessage: 'Open the release page for the current validation and packaging status.',
+      pausedMessage: 'Open the Releases page for the current validation and packaging status.',
       errorTitle: 'Release status unavailable',
       errorMessage: 'Open the official Releases page before downloading.',
-      installerEnabled: 'Download Windows installer',
+      installerFallback: 'Download free for Windows',
       installerPaused: 'View official release status',
-      paidUnavailable: 'Paid checkout is not currently enabled; the free evaluation download is available separately.',
+      paidUnavailable: 'Paid checkout is not currently enabled. The free evaluation remains available separately.',
       paidAvailable: 'Paid checkout is available only through the authorised link and terms shown before payment.'
     },
     id: {
-      title: 'ArSonKuPik Audio Enhancer VST3 | Evaluasi Gratis 365 Hari',
-      description: 'ArSonKuPik adalah audio enhancer VST3 dan standalone untuk Windows, mastering, mix bus, vokal, track, dan podcast. Evaluasi seluruh preset dan kontrol selama 365 hari tanpa kartu atau langganan.',
-      socialTitle: 'ArSonKuPik Audio Enhancer VST3',
-      socialDescription: 'Audio enhancer Windows VST3 dan standalone dengan evaluasi transparan 365 hari. Tanpa kartu, langganan, atau tagihan otomatis.',
       checkingTitle: 'Status rilis',
       checkingMessage: 'Memeriksa status distribusi resmi…',
-      enabledTitle: 'Unduhan evaluasi resmi tersedia',
-      enabledMessage: 'Unduh hanya dari GitHub Release resmi dan verifikasi SHA-256 sebelum menjalankan file.',
+      enabledTitle: 'Evaluasi gratis resmi tersedia',
+      enabledMessage: 'Unduh melalui GitHub Release resmi. Verifikasi SHA-256 tersedia sebelum instalasi.',
       pausedTitle: 'Unduhan resmi dijeda sementara',
-      pausedMessage: 'Buka halaman rilis untuk melihat status validasi dan packaging terbaru.',
+      pausedMessage: 'Buka halaman Releases untuk melihat status validasi dan packaging terbaru.',
       errorTitle: 'Status rilis tidak tersedia',
       errorMessage: 'Buka halaman Releases resmi sebelum mengunduh.',
-      installerEnabled: 'Unduh installer Windows',
+      installerFallback: 'Unduh gratis untuk Windows',
       installerPaused: 'Lihat status rilis resmi',
-      paidUnavailable: 'Checkout berbayar saat ini belum diaktifkan; unduhan evaluasi gratis tersedia secara terpisah.',
+      paidUnavailable: 'Checkout berbayar saat ini belum diaktifkan. Evaluasi gratis tetap tersedia secara terpisah.',
       paidAvailable: 'Checkout berbayar hanya tersedia melalui tautan resmi dan ketentuan yang ditampilkan sebelum pembayaran.'
     }
   };
@@ -69,10 +56,13 @@
 
   const officialReleaseUrl = (value, kind = 'release') => {
     if (typeof value !== 'string' || value.length > 500) return null;
+
     try {
       const url = new URL(value);
-      if (url.protocol !== 'https:' || url.hostname !== 'github.com') return null;
-      if (!url.pathname.startsWith(OFFICIAL_RELEASE_PATH)) return null;
+      const releaseRoot = `${OFFICIAL_RELEASE_PATH}/`;
+      const isOfficialPath = url.pathname === OFFICIAL_RELEASE_PATH || url.pathname.startsWith(releaseRoot);
+
+      if (url.protocol !== 'https:' || url.hostname !== 'github.com' || !isOfficialPath) return null;
       if (kind === 'asset' && !url.pathname.includes('/releases/download/')) return null;
       return url.href;
     } catch (_) {
@@ -94,22 +84,15 @@
     return navigator.language?.toLowerCase().startsWith('id') ? 'id' : 'en';
   };
 
-  const localizedUrl = (language) => {
-    const url = new URL(SITE_URL);
-    url.searchParams.set('lang', language);
-    return url.href;
-  };
-
-  const updateStructuredData = (language) => {
+  const updateStructuredData = () => {
     const script = document.getElementById('software-structured-data');
     if (!script) return;
 
     try {
       const data = JSON.parse(script.textContent);
       const software = data['@graph']?.find((entry) => entry['@type'] === 'SoftwareApplication');
+
       if (software) {
-        software.url = localizedUrl(language);
-        software.inLanguage = language;
         if (releaseState.version) software.softwareVersion = releaseState.version.replace(/^v/i, '');
         if (releaseState.releaseUrl) {
           software.downloadUrl = releaseState.releaseUrl;
@@ -117,29 +100,16 @@
           if (software.offers) software.offers.url = releaseState.releaseUrl;
         }
       }
+
       script.textContent = JSON.stringify(data, null, 2);
     } catch (_) {
       // Keep the server-rendered JSON-LD if dynamic enhancement fails.
     }
   };
 
-  const setMetadata = (language) => {
-    const text = copy[language];
-    const pageUrl = localizedUrl(language);
-    document.title = text.title;
-    document.querySelector('meta[name="description"]')?.setAttribute('content', text.description);
-    document.querySelector('meta[property="og:title"]')?.setAttribute('content', text.socialTitle);
-    document.querySelector('meta[property="og:description"]')?.setAttribute('content', text.socialDescription);
-    document.querySelector('meta[property="og:url"]')?.setAttribute('content', pageUrl);
-    document.querySelector('meta[property="og:locale"]')?.setAttribute('content', language === 'id' ? 'id_ID' : 'en_US');
-    document.querySelector('meta[name="twitter:title"]')?.setAttribute('content', text.socialTitle);
-    document.querySelector('meta[name="twitter:description"]')?.setAttribute('content', text.socialDescription);
-    document.getElementById('canonical-link')?.setAttribute('href', pageUrl);
-    updateStructuredData(language);
-  };
-
   const setLink = (element, url, enabled = true) => {
     if (!element) return;
+
     element.setAttribute('href', url || RELEASE_FALLBACK);
     if (enabled) {
       element.removeAttribute('aria-disabled');
@@ -148,6 +118,12 @@
       element.setAttribute('aria-disabled', 'true');
       element.setAttribute('data-release-pending', 'true');
     }
+  };
+
+  const installerLabel = (button, enabled) => {
+    const text = copy[currentLanguage];
+    if (!enabled) return text.installerPaused;
+    return button.dataset[currentLanguage] || text.installerFallback;
   };
 
   const updateChecksumCommand = (installerUrl, version) => {
@@ -167,6 +143,16 @@
     command.textContent = `Get-FileHash .\\${filename} -Algorithm SHA256`;
   };
 
+  const announceReleaseState = () => {
+    document.dispatchEvent(new CustomEvent('askp:release-ready', {
+      detail: {
+        type: releaseState.type,
+        version: releaseState.version || null,
+        releaseUrl: releaseState.releaseUrl || RELEASE_FALLBACK
+      }
+    }));
+  };
+
   const renderReleaseState = () => {
     const text = copy[currentLanguage];
     const banner = document.getElementById('distribution-banner');
@@ -184,22 +170,35 @@
       purchaseStatus.textContent = releaseState.purchaseCheckoutAvailable
         ? text.paidAvailable
         : text.paidUnavailable;
-      purchaseStatus.setAttribute('data-checkout-state', releaseState.purchaseCheckoutAvailable ? 'available' : 'unavailable');
+      purchaseStatus.setAttribute(
+        'data-checkout-state',
+        releaseState.purchaseCheckoutAvailable ? 'available' : 'unavailable'
+      );
+    }
+
+    if (releaseState.type === 'checking') {
+      banner?.setAttribute('data-state', 'checking');
+      if (title) title.textContent = text.checkingTitle;
+      if (message) message.textContent = text.checkingMessage;
+      return;
     }
 
     if (releaseState.type === 'enabled' && releaseState.installerUrl) {
       banner?.setAttribute('data-state', 'enabled');
       if (title) title.textContent = text.enabledTitle;
       if (message) message.textContent = text.enabledMessage;
+
       installerButtons.forEach((button) => {
         setLink(button, releaseState.installerUrl, true);
-        button.textContent = text.installerEnabled;
+        button.textContent = installerLabel(button, true);
       });
+
       setLink(packageLinks.vst3, releaseState.vst3Url || releaseUrl, Boolean(releaseState.vst3Url));
       setLink(packageLinks.standalone, releaseState.standaloneUrl || releaseUrl, Boolean(releaseState.standaloneUrl));
       setLink(packageLinks.checksums, releaseState.checksumsUrl || releaseUrl, Boolean(releaseState.checksumsUrl));
       updateChecksumCommand(releaseState.installerUrl, releaseState.version);
-      updateStructuredData(currentLanguage);
+      updateStructuredData();
+      announceReleaseState();
       return;
     }
 
@@ -207,17 +206,21 @@
     banner?.setAttribute('data-state', isPaused ? 'paused' : 'error');
     if (title) title.textContent = isPaused ? text.pausedTitle : text.errorTitle;
     if (message) message.textContent = isPaused ? text.pausedMessage : text.errorMessage;
+
     installerButtons.forEach((button) => {
       setLink(button, releaseUrl, false);
-      button.textContent = text.installerPaused;
+      button.textContent = installerLabel(button, false);
     });
+
     setLink(packageLinks.vst3, releaseUrl, false);
     setLink(packageLinks.standalone, releaseUrl, false);
     setLink(packageLinks.checksums, releaseUrl, false);
+    announceReleaseState();
   };
 
-  const setLanguage = (language, updateUrl = true) => {
+  const setLanguage = (language) => {
     if (!SUPPORTED_LANGUAGES.includes(language)) return;
+
     currentLanguage = language;
     document.documentElement.lang = language;
 
@@ -229,15 +232,12 @@
       button.setAttribute('aria-pressed', String(button.dataset.langButton === language));
     });
 
-    try { localStorage.setItem(STORAGE_KEY, language); } catch (_) {}
-
-    if (updateUrl) {
-      const url = new URL(window.location.href);
-      url.searchParams.set('lang', language);
-      history.replaceState(null, '', `${url.pathname}${url.search}${url.hash}`);
+    try {
+      localStorage.setItem(STORAGE_KEY, language);
+    } catch (_) {
+      // Language switching remains functional without storage.
     }
 
-    setMetadata(language);
     renderReleaseState();
   };
 
@@ -245,14 +245,17 @@
     button.addEventListener('click', () => setLanguage(button.dataset.langButton));
   });
 
-  setLanguage(chooseInitialLanguage(), false);
+  setLanguage(chooseInitialLanguage());
 
   (async () => {
     try {
-      const response = await fetch('./release.json', { cache: 'no-store', credentials: 'same-origin' });
+      const response = await fetch('./release.json', {
+        cache: 'no-store',
+        credentials: 'same-origin'
+      });
       if (!response.ok) throw new Error(`Release metadata returned ${response.status}`);
-      const release = await response.json();
 
+      const release = await response.json();
       const releaseUrl = officialReleaseUrl(release.releaseUrl) || RELEASE_FALLBACK;
       const installerUrl = officialReleaseUrl(release.installerUrl, 'asset');
       const vst3Url = officialReleaseUrl(release.vst3Url, 'asset');
