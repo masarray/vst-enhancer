@@ -3,49 +3,23 @@
 
   const RELEASE_FALLBACK = 'https://github.com/masarray/vst-enhancer/releases/latest';
   const OFFICIAL_ASSET_PREFIX = '/masarray/vst-enhancer/releases/download/';
-  const metaCopy = {
+  const installerCtas = [...document.querySelectorAll('[data-installer-cta]')];
+
+  const copy = {
     en: {
-      title: 'ArSonKuPik VST3 Audio Enhancer | Free for 365 Days',
-      description: 'Hear ArSonKuPik in your own mix. Use every preset and control free for 365 days with no account, card, subscription, automatic charge or obligation to buy.',
-      socialTitle: 'ArSonKuPik VST3 Audio Enhancer — Free for 365 Days',
-      socialDescription: 'Use every preset and control in your own music for a full year. No account, card, subscription, automatic charge or obligation to buy.'
+      enabled: 'Download free for Windows',
+      paused: 'View official release status'
     },
     id: {
-      title: 'ArSonKuPik Audio Enhancer VST3 | Gratis 365 Hari',
-      description: 'Dengarkan ArSonKuPik pada mix Anda sendiri. Gunakan seluruh preset dan kontrol gratis 365 hari tanpa akun, kartu, langganan, tagihan otomatis, atau kewajiban membeli.',
-      socialTitle: 'ArSonKuPik Audio Enhancer VST3 — Gratis 365 Hari',
-      socialDescription: 'Gunakan seluruh preset dan kontrol pada musik Anda selama satu tahun. Tanpa akun, kartu, langganan, tagihan otomatis, atau kewajiban membeli.'
+      enabled: 'Unduh gratis untuk Windows',
+      paused: 'Lihat status rilis resmi'
     }
   };
 
-  const currentLanguage = () => document.documentElement.lang === 'id' ? 'id' : 'en';
-
-  const applyCtaCopy = () => {
-    const language = currentLanguage();
-    document.querySelectorAll('[data-installer-cta][data-en][data-id]').forEach((link) => {
-      link.textContent = link.dataset[language] || link.dataset.en || link.textContent;
-    });
-  };
-
-  const applyMetadata = () => {
-    const text = metaCopy[currentLanguage()];
-    document.title = text.title;
-    document.querySelector('meta[name="description"]')?.setAttribute('content', text.description);
-    document.querySelector('meta[property="og:title"]')?.setAttribute('content', text.socialTitle);
-    document.querySelector('meta[property="og:description"]')?.setAttribute('content', text.socialDescription);
-    document.querySelector('meta[name="twitter:title"]')?.setAttribute('content', text.socialTitle);
-    document.querySelector('meta[name="twitter:description"]')?.setAttribute('content', text.socialDescription);
-    applyCtaCopy();
-  };
-
-  document.querySelectorAll('[data-lang-button]').forEach((button) => {
-    button.addEventListener('click', () => queueMicrotask(applyMetadata));
-  });
-
-  applyMetadata();
+  const language = () => document.documentElement.lang === 'id' ? 'id' : 'en';
 
   const officialInstallerUrl = (value) => {
-    if (typeof value !== 'string') return null;
+    if (typeof value !== 'string' || value.length > 500) return null;
     try {
       const url = new URL(value);
       if (url.protocol !== 'https:' || url.hostname !== 'github.com') return null;
@@ -57,23 +31,40 @@
     }
   };
 
+  const setCtaState = (url, enabled) => {
+    const text = copy[language()];
+    installerCtas.forEach((cta) => {
+      cta.href = url || RELEASE_FALLBACK;
+      cta.textContent = enabled ? text.enabled : text.paused;
+      if (enabled) {
+        cta.removeAttribute('aria-disabled');
+      } else {
+        cta.setAttribute('aria-disabled', 'true');
+      }
+    });
+  };
+
+  const syncTextOnLanguageChange = () => {
+    const observer = new MutationObserver(() => {
+      const enabled = installerCtas.some((cta) => cta.getAttribute('aria-disabled') !== 'true');
+      const currentUrl = installerCtas[0]?.href || RELEASE_FALLBACK;
+      setCtaState(currentUrl, enabled);
+    });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+  };
+
+  syncTextOnLanguageChange();
+
   (async () => {
     try {
       const response = await fetch('./release.json', { cache: 'no-store', credentials: 'same-origin' });
-      if (!response.ok) return;
+      if (!response.ok) throw new Error(`Release metadata returned ${response.status}`);
       const release = await response.json();
-      const installerUrl = release.distributionEnabled === true
-        ? officialInstallerUrl(release.installerUrl)
-        : null;
-      document.querySelectorAll('[data-installer-cta]').forEach((link) => {
-        link.href = installerUrl || release.releaseUrl || RELEASE_FALLBACK;
-      });
-      applyCtaCopy();
+      const installerUrl = officialInstallerUrl(release.installerUrl);
+      const enabled = release.distributionEnabled === true && Boolean(installerUrl);
+      setCtaState(enabled ? installerUrl : release.releaseUrl || RELEASE_FALLBACK, enabled);
     } catch (_) {
-      document.querySelectorAll('[data-installer-cta]').forEach((link) => {
-        link.href = RELEASE_FALLBACK;
-      });
-      applyCtaCopy();
+      setCtaState(RELEASE_FALLBACK, false);
     }
   })();
 })();
