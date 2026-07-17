@@ -2,6 +2,22 @@
 
 This changelog covers the public product website, distribution metadata, legal notices, supported packages, and public support surface. Proprietary DSP implementation details are not published in this repository.
 
+## Unreleased — trial-first landing
+
+### Evaluation-first product journey
+
+- Repositioned the main landing page around listening, free evaluation, download confidence, privacy, and honest A/B comparison.
+- Made the 365-day full-editing evaluation, no-account, no-card, no-subscription, no-automatic-charge, and no-purchase-obligation terms prominent.
+- Moved the unsigned Windows package disclosure from the hero into the installation and file-verification section.
+- Added a “your music is the real demo” workflow rather than publishing unverified or misleading audio examples.
+
+### Optional activation
+
+- Moved price, device limits, activation details, checkout prerequisites, and development-support messaging to a separate `/activation/` page.
+- Marked the activation page `noindex,follow` while paid checkout is not configured.
+- Clarified that activation is a purchase for concrete licence rights, not a donation.
+- Clarified that activation revenue may support independent development, applicable JUCE licensing, testing, documentation, support, security, and trusted Windows distribution without promising that individual payments are earmarked for a particular expense.
+
 ## v0.5.12 — 17 July 2026
 
 ### Public distribution
