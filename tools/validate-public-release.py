@@ -292,7 +292,8 @@ def validate_support_files(root: Path, release: dict[str, object]) -> None:
     version = str(release["version"])
     require(version in texts["README.md"], "README does not mention current release version")
     require("releases/latest" in texts[".github/ISSUE_TEMPLATE/config.yml"], "Issue chooser must use releases/latest")
-    require("/tag/v0.5.0" not in "\n".join(texts.values()), "Stale v0.5.0 release link found")
+    stale_tag = "/tag/" + "v0.5.0"
+    require(stale_tag not in "\n".join(texts.values()), "Stale v0.5.0 release link found")
     workflow = texts[".github/workflows/validate-public-site.yml"]
     require("pull_request:" not in workflow, "Self-hosted workflow must not run public PR code")
     require("runs-on: self-hosted" in workflow, "Workflow must use the self-hosted runner")
