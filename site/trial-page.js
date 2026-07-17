@@ -1,55 +1,28 @@
 (() => {
   'use strict';
 
-  const RELEASE_FALLBACK = 'https://github.com/masarray/vst-enhancer/releases/latest';
-  const OFFICIAL_ASSET_PREFIX = '/masarray/vst-enhancer/releases/download/';
-  const installerCtas = [...document.querySelectorAll('[data-installer-cta]')];
+  const CANONICAL_URL = 'https://masarray.github.io/vst-enhancer/';
 
-  const copy = {
-    en: { enabled: 'Download free for Windows', paused: 'View official release status' },
-    id: { enabled: 'Unduh gratis untuk Windows', paused: 'Lihat status rilis resmi' }
-  };
+  // EN/ID is a display preference on one canonical product page. Remove the
+  // legacy query-language alternate signals from the rendered document so
+  // canonical metadata cannot vary by browser language or local storage.
+  document.querySelectorAll('link[rel="alternate"][hreflang]').forEach((link) => link.remove());
 
-  const language = () => document.documentElement.lang === 'id' ? 'id' : 'en';
+  const canonical = document.getElementById('canonical-link');
+  if (canonical) canonical.setAttribute('href', CANONICAL_URL);
 
-  const officialInstallerUrl = (value) => {
-    if (typeof value !== 'string' || value.length > 500) return null;
-    try {
-      const url = new URL(value);
-      if (url.protocol !== 'https:' || url.hostname !== 'github.com') return null;
-      if (!url.pathname.startsWith(OFFICIAL_ASSET_PREFIX) || !url.pathname.endsWith('.exe')) return null;
-      return url.href;
-    } catch (_) {
-      return null;
-    }
-  };
+  document.querySelector('meta[property="og:url"]')?.setAttribute('content', CANONICAL_URL);
 
-  const setCtaState = (url, enabled) => {
-    const text = copy[language()];
-    installerCtas.forEach((cta) => {
-      cta.href = url || RELEASE_FALLBACK;
-      cta.textContent = enabled ? text.enabled : text.paused;
-      if (enabled) cta.removeAttribute('aria-disabled');
-      else cta.setAttribute('aria-disabled', 'true');
-    });
-  };
+  const currentUrl = new URL(window.location.href);
+  if (currentUrl.searchParams.has('lang')) {
+    currentUrl.searchParams.delete('lang');
+    const query = currentUrl.searchParams.toString();
+    history.replaceState(
+      null,
+      '',
+      `${currentUrl.pathname}${query ? `?${query}` : ''}${currentUrl.hash}`
+    );
+  }
 
-  const observer = new MutationObserver(() => {
-    const enabled = installerCtas.some((cta) => cta.getAttribute('aria-disabled') !== 'true');
-    setCtaState(installerCtas[0]?.href || RELEASE_FALLBACK, enabled);
-  });
-  observer.observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
-
-  (async () => {
-    try {
-      const response = await fetch('./release.json', { cache: 'no-store', credentials: 'same-origin' });
-      if (!response.ok) throw new Error(`Release metadata returned ${response.status}`);
-      const release = await response.json();
-      const installerUrl = officialInstallerUrl(release.installerUrl);
-      const enabled = release.distributionEnabled === true && Boolean(installerUrl);
-      setCtaState(enabled ? installerUrl : release.releaseUrl || RELEASE_FALLBACK, enabled);
-    } catch (_) {
-      setCtaState(RELEASE_FALLBACK, false);
-    }
-  })();
+  document.documentElement.setAttribute('data-canonical-mode', 'single-url');
 })();
