@@ -117,9 +117,14 @@ def main() -> int:
     require(release.get("purchaseCheckoutAvailable") is False, "Checkout must remain disabled until configured")
     require("purchaseUrl" not in release, "Disabled checkout must not publish a purchaseUrl")
 
-    require("--micro: 10px" in trial_css, "Micro typography must be 10 px")
-    require("--small: 11px" in trial_css, "Small typography must be 11 px")
-    require("--copy: 12px" in trial_css, "Body typography must be 12 px")
+    require("--micro: 10px" in trial_css, "Desktop micro typography must remain 10 px")
+    require("--small: 11px" in trial_css, "Desktop small typography must remain 11 px")
+    require("--copy: 12px" in trial_css, "Desktop body typography must remain 12 px")
+    require("mobile-readable-type" in trial_js, "Mobile typography override is missing")
+    require("--micro: 12px" in trial_js, "Mobile micro typography must be 12 px")
+    require("--small: 12px" in trial_js, "Mobile small typography must be 12 px")
+    require("--copy: 13px" in trial_js, "Mobile body typography must be 13 px")
+    require("font-size: 13px" in trial_js, "Mobile default body typography must be 13 px")
     require("font-family: Inter" in trial_css or "font-family: Inter" in styles_css, "Inter must remain primary")
 
     for token in ("BEGIN PRIVATE KEY", "BEGIN RSA PRIVATE KEY", "ArSonKuPikKeyActivator"):
@@ -129,7 +134,8 @@ def main() -> int:
         "P2 validation passed: "
         f"{landing_parser.translated} bilingual elements, "
         f"{landing_parser.details} compact FAQ/disclosures, "
-        "single release controller, mobile CTA, consistent funding copy, checkout readiness."
+        "single release controller, readable 12-13 px mobile typography, mobile CTA, "
+        "consistent funding copy, checkout readiness."
     )
     return 0
 
