@@ -22,7 +22,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Validate public repository and trial funnel
+      - name: Validate public repository and landing
         shell: powershell
         run: |
           $arguments = @()
