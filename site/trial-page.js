@@ -6,14 +6,8 @@
   const installerCtas = [...document.querySelectorAll('[data-installer-cta]')];
 
   const copy = {
-    en: {
-      enabled: 'Download free for Windows',
-      paused: 'View official release status'
-    },
-    id: {
-      enabled: 'Unduh gratis untuk Windows',
-      paused: 'Lihat status rilis resmi'
-    }
+    en: { enabled: 'Download free for Windows', paused: 'View official release status' },
+    id: { enabled: 'Unduh gratis untuk Windows', paused: 'Lihat status rilis resmi' }
   };
 
   const language = () => document.documentElement.lang === 'id' ? 'id' : 'en';
@@ -23,8 +17,7 @@
     try {
       const url = new URL(value);
       if (url.protocol !== 'https:' || url.hostname !== 'github.com') return null;
-      if (!url.pathname.startsWith(OFFICIAL_ASSET_PREFIX)) return null;
-      if (!url.pathname.endsWith('.exe')) return null;
+      if (!url.pathname.startsWith(OFFICIAL_ASSET_PREFIX) || !url.pathname.endsWith('.exe')) return null;
       return url.href;
     } catch (_) {
       return null;
@@ -41,16 +34,11 @@
     });
   };
 
-  const syncTextOnLanguageChange = () => {
-    const observer = new MutationObserver(() => {
-      const enabled = installerCtas.some((cta) => cta.getAttribute('aria-disabled') !== 'true');
-      const currentUrl = installerCtas[0]?.href || RELEASE_FALLBACK;
-      setCtaState(currentUrl, enabled);
-    });
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
-  };
-
-  syncTextOnLanguageChange();
+  const observer = new MutationObserver(() => {
+    const enabled = installerCtas.some((cta) => cta.getAttribute('aria-disabled') !== 'true');
+    setCtaState(installerCtas[0]?.href || RELEASE_FALLBACK, enabled);
+  });
+  observer.observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
 
   (async () => {
     try {
