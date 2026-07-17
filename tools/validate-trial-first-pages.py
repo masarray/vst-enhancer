@@ -15,6 +15,7 @@ class PageParser(HTMLParser):
         self.ids: list[str] = []
         self.links: list[str] = []
         self.translated = 0
+        self.details = 0
         self.meta: list[dict[str, str]] = []
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
@@ -25,6 +26,8 @@ class PageParser(HTMLParser):
             if not data.get("data-en") or not data.get("data-id"):
                 raise AssertionError(f"Missing bilingual value on <{tag}>")
             self.translated += 1
+        if tag == "details":
+            self.details += 1
         if tag == "a" and data.get("href"):
             self.links.append(data["href"])
         if tag == "meta":
@@ -63,7 +66,8 @@ def main() -> int:
     landing_parser = parse(landing)
     activation_parser = parse(activation)
 
-    require(landing_parser.translated >= 150, "Trial landing needs at least 150 bilingual elements")
+    require(landing_parser.translated >= 200, "Trial landing needs at least 200 bilingual elements")
+    require(landing_parser.details >= 14, "Trial landing needs at least 14 FAQ/disclosure entries")
     require(activation_parser.translated >= 45, "Activation page needs at least 45 bilingual elements")
 
     landing_description = next(
@@ -74,12 +78,16 @@ def main() -> int:
     require("obligation to buy" in landing_description, "Landing description must state no purchase obligation")
 
     for phrase in (
-        "Every control for 365 days",
+        "All controls for 365 days",
         "No account or card",
         "No automatic charge",
         "No obligation to buy",
-        "Your music is the real demo",
+        "Your own audio is the most relevant demo",
         "Download free for Windows",
+        "First-time user",
+        "Musician & creator",
+        "Producer",
+        "Audio engineer",
     ):
         require(phrase in landing, f"Landing is missing trial-first phrase: {phrase}")
 
@@ -87,7 +95,9 @@ def main() -> int:
     require('href="activation/"' in landing, "Main landing must link the separate activation page")
     require('id="purchase-status" hidden' in landing, "Checkout state must remain non-prominent on the trial landing")
     require(landing.find("commercially code-signed") > landing.find('id="download"'), "Unsigned disclosure must appear in the download/installation journey, not the hero")
-    require('data-installer-cta' in landing, "Trial landing must expose release-driven installer CTAs")
+    require("data-installer-cta" in landing, "Trial landing must expose release-driven installer CTAs")
+    require("What is the difference between VST3 and Standalone?" in landing, "Landing must explain VST3 versus Standalone")
+    require("Install in four steps" in landing, "Landing must include beginner installation guidance")
 
     robots = next(
         (item.get("content", "") for item in activation_parser.meta if item.get("name") == "robots"),
@@ -113,6 +123,7 @@ def main() -> int:
         "Trial-first validation passed: "
         f"{landing_parser.translated} landing translations, "
         f"{activation_parser.translated} activation translations, "
+        f"{landing_parser.details} FAQ/disclosure entries, "
         "price separated, checkout disabled."
     )
     return 0
