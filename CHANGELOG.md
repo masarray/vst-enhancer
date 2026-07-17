@@ -2,14 +2,23 @@
 
 This changelog covers the public product website, distribution metadata, legal notices, supported packages, and public support surface. Proprietary DSP implementation details are not published in this repository.
 
-## Unreleased — trial-first landing
+## Unreleased — trial-first public landing
 
 ### Evaluation-first product journey
 
 - Repositioned the main landing page around listening, free evaluation, download confidence, privacy, and honest A/B comparison.
 - Made the 365-day full-editing evaluation, no-account, no-card, no-subscription, no-automatic-charge, and no-purchase-obligation terms prominent.
-- Moved the unsigned Windows package disclosure from the hero into the installation and file-verification section.
-- Added a “your music is the real demo” workflow rather than publishing unverified or misleading audio examples.
+- Moved the unsigned Windows package disclosure from the hero into a progressive installation and file-verification section.
+- Added a three-minute evaluation workflow using familiar audio and loudness-matched A/B comparison rather than publishing unverified or misleading audio examples.
+
+### Public audience and readability
+
+- Added dedicated entry paths for first-time users, musicians and creators, producers, and audio engineers.
+- Added plain-language explanations of VST3, Standalone, Windows requirements, local audio processing, and compatibility testing.
+- Expanded the six control descriptions with practical “listen for” guidance.
+- Added task-oriented preset explanations, a visual three-step workflow, technical requirement summaries, and a four-step installation guide.
+- Expanded the bilingual FAQ with a beginner-friendly VST3 versus Standalone explanation.
+- Added responsive presentation rules for desktop, tablet, mobile, keyboard focus, and reduced-motion preferences.
 
 ### Optional activation
 
@@ -17,6 +26,11 @@ This changelog covers the public product website, distribution metadata, legal n
 - Marked the activation page `noindex,follow` while paid checkout is not configured.
 - Clarified that activation is a purchase for concrete licence rights, not a donation.
 - Clarified that activation revenue may support independent development, applicable JUCE licensing, testing, documentation, support, security, and trusted Windows distribution without promising that individual payments are earmarked for a particular expense.
+
+### Validation
+
+- Added dependency-free checks for four audience paths, bilingual coverage, plain-language format explanations, installation guidance, price separation, release-driven download links, required visual components, duplicate IDs, and balanced CSS.
+- Kept validation local and manually triggered on the self-hosted runner.
 
 ## v0.5.12 — 17 July 2026
 
