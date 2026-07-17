@@ -3,9 +3,6 @@
 
   const CANONICAL_URL = 'https://masarray.github.io/vst-enhancer/';
 
-  // EN/ID is a display preference on one canonical product page. Remove the
-  // legacy query-language alternate signals from the rendered document so
-  // canonical metadata cannot vary by browser language or local storage.
   document.querySelectorAll('link[rel="alternate"][hreflang]').forEach((link) => link.remove());
 
   const canonical = document.getElementById('canonical-link');
@@ -25,4 +22,26 @@
   }
 
   document.documentElement.setAttribute('data-canonical-mode', 'single-url');
+
+  const mobileBar = document.getElementById('mobile-download-bar');
+  const heroCta = document.getElementById('installer-link-bottom');
+
+  if (mobileBar && heroCta) {
+    mobileBar.hidden = false;
+
+    const setVisible = (visible) => {
+      mobileBar.setAttribute('data-visible', String(visible));
+      mobileBar.setAttribute('aria-hidden', String(!visible));
+    };
+
+    if ('IntersectionObserver' in window) {
+      const observer = new IntersectionObserver(
+        ([entry]) => setVisible(!entry.isIntersecting),
+        { threshold: 0.15 }
+      );
+      observer.observe(heroCta);
+    } else {
+      setVisible(true);
+    }
+  }
 })();
