@@ -1,68 +1,112 @@
 ARSONKUPIK COMMERCIAL ACTIVATION TERMS
 
-Effective date: 16 July 2026
+Effective date: 17 July 2026
 Copyright (C) 2026 Tutorial Mas Ari / MasArray. All rights reserved.
 
-These terms supplement the ArSonKuPik End User Licence Agreement. The checkout
-page, receipt, and Merchant of Record terms also apply to each purchase.
+These terms supplement the ArSonKuPik End User Licence Agreement. The authorised
+checkout page, order confirmation, receipt, and Merchant of Record terms also
+apply to each completed purchase.
 
-1. ONE-YEAR FREE EVALUATION
+1. EVALUATION DOWNLOAD AND PURCHASE AVAILABILITY
 
 ArSonKuPik provides 365 days of full editing from first launch on each computer.
 No payment card is required to start the evaluation. No payment is collected and
 no automatic charge occurs when the evaluation ends.
 
+The public evaluation download is separate from paid checkout. Publishing these
+terms or a price does not mean that checkout is currently available, does not
+create an offer capable of acceptance outside the authorised checkout, and does
+not create an order or payment obligation.
+
+A purchase is available only when an official product channel links to an
+authorised checkout that displays the seller identity, final amount and currency,
+tax, payment methods, refund information, privacy notice, and provider terms
+before payment.
+
+2. END OF EVALUATION
+
 After the evaluation, existing projects, saved settings, meters, automation, and
 audio processing are designed to continue in project-safe read-only mode. A
-purchase is optional and is required only to restore editing controls.
+purchase is optional and is required only to restore editing controls, subject
+to technical compatibility and the EULA.
 
-2. PRICE AND BILLING MODEL
+3. PUBLISHED PRICE AND BILLING MODEL
 
-The standard perpetual activation price for ArSonKuPik v0.5 evaluation users is
-USD 25 before any tax required at checkout. The activation is a one-time purchase,
-not a subscription, and does not renew automatically.
+The published standard perpetual activation price for ArSonKuPik v0.5 evaluation
+users is USD 25 before any tax required at checkout. The activation is intended
+as a one-time purchase, not a subscription, and does not renew automatically.
 
-The final amount, currency conversion, tax, payment methods, refund information,
-and seller-of-record identity shown at checkout control the transaction. No sale
-is complete until the checkout provider confirms payment.
+The final amount, transaction currency, currency conversion, tax, payment
+methods, seller-of-record identity, refund information, and checkout-provider
+terms shown before payment control the transaction. No sale is complete until
+the authorised checkout provider confirms payment and issues an order or receipt.
 
-3. PERPETUAL EDITING ACTIVATION
+4. PERPETUAL EDITING ACTIVATION
 
-A valid purchase authorises perpetual editing for the purchased ArSonKuPik major
-product generation, subject to the EULA. This does not guarantee every future
-major version, operating system, DAW, feature, or compatibility update.
+A valid completed purchase authorises perpetual editing for the purchased
+ArSonKuPik v0.5 product generation, subject to the EULA. "Perpetual" describes
+the duration of the editing licence for that purchased generation; it does not
+guarantee that every future operating system, DAW, driver, device, security
+policy, or hardware configuration will remain compatible.
 
-4. COMPUTER ACTIVATIONS
+The purchase does not guarantee every future major version, feature, format,
+platform, compatibility update, or support service.
 
-One purchase may be used on up to two active computers owned or controlled by the
-customer. Each activation code is hardware-bound to one Computer Request ID.
-Activation codes may not be shared, resold, published, or used for computers not
-owned or controlled by the customer.
+5. COMPUTER ACTIVATIONS
+
+One completed purchase may be used on up to two active computers owned or
+controlled by the customer. Each activation code is hardware-bound to one
+Computer Request ID. Activation codes may not be shared, resold, published, or
+used for computers not owned or controlled by the customer.
 
 Reasonable reissue for a replacement or repaired computer may be provided after
-proof of purchase and abuse review. The Licensor may deactivate or refuse excess,
-duplicate, fraudulent, refunded, or chargeback-related activations.
+proof of purchase and an abuse review. Reissue may require deactivation of a
+previous computer. The Licensor may refuse or deactivate excess, duplicate,
+fraudulent, refunded, reversed, or chargeback-related activations to the extent
+permitted by applicable law.
 
-5. DELIVERY
+6. DELIVERY AND CUSTOMER RESPONSIBILITY
 
 The customer receives purchase confirmation from the checkout provider. The
 Computer Request ID is generated locally by ArSonKuPik and is supplied by the
-customer only when requesting an activation. The resulting activation code is
+customer only when requesting activation. The resulting activation code is
 validated locally; normal audio processing does not require a permanent internet
 connection.
 
-6. REFUNDS AND CHARGEBACKS
+The customer is responsible for entering the correct contact and order
+information, retaining the receipt and activation records, and keeping activation
+codes private. Do not post an order ID, Computer Request ID, activation code, or
+proof-of-purchase document in a public GitHub issue.
 
-Refund eligibility and procedure are presented at checkout by the Merchant of
-Record. A refund or chargeback may terminate the related commercial activation
-entitlement and block new activation or reissue requests, to the extent permitted
-by applicable law.
+7. REFUNDS, REVERSALS, AND CHARGEBACKS
 
-7. SUPPORT AND CONTACT
+Refund eligibility, any digital-content consent, withdrawal information, and the
+refund procedure are presented by the Merchant of Record at checkout and remain
+subject to mandatory applicable law. A refund, reversal, or chargeback may end
+the related commercial activation entitlement and may block new activation or
+reissue requests for that order, to the extent permitted by law.
 
-Product, release, and support information:
+8. TAX, RECORDS, AND PAYMENT DATA
+
+The authorised Merchant of Record is responsible for the payment methods, tax
+calculation, fraud screening, receipt, and payment-card processing described in
+its checkout terms. ArSonKuPik and this public repository do not store payment-
+card data.
+
+The Licensor may retain order, entitlement, activation, refund, and support
+records as reasonably necessary for fulfilment, accounting, fraud prevention,
+legal compliance, and licence administration. See PRIVACY.txt.
+
+9. SUPPORT AND SECURITY
+
+Product, release, and non-confidential support information:
 https://github.com/masarray/vst-enhancer
 
-These commercial terms may be updated for future purchases. Terms accepted and
-shown at the time of a completed purchase govern that transaction, subject to
-mandatory consumer rights that cannot lawfully be excluded.
+Security vulnerabilities must be reported privately according to SECURITY.md.
+
+10. CHANGES TO FUTURE PURCHASE TERMS
+
+These commercial terms may be updated for future purchases. The terms displayed
+and accepted for a completed purchase govern that transaction, together with the
+EULA, checkout terms, and receipt, subject to mandatory rights that cannot
+lawfully be excluded.

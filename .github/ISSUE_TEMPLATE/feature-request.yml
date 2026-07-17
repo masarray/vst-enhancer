@@ -1,0 +1,44 @@
+name: Product or workflow suggestion
+description: Suggest a non-confidential improvement to the public product, documentation, compatibility, or workflow.
+title: "[Suggestion] "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Describe the user problem and desired outcome. Do not include proprietary third-party material, customer audio, activation information, private projects, or personal data.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Audio workflow
+        - Preset organisation
+        - User interface
+        - DAW compatibility
+        - Standalone workflow
+        - Installation or packaging
+        - Documentation or website
+        - Accessibility
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem to solve
+      description: Explain the workflow problem rather than only naming a feature.
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Desired outcome
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Non-confidential context
+      description: DAW, Windows version, format, or example workflow where relevant.

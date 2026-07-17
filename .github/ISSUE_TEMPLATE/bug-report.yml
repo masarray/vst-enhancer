@@ -1,18 +1,40 @@
 name: Public beta bug report
-description: Report a reproducible ArSonKuPik VST or Standalone problem.
-title: "[Beta Bug] "
+description: Report a reproducible ArSonKuPik VST3 or Standalone problem without confidential data.
+title: "[Bug] "
 labels:
   - bug
 body:
   - type: markdown
     attributes:
       value: |
-        Thank you for testing ArSonKuPik. Please include enough detail for the issue to be reproduced.
+        Thank you for evaluating ArSonKuPik. Please use the current official release and include enough detail to reproduce the problem.
+
+        Never post activation codes, Computer Request IDs, receipts, customer audio, private projects, personal data, or security exploit details. Follow SECURITY.md for vulnerabilities.
   - type: input
     id: version
     attributes:
       label: ArSonKuPik version
-      placeholder: v0.5.0
+      description: Copy the exact version from the plug-in, Standalone About view, or official release.
+      placeholder: Example: v0.5.12
+    validations:
+      required: true
+  - type: dropdown
+    id: package
+    attributes:
+      label: Package used
+      options:
+        - Windows installer
+        - VST3 ZIP
+        - Standalone ZIP
+        - Other official package
+    validations:
+      required: true
+  - type: input
+    id: checksum
+    attributes:
+      label: Package SHA-256
+      description: Paste the file hash only. Do not paste activation or order information.
+      placeholder: 64-character SHA-256 value
     validations:
       required: true
   - type: dropdown
@@ -28,8 +50,8 @@ body:
   - type: input
     id: daw
     attributes:
-      label: DAW and version
-      placeholder: FL Studio 2025, Reaper 7.x, Cubase 14, Ableton Live 12
+      label: DAW or host and version
+      placeholder: REAPER 7.x, Cubase 14, Ableton Live 12, FL Studio 2025, or Standalone
     validations:
       required: true
   - type: input
@@ -43,20 +65,30 @@ body:
     id: audio
     attributes:
       label: Audio interface, driver, sample rate, and buffer
-      placeholder: ASIO, 48 kHz, 256 samples
+      placeholder: Interface model, ASIO driver, 48 kHz, 256 samples
   - type: input
     id: preset
     attributes:
-      label: Preset and macro positions
-      placeholder: Mas Ari Signature, defaults
+      label: Preset and relevant controls
+      placeholder: Mas Ari Signature, defaults; Enhance 50%; Smart Protect on
+  - type: dropdown
+    id: clean_project
+    attributes:
+      label: Reproduced in a new minimal project?
+      options:
+        - "Yes"
+        - "No"
+        - Not applicable
+    validations:
+      required: true
   - type: textarea
     id: steps
     attributes:
       label: Reproduction steps
       placeholder: |
-        1. Insert the VST3 on the master bus
+        1. Insert ArSonKuPik on ...
         2. Select ...
-        3. Play ...
+        3. Play or change ...
         4. Observe ...
     validations:
       required: true
@@ -75,14 +107,18 @@ body:
   - type: textarea
     id: notes
     attributes:
-      label: Additional information
-      description: CPU use, screenshots, short audio examples, crash logs, or whether bypass removes the problem.
+      label: Additional non-confidential information
+      description: CPU use, bypass result, VST3 versus Standalone comparison, sanitized screenshot, or crash-log location.
   - type: checkboxes
     id: confirmation
     attributes:
       label: Confirmation
       options:
-        - label: I tested with the current public-beta release.
+        - label: I tested the current official release or explained why I could not.
           required: true
-        - label: I removed confidential project information before attaching files.
+        - label: I verified the package SHA-256 against the same official release.
+          required: true
+        - label: I removed confidential, personal, activation, order, and customer information.
+          required: true
+        - label: This report does not disclose a security vulnerability that should be reported privately.
           required: true
