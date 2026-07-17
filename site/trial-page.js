@@ -36,11 +36,8 @@
     installerCtas.forEach((cta) => {
       cta.href = url || RELEASE_FALLBACK;
       cta.textContent = enabled ? text.enabled : text.paused;
-      if (enabled) {
-        cta.removeAttribute('aria-disabled');
-      } else {
-        cta.setAttribute('aria-disabled', 'true');
-      }
+      if (enabled) cta.removeAttribute('aria-disabled');
+      else cta.setAttribute('aria-disabled', 'true');
     });
   };
 
