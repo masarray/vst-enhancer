@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the trial-first landing and separated optional-activation page."""
+"""Validate the trial-first funnel, single release controller, and canonical mode."""
 
 from __future__ import annotations
 
@@ -54,18 +54,7 @@ def parse(html: str) -> PageParser:
     return parser
 
 
-def main() -> int:
-    root = Path(__file__).resolve().parents[1]
-    landing = read(root / "site" / "index.html")
-    activation = read(root / "site" / "activation" / "index.html")
-    trial_css = read(root / "site" / "trial.css")
-    trial_js = read(root / "site" / "trial-page.js")
-    activation_js = read(root / "site" / "activation" / "activation.js")
-    release = json.loads(read(root / "site" / "release.json"))
-
-    landing_parser = parse(landing)
-    activation_parser = parse(activation)
-
+def validate_trial_content(landing: str, activation: str, landing_parser: PageParser, activation_parser: PageParser) -> None:
     require(landing_parser.translated >= 200, "Trial landing needs at least 200 bilingual elements")
     require(landing_parser.details >= 14, "Trial landing needs at least 14 FAQ/disclosure entries")
     require(activation_parser.translated >= 45, "Activation page needs at least 45 bilingual elements")
@@ -93,8 +82,11 @@ def main() -> int:
 
     require("USD 25" not in landing, "Price must not appear on the main trial landing")
     require('href="activation/"' in landing, "Main landing must link the separate activation page")
-    require('id="purchase-status" hidden' in landing, "Checkout state must remain non-prominent on the trial landing")
-    require(landing.find("commercially code-signed") > landing.find('id="download"'), "Unsigned disclosure must appear in the download/installation journey, not the hero")
+    require('id="purchase-status" hidden' in landing, "Checkout state must remain non-prominent")
+    require(
+        landing.find("commercially code-signed") > landing.find('id="download"'),
+        "Unsigned disclosure must appear in the download journey, not the hero",
+    )
     require("data-installer-cta" in landing, "Trial landing must expose release-driven installer CTAs")
     require("What is the difference between VST3 and Standalone?" in landing, "Landing must explain VST3 versus Standalone")
     require("Install in four steps" in landing, "Landing must include beginner installation guidance")
@@ -108,23 +100,88 @@ def main() -> int:
     require("not a donation" in activation.lower(), "Activation page must distinguish a licence purchase from a donation")
     require("JUCE" in activation, "Activation page must explain applicable JUCE licensing support")
     require("Windows code signing" in activation, "Activation page must explain trusted Windows distribution support")
-    require("../release.json" in activation_js, "Activation page must read the shared release manifest")
-    require("OFFICIAL_ASSET_PREFIX" in trial_js, "Trial CTA script must validate installer asset paths")
 
+
+def validate_single_release_controller(landing: str, app_js: str, trial_js: str) -> None:
+    require(
+        app_js.count("fetch('./release.json'") == 1,
+        "app.js must be the single release.json requester",
+    )
+    require("fetch(" not in trial_js and "release.json" not in trial_js, "trial-page.js must not fetch release metadata")
+    require(
+        "querySelectorAll('[data-installer-cta]')" in app_js,
+        "The central controller must manage every installer CTA",
+    )
+    require(
+        "button.dataset[currentLanguage]" in app_js,
+        "Enabled installer CTAs must preserve their contextual bilingual labels",
+    )
+    require("askp:release-ready" in app_js, "The central controller must announce its final release state")
+    require("officialReleaseUrl" in app_js, "The central controller must validate official release URLs")
+
+    forbidden_metadata_mutations = (
+        "document.title",
+        "canonical-link",
+        "meta[name=\"description\"]",
+        "localizedUrl",
+    )
+    for token in forbidden_metadata_mutations:
+        require(token not in app_js, f"app.js must not mutate canonical SEO metadata: {token}")
+
+    require("CANONICAL_URL" in trial_js, "Canonical guard must define one product URL")
+    require("link[rel=\"alternate\"][hreflang]" in trial_js, "Canonical guard must remove legacy rendered hreflang alternates")
+    require("history.replaceState" in trial_js, "Canonical guard must remove legacy language query parameters")
+    require("data-canonical-mode" in trial_js, "Canonical guard must expose its deterministic mode")
+
+    app_script = landing.find('<script src="app.js"></script>')
+    guard_script = landing.find('<script src="trial-page.js"></script>')
+    require(app_script >= 0 and guard_script > app_script, "Canonical guard must load after the central release controller")
+
+
+def validate_manifest_and_public_safety(release: dict[str, object], activation_js: str, public_text: str) -> None:
+    require("../release.json" in activation_js, "Activation page must read the shared release manifest")
     require(release.get("purchaseObligation") is False, "release.json must declare purchaseObligation=false")
     require(release.get("purchaseCheckoutAvailable") is False, "Checkout must remain disabled until configured")
-    require(release.get("activationPageUrl") == "https://masarray.github.io/vst-enhancer/activation/", "activationPageUrl mismatch")
+    require(
+        release.get("activationPageUrl") == "https://masarray.github.io/vst-enhancer/activation/",
+        "activationPageUrl mismatch",
+    )
     require("purchaseUrl" not in release, "Disabled checkout must not publish a purchaseUrl")
 
     for token in ("BEGIN PRIVATE KEY", "BEGIN RSA PRIVATE KEY", "ArSonKuPikKeyActivator"):
-        require(token not in "\n".join((landing, activation, trial_css, trial_js, activation_js)), f"Prohibited public token: {token}")
+        require(token not in public_text, f"Prohibited public token: {token}")
+
+
+def main() -> int:
+    root = Path(__file__).resolve().parents[1]
+    landing = read(root / "site" / "index.html")
+    activation = read(root / "site" / "activation" / "index.html")
+    styles_css = read(root / "site" / "styles.css")
+    trial_css = read(root / "site" / "trial.css")
+    app_js = read(root / "site" / "app.js")
+    trial_js = read(root / "site" / "trial-page.js")
+    activation_js = read(root / "site" / "activation" / "activation.js")
+    release = json.loads(read(root / "site" / "release.json"))
+
+    landing_parser = parse(landing)
+    activation_parser = parse(activation)
+
+    validate_trial_content(landing, activation, landing_parser, activation_parser)
+    validate_single_release_controller(landing, app_js, trial_js)
+    validate_manifest_and_public_safety(
+        release,
+        activation_js,
+        "\n".join((landing, activation, styles_css, trial_css, app_js, trial_js, activation_js)),
+    )
+
+    require("font-family: Inter" in styles_css, "Public landing must retain Inter as its primary font")
 
     print(
-        "Trial-first validation passed: "
+        "P1 trial-first validation passed: "
         f"{landing_parser.translated} landing translations, "
         f"{activation_parser.translated} activation translations, "
         f"{landing_parser.details} FAQ/disclosure entries, "
-        "price separated, checkout disabled."
+        "one release controller, contextual CTAs, deterministic canonical mode."
     )
     return 0
 
