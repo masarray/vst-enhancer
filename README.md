@@ -4,12 +4,12 @@
 [![Latest release](https://img.shields.io/github/v/release/masarray/vst-enhancer?label=Latest%20release)](https://github.com/masarray/vst-enhancer/releases/latest)
 [![Platform](https://img.shields.io/badge/Platform-Windows%2010%2F11-5b8def)](#compatibility)
 [![Formats](https://img.shields.io/badge/Formats-VST3%20%2B%20Standalone-c5a0ff)](#compatibility)
-[![Evaluation](https://img.shields.io/badge/Evaluation-365%20days-5bd49a)](#evaluation--evaluasi)
+[![Evaluation](https://img.shields.io/badge/Free%20evaluation-365%20days-5bd49a)](#free-365-day-evaluation--evaluasi-gratis-365-hari)
 [![Product licence](https://img.shields.io/badge/Product-Proprietary-ef7c8f)](EULA.txt)
 
-**English:** ArSonKuPik is a focused Windows VST3 and standalone audio enhancer for mastering, mix bus, tracks, vocals, podcasts, and creative processing. This public repository hosts the bilingual product website, official release metadata, checksums, public legal documents, support policy, and supported downloads.
+**English:** ArSonKuPik is a focused Windows VST3 and standalone audio enhancer for musicians, creators, producers, audio engineers, and first-time users. Every preset and control is available free for 365 days with no account, payment card, subscription, automatic charge, or obligation to buy.
 
-**Bahasa Indonesia:** ArSonKuPik adalah audio enhancer Windows VST3 dan standalone untuk mastering, mix bus, track, vokal, podcast, dan pemrosesan kreatif. Repository publik ini memuat website produk dwibahasa, metadata rilis resmi, checksum, dokumen legal publik, kebijakan dukungan, dan unduhan yang didukung.
+**Bahasa Indonesia:** ArSonKuPik adalah audio enhancer Windows VST3 dan standalone untuk musisi, kreator, produser, audio engineer, dan pengguna awam. Seluruh preset dan kontrol tersedia gratis selama 365 hari tanpa akun, kartu pembayaran, langganan, tagihan otomatis, atau kewajiban membeli.
 
 <p align="center">
   <a href="https://masarray.github.io/vst-enhancer/">
@@ -19,8 +19,9 @@
 
 ## Official links / Tautan resmi
 
-- **[Product website / Website produk](https://masarray.github.io/vst-enhancer/)**
+- **[Free product evaluation / Evaluasi produk gratis](https://masarray.github.io/vst-enhancer/)**
 - **[Latest supported release / Rilis terbaru](https://github.com/masarray/vst-enhancer/releases/latest)**
+- **[Optional activation information / Informasi aktivasi opsional](https://masarray.github.io/vst-enhancer/activation/)**
 - **[Report a reproducible public bug / Laporkan bug publik](https://github.com/masarray/vst-enhancer/issues/new/choose)**
 - **[Private security reporting / Pelaporan keamanan privat](SECURITY.md)**
 - **[Support guide / Panduan dukungan](SUPPORT.md)**
@@ -42,25 +43,50 @@ Current metadata points to **v0.5.12**:
 
 Use the [latest release page](https://github.com/masarray/vst-enhancer/releases/latest) as the source of truth. The landing page reads `site/release.json` and enables direct download buttons only when public distribution is explicitly enabled.
 
-## Evaluation / Evaluasi
+## Public landing experience
+
+The bilingual landing page is designed for several reading levels without splitting the product into separate marketing pages:
+
+- **First-time users:** plain-language VST3 and Standalone explanations, preset-first guidance, and a four-step installation path.
+- **Musicians and creators:** vocal, instrument, acoustic, stereo, podcast, and creative starting points.
+- **Producers:** mastering and mix-bus workflows, fast A/B comparison, body, glue, depth, focus, and air.
+- **Audio engineers:** track/bus/master placement, matched-gain comparison, stereo and low-end translation, and final peak/loudness verification reminders.
+
+The page also provides a three-minute evaluation method, practical “listen for” guidance for every control, compatibility requirements, privacy information, 15 bilingual FAQs, and a separated optional-activation path.
+
+## Free 365-day evaluation / Evaluasi gratis 365 hari
 
 | English | Bahasa Indonesia |
 |---|---|
-| 365 days of full preset and control editing from first launch on each computer. | 365 hari akses penuh ke preset dan kontrol sejak pertama kali dijalankan pada tiap komputer. |
-| No card, account, subscription, automatic renewal, automatic charge, or audio watermark is required to begin. | Tidak memerlukan kartu, akun, langganan, perpanjangan otomatis, tagihan otomatis, atau watermark audio untuk memulai. |
+| Every preset and editing control is available for 365 days from first launch on each computer. | Seluruh preset dan kontrol editing tersedia selama 365 hari sejak pertama kali dijalankan pada tiap komputer. |
+| No account, payment card, subscription, automatic renewal, automatic charge, or audio watermark is required to begin. | Tidak memerlukan akun, kartu pembayaran, langganan, perpanjangan otomatis, tagihan otomatis, atau watermark audio untuk memulai. |
 | Personal and commercial audio-production use is permitted during evaluation, subject to the EULA. | Penggunaan produksi audio personal dan komersial diizinkan selama evaluasi, tunduk pada EULA. |
+| No purchase obligation exists when the evaluation ends. | Tidak ada kewajiban membeli ketika masa evaluasi berakhir. |
 | After evaluation, existing projects and saved processing are designed to continue in project-safe read-only mode. | Setelah evaluasi, project lama dan pemrosesan tersimpan dirancang tetap berjalan dalam mode project-safe read-only. |
-| Buying an activation is optional. | Pembelian aktivasi bersifat opsional. |
 
-The published standard offer for the v0.5 evaluation cohort is a **USD 25 perpetual editing activation**, before applicable tax, with no subscription or automatic renewal. A published price does not mean checkout is currently available. Any purchase can occur only through an authorised checkout that shows seller identity, final currency, tax, payment, privacy, and refund terms before payment.
+The free evaluation is intentionally separated from payment information. The main landing page helps users understand the product, choose the right format, download, install, test familiar audio, compare at matched loudness, and decide by listening.
 
-Penawaran standar yang dipublikasikan untuk pengguna evaluasi v0.5 adalah **aktivasi editing perpetual USD 25**, sebelum pajak yang berlaku, tanpa langganan atau perpanjangan otomatis. Harga yang dipublikasikan tidak berarti checkout sudah tersedia. Pembelian hanya dapat dilakukan melalui checkout resmi yang menampilkan identitas penjual, mata uang final, pajak, pembayaran, privasi, dan ketentuan refund sebelum pembayaran.
+Evaluasi gratis sengaja dipisahkan dari informasi pembayaran. Landing page utama membantu pengguna memahami produk, memilih format yang tepat, mengunduh, menginstal, mencoba audio yang familiar, membandingkan pada loudness yang seimbang, dan memutuskan berdasarkan hasil yang didengar.
+
+## Optional activation / Aktivasi opsional
+
+There is no obligation to buy. Users who later decide that ArSonKuPik has earned a lasting place in their workflow may review the separate [Optional Activation page](https://masarray.github.io/vst-enhancer/activation/).
+
+The published standard plan for the v0.5 evaluation cohort is a **USD 25 one-time perpetual editing activation**, before applicable tax, with no subscription or automatic renewal. Paid checkout is not currently enabled.
+
+An activation purchase provides concrete licence rights; it is not a donation. Revenue may help sustain independent development, JUCE licensing when applicable, testing, documentation, user support, and trusted Windows code signing and distribution. This is not a promise that each payment is earmarked for a specific vendor, certificate, or expense.
+
+Tidak ada kewajiban membeli. Pengguna yang kemudian merasa ArSonKuPik layak menjadi bagian tetap dari workflow mereka dapat membaca [halaman Aktivasi Opsional](https://masarray.github.io/vst-enhancer/activation/).
+
+Rencana standar yang dipublikasikan untuk pengguna evaluasi v0.5 adalah **aktivasi editing perpetual satu kali sebesar USD 25**, sebelum pajak yang berlaku, tanpa langganan atau perpanjangan otomatis. Checkout berbayar saat ini belum diaktifkan.
+
+Pembelian aktivasi memberikan hak lisensi yang nyata; pembayaran tersebut bukan donasi. Pendapatan dapat membantu pengembangan independen, lisensi JUCE bila berlaku, testing, dokumentasi, dukungan pengguna, serta trusted Windows code signing dan distribusi. Ini bukan janji bahwa setiap pembayaran dialokasikan kepada vendor, sertifikat, atau biaya tertentu.
 
 ## Compatibility
 
 - Windows 10/11, 64-bit
-- VST3 plug-in
-- Standalone application
+- VST3 plug-in for use inside a compatible DAW
+- Standalone application for supported audio-device workflows
 - macOS, Linux, VST2, AAX, and Audio Unit are not currently distributed
 - Compatibility varies by DAW, driver, audio interface, sample rate, buffer, device, and security policy
 - Evaluate in your own workflow before critical delivery or broadcast
@@ -68,7 +94,7 @@ Penawaran standar yang dipublikasikan untuk pengguna evaluasi v0.5 adalah **akti
 ## Install and verify / Instalasi dan verifikasi
 
 1. Open the [latest official release](https://github.com/masarray/vst-enhancer/releases/latest).
-2. Choose the installer, VST3 ZIP, or Standalone ZIP.
+2. Choose the installer, VST3 ZIP, or Standalone ZIP. Most users should choose the installer.
 3. Download `SHA256SUMS.txt` from the same release.
 4. Verify the exact installer name:
 
@@ -82,7 +108,7 @@ Get-FileHash .\ArSonKuPik-v0.5.12-Windows-x64-Setup.exe -Algorithm SHA256
 
 ### Unsigned Windows package
 
-The current package is distributed without a commercial Windows code-signing certificate. Windows SmartScreen may therefore show an unknown-publisher or reputation warning. This status is disclosed openly so evaluators can make an informed decision.
+The current package is distributed without a commercial Windows code-signing certificate. Windows SmartScreen may therefore show an unknown-publisher or reputation warning. The landing page keeps this disclosure in the installation and verification section so it appears at the correct decision point rather than interrupting the product introduction.
 
 A matching SHA-256 value verifies file identity against the value published in the same release. It does not replace antivirus scanning, endpoint protection, backups, or compatibility testing.
 
@@ -93,7 +119,7 @@ ArSonKuPik processes audio locally and does not intentionally transmit audio, DA
 - The application checks for updates only when the user requests it.
 - The website stores only the selected EN/ID language value in browser local storage.
 - Offline activation uses a locally generated Computer Request ID shared only when the user chooses to request activation.
-- The evaluation download does not collect payment-card data.
+- The evaluation download has no checkout and does not collect payment-card data.
 - Public GitHub Issues must not contain activation codes, Computer Request IDs, customer audio, private projects, order documents, or personal data.
 
 See [PRIVACY.txt](PRIVACY.txt).
@@ -137,7 +163,7 @@ Optionally validate the public release URLs from a connected machine:
 .\tools\validate-public-release.ps1 --check-remote
 ```
 
-The manual GitHub workflow uses a self-hosted runner and `workflow_dispatch` only. It intentionally does not execute untrusted pull-request code on the local runner.
+The PowerShell wrapper runs repository/release, trial-first funnel, and public-audience readability validators. The manual GitHub workflow uses a self-hosted runner and `workflow_dispatch` only. It intentionally does not execute untrusted pull-request code on the local runner.
 
 ## Safe feedback
 

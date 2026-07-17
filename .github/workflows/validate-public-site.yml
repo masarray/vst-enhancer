@@ -22,11 +22,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Validate public repository
+      - name: Validate public repository and landing
         shell: powershell
         run: |
           $arguments = @()
           if ("${{ inputs.check_remote }}" -eq "true") {
             $arguments += "--check-remote"
           }
-          python tools/validate-public-release.py @arguments
+          .\tools\validate-public-release.ps1 @arguments

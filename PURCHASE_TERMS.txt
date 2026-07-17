@@ -10,13 +10,14 @@ apply to each completed purchase.
 1. EVALUATION DOWNLOAD AND PURCHASE AVAILABILITY
 
 ArSonKuPik provides 365 days of full editing from first launch on each computer.
-No payment card is required to start the evaluation. No payment is collected and
-no automatic charge occurs when the evaluation ends.
+No account or payment card is required to start the evaluation. No subscription
+is created, no payment is collected, and no automatic charge occurs when the
+evaluation ends. The user has no obligation to purchase an activation.
 
 The public evaluation download is separate from paid checkout. Publishing these
-terms or a price does not mean that checkout is currently available, does not
-create an offer capable of acceptance outside the authorised checkout, and does
-not create an order or payment obligation.
+terms, an activation page, or a price does not mean that checkout is currently
+available, does not create an offer capable of acceptance outside the authorised
+checkout, and does not create an order or payment obligation.
 
 A purchase is available only when an official product channel links to an
 authorised checkout that displays the seller identity, final amount and currency,
@@ -30,11 +31,23 @@ audio processing are designed to continue in project-safe read-only mode. A
 purchase is optional and is required only to restore editing controls, subject
 to technical compatibility and the EULA.
 
-3. PUBLISHED PRICE AND BILLING MODEL
+3. PUBLISHED PRICE, BILLING MODEL, AND DEVELOPMENT SUPPORT
 
 The published standard perpetual activation price for ArSonKuPik v0.5 evaluation
 users is USD 25 before any tax required at checkout. The activation is intended
 as a one-time purchase, not a subscription, and does not renew automatically.
+
+A completed payment is consideration for the commercial activation rights
+described in these terms and the EULA. It is not a charitable donation, tip, or
+payment without consideration.
+
+Revenue from activation purchases may help sustain independent product
+development, JUCE or other third-party licensing when applicable, compatibility
+testing, documentation, user support, security work, and trusted Windows code
+signing and distribution. This description explains possible business costs and
+development purposes. It does not promise that any particular payment will be
+earmarked for, transferred to, or spent on a specific vendor, certificate,
+licence, service, feature, or expense.
 
 The final amount, transaction currency, currency conversion, tax, payment
 methods, seller-of-record identity, refund information, and checkout-provider
