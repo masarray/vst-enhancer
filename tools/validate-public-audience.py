@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate public readability and audience coverage for the ArSonKuPik landing page."""
+"""Validate compact audience coverage and readable information architecture."""
 
 from __future__ import annotations
 
@@ -18,11 +18,10 @@ class LandingParser(HTMLParser):
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         data = {key: value or "" for key, value in attrs}
-        if "id" in data:
+        if data.get("id"):
             self.ids.append(data["id"])
         if "data-en" in data or "data-id" in data:
-            assert data.get("data-en"), f"Missing data-en on <{tag}>"
-            assert data.get("data-id"), f"Missing data-id on <{tag}>"
+            require(bool(data.get("data-en") and data.get("data-id")), f"Missing bilingual value on <{tag}>")
             self.translated += 1
         if tag == "details":
             self.details += 1
@@ -37,25 +36,17 @@ def require(condition: bool, message: str) -> None:
 
 def main() -> int:
     root = Path(__file__).resolve().parents[1]
-    page = root / "site" / "index.html"
-    css_path = root / "site" / "trial.css"
-
-    require(page.is_file(), "Missing site/index.html")
-    require(css_path.is_file(), "Missing site/trial.css")
-
-    html = page.read_text(encoding="utf-8")
-    css = css_path.read_text(encoding="utf-8")
+    html = (root / "site" / "index.html").read_text(encoding="utf-8")
+    css = (root / "site" / "trial.css").read_text(encoding="utf-8")
 
     parser = LandingParser()
     parser.feed(html)
-
     duplicates = [value for value, count in Counter(parser.ids).items() if count > 1]
     require(not duplicates, f"Duplicate HTML ids: {duplicates}")
 
     required_sections = {
         "main",
         "for-you",
-        "listen",
         "workflow",
         "features",
         "presets",
@@ -67,12 +58,12 @@ def main() -> int:
         "legal",
     }
     missing = sorted(required_sections.difference(parser.ids))
-    require(not missing, f"Missing public-reading sections: {missing}")
+    require(not missing, f"Missing reading paths: {missing}")
+    require(parser.translated >= 120, f"Only {parser.translated} bilingual elements found")
+    require(9 <= parser.details <= 11, f"Expected 9-11 disclosures, found {parser.details}")
+    require(html.count("<section") <= 10, "Landing should not exceed ten major sections")
 
-    require(parser.translated >= 200, f"Only {parser.translated} bilingual elements found")
-    require(parser.details >= 14, f"Only {parser.details} FAQ entries found")
-
-    required_audiences = (
+    for phrase in (
         "First-time user",
         "Musician & creator",
         "Producer",
@@ -80,55 +71,42 @@ def main() -> int:
         "Pengguna awam",
         "Musisi & kreator",
         "Produser",
-    )
-    for phrase in required_audiences:
-        require(phrase in html, f"Missing audience coverage: {phrase}")
-
-    required_plain_language = (
-        "What is the difference between VST3 and Standalone?",
-        "Apa perbedaan VST3 dan Standalone?",
-        "Use inside a compatible DAW",
-        "Use as a standalone application",
-        "Install in four steps",
-        "Instalasi dalam empat langkah",
-    )
-    for phrase in required_plain_language:
-        require(phrase in html, f"Missing plain-language guidance: {phrase}")
-
-    required_trust = (
+        "VST3 or Standalone?",
+        "Installation and verification — four steps",
         "No account or card",
         "No automatic charge",
         "No obligation to buy",
-        "Local audio processing",
+        "Local processing",
         "Official download",
-    )
-    for phrase in required_trust:
-        require(phrase in html, f"Missing trust statement: {phrase}")
+    ):
+        require(phrase in html, f"Missing public guidance: {phrase}")
 
-    require("USD 25" not in html, "Price must remain outside the public trial landing")
-    require("activation/" in parser.links, "Landing must retain a low-emphasis activation link")
-    require("data-installer-cta" in html, "Missing release-driven installer CTAs")
+    require("USD 25" not in html, "Price must remain outside the trial landing")
+    require("activation/" in parser.links, "Landing must retain optional activation link")
     require("SHA256SUMS.txt" in html, "Missing checksum guidance")
+    require('id="mobile-download-bar"' in html, "Missing mobile sticky download CTA")
 
-    required_styles = (
-        ".audience-grid",
+    for selector in (
+        ".audience-compact",
         ".test-flow",
-        ".workflow-rail",
-        ".format-grid",
-        ".spec-list",
-        ".install-guide",
-        ".verification-disclosure",
-    )
-    for selector in required_styles:
-        require(selector in css, f"Missing presentation style: {selector}")
+        ".preset-strip",
+        ".format-inline",
+        ".install-disclosure",
+        ".evaluation-compact",
+        ".privacy-compact",
+        ".mobile-download-bar",
+    ):
+        require(selector in css, f"Missing compact presentation style: {selector}")
 
     require(css.count("{") == css.count("}"), "Unbalanced CSS braces")
+    require("--micro: 10px" in css and "--small: 11px" in css and "--copy: 12px" in css, "Typography scale changed")
+    require("font-family: Inter" in css, "Inter must remain the primary font")
 
     print(
         "Audience/readability validation passed: "
         f"{parser.translated} bilingual elements, "
-        f"{parser.details} FAQ entries, "
-        "four audience paths, plain-language formats and installation guidance."
+        f"{parser.details} compact FAQ/disclosures, "
+        "four audience paths, merged technical/download flow and mobile CTA."
     )
     return 0
 

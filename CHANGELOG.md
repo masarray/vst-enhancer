@@ -2,6 +2,28 @@
 
 This changelog covers the public product website, distribution metadata, legal notices, supported packages, and public support surface. Proprietary DSP implementation details are not published in this repository.
 
+## Unreleased — compact trial-first public landing
+
+### Conversion and information architecture
+
+- Reduced the public landing to ten major sections with a compact four-audience strip, one three-minute evaluation flow, a combined controls-and-presets section, and a merged technical-download-installation journey.
+- Reduced the FAQ to eight essential questions and moved legal documents into one optional disclosure.
+- Added a viewport-aware mobile sticky download CTA that appears after the hero action leaves view.
+- Kept Inter as the primary font and formalised a 10 px, 11 px, and 12 px compact typography scale.
+
+### Trust and optional activation
+
+- Kept price and payment details outside the free-evaluation journey.
+- Standardised development-support wording to “may help sustain” so it does not imply that individual payments are earmarked for a vendor or expense.
+- Added future checkout safeguards requiring HTTPS, an exact hostname allowlist, seller and provider identity, currency, tax and refund disclosures, and explicit page-indexing readiness before a payment link can appear.
+- Kept paid checkout disabled and the activation page `noindex,follow` until those requirements are met.
+
+### SEO and validation
+
+- Kept the product on one deterministic canonical URL and removed query-language URLs from the sitemap.
+- Updated validators to prevent the landing from regrowing beyond ten sections or eleven disclosures.
+- Added checks for mobile CTA behaviour, the Inter 10/11/12 px scale, consistent funding language, trusted checkout fields, URL allowlisting, and owner-controlled self-hosted validation.
+
 ## Unreleased — trial-first public landing
 
 ### Evaluation-first product journey
@@ -51,7 +73,7 @@ This changelog covers the public product website, distribution metadata, legal n
 ### Website and repository
 
 - Rebuilt the bilingual English/Bahasa Indonesia landing page.
-- Added structured software metadata, canonical and language-alternate signals, social preview metadata, sitemap support, and release-driven download links.
+- Added structured software metadata, deterministic canonical metadata, social preview metadata, sitemap support, and release-driven download links.
 - Added clear unsigned-package and SHA-256 verification guidance.
 - Added Security, Support, Privacy, EULA, Purchase Terms, and third-party transparency documents.
 - Added local and self-hosted release validation without requiring GitHub-hosted runner minutes.
