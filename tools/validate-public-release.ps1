@@ -29,3 +29,4 @@ function Invoke-PythonValidator {
 
 Invoke-PythonValidator -ScriptPath "$PSScriptRoot\validate-public-release.py" -ScriptArguments $args
 Invoke-PythonValidator -ScriptPath "$PSScriptRoot\validate-trial-first-pages.py"
+Invoke-PythonValidator -ScriptPath "$PSScriptRoot\validate-public-audience.py"
