@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the public ArSonKuPik website and release metadata without third-party packages."""
+"""Validate the public ArSonKuPik site, release manifest and owner-controlled workflow."""
 
 from __future__ import annotations
 
@@ -13,13 +13,14 @@ from collections import Counter
 from html.parser import HTMLParser
 from pathlib import Path
 from typing import Iterable
+from urllib.parse import urlparse
 from xml.etree import ElementTree
 
 REPOSITORY = "masarray/vst-enhancer"
+SITE_URL = "https://masarray.github.io/vst-enhancer/"
 RELEASE_PREFIX = f"https://github.com/{REPOSITORY}/releases"
 ASSET_PREFIX = f"{RELEASE_PREFIX}/download/"
 VERSION_PATTERN = re.compile(r"^v\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?$")
-SHA256_PATTERN = re.compile(r"^[0-9a-fA-F]{64}$")
 FORBIDDEN_TOKENS = (
     "private-key",
     "private_key",
@@ -27,6 +28,18 @@ FORBIDDEN_TOKENS = (
     "BEGIN RSA PRIVATE KEY",
     "ArSonKuPikKeyActivator",
 )
+CHECKOUT_FIELDS = {
+    "purchaseUrl",
+    "purchaseAllowedHosts",
+    "sellerName",
+    "purchaseProvider",
+    "priceCurrency",
+    "taxSummaryEn",
+    "taxSummaryId",
+    "refundSummaryEn",
+    "refundSummaryId",
+    "purchasePageIndexable",
+}
 
 
 class SiteParser(HTMLParser):
@@ -39,16 +52,15 @@ class SiteParser(HTMLParser):
         self.meta: list[dict[str, str]] = []
         self.link_tags: list[dict[str, str]] = []
         self.scripts: dict[str, str] = {}
-        self._capturing_script_id: str | None = None
+        self._script_id: str | None = None
         self._script_chunks: list[str] = []
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         data = {key: value or "" for key, value in attrs}
-        if "id" in data:
+        if data.get("id"):
             self.ids.append(data["id"])
         if "data-en" in data or "data-id" in data:
-            assert data.get("data-en"), f"Missing data-en on <{tag}>"
-            assert data.get("data-id"), f"Missing data-id on <{tag}>"
+            require(bool(data.get("data-en") and data.get("data-id")), f"Missing bilingual value on <{tag}>")
             self.translated += 1
         if tag == "details":
             self.details += 1
@@ -59,17 +71,17 @@ class SiteParser(HTMLParser):
         if tag == "link":
             self.link_tags.append(data)
         if tag == "script" and data.get("id"):
-            self._capturing_script_id = data["id"]
+            self._script_id = data["id"]
             self._script_chunks = []
 
     def handle_data(self, data: str) -> None:
-        if self._capturing_script_id:
+        if self._script_id:
             self._script_chunks.append(data)
 
     def handle_endtag(self, tag: str) -> None:
-        if tag == "script" and self._capturing_script_id:
-            self.scripts[self._capturing_script_id] = "".join(self._script_chunks)
-            self._capturing_script_id = None
+        if tag == "script" and self._script_id:
+            self.scripts[self._script_id] = "".join(self._script_chunks)
+            self._script_id = None
             self._script_chunks = []
 
 
@@ -81,7 +93,7 @@ def require(condition: bool, message: str) -> None:
 def read_text(path: Path) -> str:
     require(path.is_file(), f"Missing file: {path.as_posix()}")
     text = path.read_text(encoding="utf-8")
-    require(text.strip() != "", f"Empty file: {path.as_posix()}")
+    require(bool(text.strip()), f"Empty file: {path.as_posix()}")
     return text
 
 
@@ -93,85 +105,26 @@ def validate_official_url(value: object, *, asset: bool = False) -> str:
     return value
 
 
-def validate_html(root: Path, release: dict[str, object]) -> SiteParser:
-    html = read_text(root / "site" / "index.html")
-    parser = SiteParser()
-    parser.feed(html)
+def validate_checkout_manifest(release: dict[str, object]) -> None:
+    if release["purchaseCheckoutAvailable"] is not True:
+        require(
+            release.get("purchaseStatus") in {"not-configured", "paused", "unavailable"},
+            "Disabled checkout requires a clear purchaseStatus",
+        )
+        require("purchaseUrl" not in release, "Disabled checkout must not publish purchaseUrl")
+        return
 
-    duplicates = [name for name, count in Counter(parser.ids).items() if count > 1]
-    require(not duplicates, f"Duplicate HTML ids: {duplicates}")
+    missing = sorted(field for field in CHECKOUT_FIELDS if field not in release)
+    require(not missing, f"Enabled checkout is missing fields: {missing}")
+    require(release.get("purchasePageIndexable") is True, "Enabled checkout requires purchasePageIndexable=true")
+    allowed = release.get("purchaseAllowedHosts")
+    require(isinstance(allowed, list) and allowed, "Enabled checkout requires purchaseAllowedHosts")
 
-    required_ids = {
-        "main",
-        "workflow",
-        "features",
-        "download",
-        "evaluation",
-        "privacy",
-        "faq",
-        "legal",
-        "distribution-banner",
-        "distribution-title",
-        "distribution-message",
-        "installer-link",
-        "installer-link-bottom",
-        "installer-link-final",
-        "vst3-link",
-        "standalone-link",
-        "release-version",
-        "release-link",
-        "checksums-link",
-        "purchase-status",
-        "checksum-command",
-        "software-structured-data",
-        "canonical-link",
-    }
-    missing = sorted(required_ids.difference(parser.ids))
-    require(not missing, f"Missing required HTML ids: {missing}")
-    require(parser.translated >= 100, f"Only {parser.translated} bilingual elements found")
-    require(parser.details >= 12, f"Only {parser.details} FAQ entries found")
-
-    description = [m for m in parser.meta if m.get("name") == "description"]
-    robots = [m for m in parser.meta if m.get("name") == "robots"]
-    og_image_alt = [m for m in parser.meta if m.get("property") == "og:image:alt"]
-    require(description and 80 <= len(description[0].get("content", "")) <= 180, "Meta description should be 80-180 characters")
-    require(robots and "index" in robots[0].get("content", ""), "Missing indexable robots meta")
-    require(og_image_alt and og_image_alt[0].get("content"), "Missing og:image:alt")
-
-    hreflangs = {(link.get("hreflang"), link.get("href")) for link in parser.link_tags if link.get("rel") == "alternate"}
-    require(any(lang == "en" for lang, _ in hreflangs), "Missing English hreflang")
-    require(any(lang == "id" for lang, _ in hreflangs), "Missing Indonesian hreflang")
-    require(any(lang == "x-default" for lang, _ in hreflangs), "Missing x-default hreflang")
-
-    legal_files = {
-        "EULA.txt",
-        "PURCHASE_TERMS.txt",
-        "PRIVACY.txt",
-        "THIRD_PARTY_NOTICES.txt",
-        "LICENSE.txt",
-        "SECURITY.md",
-        "SUPPORT.md",
-        "CHANGELOG.md",
-    }
-    for filename in legal_files:
-        require((root / filename).is_file(), f"Missing public document: {filename}")
-        require(any(filename in link for link in parser.links), f"Landing page does not link {filename}")
-
-    structured_text = parser.scripts.get("software-structured-data")
-    require(structured_text is not None, "Missing structured-data script")
-    structured = json.loads(structured_text)
-    graph = structured.get("@graph", [])
-    software = next((entry for entry in graph if entry.get("@type") == "SoftwareApplication"), None)
-    require(software is not None, "Missing SoftwareApplication structured data")
-    require(software.get("name") == "ArSonKuPik", "Structured-data software name mismatch")
-    require(software.get("offers", {}).get("price") is not None, "SoftwareApplication offers.price is required")
-    require(software.get("operatingSystem"), "Structured data missing operatingSystem")
-    require(str(release["version"]).lstrip("v") == software.get("softwareVersion"), "Structured-data version does not match release.json")
-
-    for token in FORBIDDEN_TOKENS:
-        require(token not in html, f"Public site contains prohibited token: {token}")
-
-    return parser
+    parsed = urlparse(str(release["purchaseUrl"]))
+    require(parsed.scheme == "https" and bool(parsed.hostname), "Enabled checkout requires a valid HTTPS purchaseUrl")
+    require(not parsed.username and not parsed.password, "Checkout URL must not contain credentials")
+    require(parsed.port in {None, 443}, "Checkout URL must use the standard HTTPS port")
+    require(parsed.hostname.lower() in {str(host).lower() for host in allowed}, "Checkout hostname is not allowlisted")
 
 
 def validate_release(root: Path) -> dict[str, object]:
@@ -189,15 +142,16 @@ def validate_release(root: Path) -> dict[str, object]:
     }
     missing = sorted(required.difference(release))
     require(not missing, f"release.json missing fields: {missing}")
-    require(isinstance(release["schemaVersion"], int) and release["schemaVersion"] >= 2, "Unsupported release schemaVersion")
+    require(isinstance(release["schemaVersion"], int) and release["schemaVersion"] >= 2, "Unsupported schemaVersion")
     require(isinstance(release["distributionEnabled"], bool), "distributionEnabled must be boolean")
     require(isinstance(release["purchaseCheckoutAvailable"], bool), "purchaseCheckoutAvailable must be boolean")
     require(VERSION_PATTERN.match(str(release["version"])) is not None, f"Invalid version: {release['version']}")
-    require(release["evaluationDays"] == 365, "Public evaluationDays must match the published 365-day terms")
+    require(release["evaluationDays"] == 365, "evaluationDays must remain 365")
     require(release.get("automaticCharge") is False, "automaticCharge must remain false")
     require(release.get("subscription") is False, "subscription must remain false")
+    require(release.get("purchaseObligation") is False, "purchaseObligation must remain false")
     require(release.get("noPaymentCardRequired") is True, "noPaymentCardRequired must remain true")
-    require(release.get("keyActivatorDistributedPublicly") is False, "Key Activator must not be marked public")
+    require(release.get("keyActivatorDistributedPublicly") is False, "Key Activator must not be public")
 
     version = str(release["version"])
     release_url = validate_official_url(release["releaseUrl"])
@@ -217,16 +171,95 @@ def validate_release(root: Path) -> dict[str, object]:
     else:
         require(bool(release["distributionStatus"]), "Disabled distribution requires a status reason")
 
-    if release["purchaseCheckoutAvailable"]:
-        checkout_url = release.get("purchaseUrl")
-        require(isinstance(checkout_url, str) and checkout_url.startswith("https://"), "Enabled checkout requires an HTTPS purchaseUrl")
-    else:
-        require(release.get("purchaseStatus") in {"not-configured", "paused", "unavailable"}, "Disabled checkout requires a clear purchaseStatus")
+    validate_checkout_manifest(release)
 
     if release["unsigned"]:
         require(release["signatureStatus"] == "unsigned", "Unsigned release must declare signatureStatus=unsigned")
 
     return release
+
+
+def validate_html(root: Path, release: dict[str, object]) -> SiteParser:
+    html = read_text(root / "site" / "index.html")
+    parser = SiteParser()
+    parser.feed(html)
+
+    duplicates = [name for name, count in Counter(parser.ids).items() if count > 1]
+    require(not duplicates, f"Duplicate HTML ids: {duplicates}")
+
+    required_ids = {
+        "main",
+        "for-you",
+        "workflow",
+        "features",
+        "presets",
+        "technical",
+        "download",
+        "evaluation",
+        "privacy",
+        "faq",
+        "legal",
+        "distribution-banner",
+        "distribution-title",
+        "distribution-message",
+        "installer-link",
+        "installer-link-bottom",
+        "installer-link-final",
+        "mobile-download-bar",
+        "vst3-link",
+        "standalone-link",
+        "release-version",
+        "release-link",
+        "checksums-link",
+        "purchase-status",
+        "checksum-command",
+        "software-structured-data",
+        "canonical-link",
+    }
+    missing = sorted(required_ids.difference(parser.ids))
+    require(not missing, f"Missing required HTML ids: {missing}")
+    require(parser.translated >= 120, f"Only {parser.translated} bilingual elements found")
+    require(9 <= parser.details <= 11, f"Expected a compact 9-11 disclosure/FAQ set, found {parser.details}")
+    require(html.count("<section") <= 10, "Public landing has regrown beyond ten sections")
+    require(len(html.splitlines()) <= 380, "Public landing is no longer compact")
+
+    description = next((m.get("content", "") for m in parser.meta if m.get("name") == "description"), "")
+    robots = next((m.get("content", "") for m in parser.meta if m.get("name") == "robots"), "")
+    require(80 <= len(description) <= 180, "Meta description should be 80-180 characters")
+    require("index" in robots, "Missing indexable robots meta")
+    require(any(m.get("property") == "og:image:alt" and m.get("content") for m in parser.meta), "Missing og:image:alt")
+
+    canonical = next((link.get("href") for link in parser.link_tags if link.get("rel") == "canonical"), "")
+    hreflangs = [link for link in parser.link_tags if link.get("rel") == "alternate" and link.get("hreflang")]
+    require(canonical == SITE_URL, "Canonical must remain the single product root")
+    require(not hreflangs, "Single-URL language preference must not publish query-language hreflang alternates")
+
+    legal_files = {
+        "EULA.txt",
+        "PURCHASE_TERMS.txt",
+        "PRIVACY.txt",
+        "THIRD_PARTY_NOTICES.txt",
+        "LICENSE.txt",
+        "SECURITY.md",
+        "SUPPORT.md",
+        "CHANGELOG.md",
+    }
+    for filename in legal_files:
+        require((root / filename).is_file(), f"Missing public document: {filename}")
+        require(any(filename in link for link in parser.links), f"Landing does not link {filename}")
+
+    structured = json.loads(parser.scripts.get("software-structured-data", ""))
+    graph = structured.get("@graph", [])
+    software = next((entry for entry in graph if entry.get("@type") == "SoftwareApplication"), None)
+    require(software is not None, "Missing SoftwareApplication structured data")
+    require(software.get("name") == "ArSonKuPik", "Structured-data software name mismatch")
+    require(software.get("offers", {}).get("price") == "0", "Evaluation structured-data price must remain zero")
+    require(str(release["version"]).lstrip("v") == software.get("softwareVersion"), "Structured-data version mismatch")
+
+    for token in FORBIDDEN_TOKENS:
+        require(token not in html, f"Public site contains prohibited token: {token}")
+
+    return parser
 
 
 def validate_support_files(root: Path, release: dict[str, object]) -> None:
@@ -241,7 +274,10 @@ def validate_support_files(root: Path, release: dict[str, object]) -> None:
         "SUPPORT.md",
         "CHANGELOG.md",
         "site/app.js",
+        "site/trial-page.js",
+        "site/activation/activation.js",
         "site/styles.css",
+        "site/trial.css",
         "site/robots.txt",
         "site/sitemap.xml",
         ".github/ISSUE_TEMPLATE/config.yml",
@@ -251,28 +287,30 @@ def validate_support_files(root: Path, release: dict[str, object]) -> None:
         "tools/validate-public-release.py",
         "tools/validate-public-release.ps1",
     ]
-    texts: dict[str, str] = {}
-    for relative in required_files:
-        texts[relative] = read_text(root / relative)
+    texts = {relative: read_text(root / relative) for relative in required_files}
 
     version = str(release["version"])
     require(version in texts["README.md"], "README does not mention current release version")
     require("releases/latest" in texts[".github/ISSUE_TEMPLATE/config.yml"], "Issue chooser must use releases/latest")
-    stale_tag = "/tag/" + "v0.5.0"
-    require(stale_tag not in "\n".join(texts.values()), "Stale v0.5.0 release link found")
-    require("pull_request:" not in texts[".github/workflows/validate-public-site.yml"], "Self-hosted workflow must not run public pull-request code")
-    require("runs-on: self-hosted" in texts[".github/workflows/validate-public-site.yml"], "Workflow must use the self-hosted runner")
-    require("workflow_dispatch:" in texts[".github/workflows/validate-public-site.yml"], "Workflow must remain manually triggered")
-    require("askp-language" in texts["PRIVACY.txt"], "Privacy notice must disclose local language preference storage")
-    require("purchaseCheckoutAvailable" in texts["site/app.js"], "Frontend must separate download and checkout state")
+    require("/tag/v0.5.0" not in "\n".join(texts.values()), "Stale v0.5.0 release link found")
+    workflow = texts[".github/workflows/validate-public-site.yml"]
+    require("pull_request:" not in workflow, "Self-hosted workflow must not run public PR code")
+    require("runs-on: self-hosted" in workflow, "Workflow must use the self-hosted runner")
+    require("workflow_dispatch:" in workflow, "Workflow must remain manually triggered")
+    require("askp-language" in texts["PRIVACY.txt"], "Privacy notice must disclose language preference storage")
     require("officialReleaseUrl" in texts["site/app.js"], "Frontend must validate release URLs")
+    require("IntersectionObserver" in texts["site/trial-page.js"], "Mobile sticky CTA must use viewport-aware visibility")
+    require("trustedCheckoutUrl" in texts["site/activation/activation.js"], "Activation page must validate checkout URLs")
+    require("purchaseAllowedHosts" in texts["site/activation/activation.js"], "Activation checkout must require a host allowlist")
+    require("--micro: 10px" in texts["site/trial.css"], "Compact typography must retain 10 px micro text")
+    require("--small: 11px" in texts["site/trial.css"], "Compact typography must retain 11 px small text")
+    require("--copy: 12px" in texts["site/trial.css"], "Compact typography must retain 12 px body text")
+    require('font-family: Inter' in texts["site/trial.css"], "Inter must remain the primary public font")
 
     sitemap = ElementTree.fromstring(texts["site/sitemap.xml"])
     namespace = {"s": "http://www.sitemaps.org/schemas/sitemap/0.9"}
     locations = [entry.text or "" for entry in sitemap.findall("s:url/s:loc", namespace)]
-    require("https://masarray.github.io/vst-enhancer/" in locations, "Sitemap missing canonical root")
-    require(any("?lang=en" in location for location in locations), "Sitemap missing English localized URL")
-    require(any("?lang=id" in location for location in locations), "Sitemap missing Indonesian localized URL")
+    require(locations == [SITE_URL], f"Sitemap must contain only the canonical product root: {locations}")
 
     combined = "\n".join(text for name, text in texts.items() if name != "tools/validate-public-release.py")
     for token in FORBIDDEN_TOKENS:
@@ -284,7 +322,7 @@ def check_remote_urls(urls: Iterable[str]) -> None:
         request = urllib.request.Request(
             url,
             method="HEAD",
-            headers={"User-Agent": "ArSonKuPik-public-release-validator/1.0"},
+            headers={"User-Agent": "ArSonKuPik-public-release-validator/2.0"},
         )
         try:
             with urllib.request.urlopen(request, timeout=20) as response:
@@ -297,7 +335,7 @@ def check_remote_urls(urls: Iterable[str]) -> None:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--check-remote", action="store_true", help="Verify official release and asset URLs over HTTPS")
+    parser.add_argument("--check-remote", action="store_true", help="Verify official release and asset URLs")
     parser.add_argument("--root", type=Path, default=Path(__file__).resolve().parents[1], help="Repository root")
     args = parser.parse_args()
 
@@ -307,22 +345,23 @@ def main() -> int:
         site = validate_html(root, release)
         validate_support_files(root, release)
         if args.check_remote:
-            urls = [
-                str(release["releaseUrl"]),
-                str(release["installerUrl"]),
-                str(release["vst3Url"]),
-                str(release["standaloneUrl"]),
-                str(release["checksumsUrl"]),
-            ]
-            check_remote_urls(urls)
-    except (AssertionError, json.JSONDecodeError, ElementTree.ParseError) as exc:
+            check_remote_urls(
+                [
+                    str(release["releaseUrl"]),
+                    str(release["installerUrl"]),
+                    str(release["vst3Url"]),
+                    str(release["standaloneUrl"]),
+                    str(release["checksumsUrl"]),
+                ]
+            )
+    except (AssertionError, json.JSONDecodeError, ElementTree.ParseError, ValueError) as exc:
         print(f"VALIDATION FAILED: {exc}", file=sys.stderr)
         return 1
 
     print(
         "Validation passed: "
         f"{site.translated} bilingual elements, "
-        f"{site.details} FAQ entries, "
+        f"{site.details} compact FAQ/disclosures, "
         f"release {release['version']}, "
         f"distribution={'enabled' if release['distributionEnabled'] else 'paused'}, "
         f"checkout={'enabled' if release['purchaseCheckoutAvailable'] else 'not enabled'}."
