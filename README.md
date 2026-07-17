@@ -7,9 +7,9 @@
 [![Evaluation](https://img.shields.io/badge/Free%20evaluation-365%20days-5bd49a)](#free-365-day-evaluation--evaluasi-gratis-365-hari)
 [![Product licence](https://img.shields.io/badge/Product-Proprietary-ef7c8f)](EULA.txt)
 
-**English:** ArSonKuPik is a focused Windows VST3 and standalone audio enhancer for mastering, mix bus, tracks, vocals, podcasts, and creative processing. Every preset and control is available free for 365 days with no account, payment card, subscription, automatic charge, or obligation to buy.
+**English:** ArSonKuPik is a focused Windows VST3 and standalone audio enhancer for musicians, creators, producers, audio engineers, and first-time users. Every preset and control is available free for 365 days with no account, payment card, subscription, automatic charge, or obligation to buy.
 
-**Bahasa Indonesia:** ArSonKuPik adalah audio enhancer Windows VST3 dan standalone untuk mastering, mix bus, track, vokal, podcast, dan pemrosesan kreatif. Seluruh preset dan kontrol tersedia gratis selama 365 hari tanpa akun, kartu pembayaran, langganan, tagihan otomatis, atau kewajiban membeli.
+**Bahasa Indonesia:** ArSonKuPik adalah audio enhancer Windows VST3 dan standalone untuk musisi, kreator, produser, audio engineer, dan pengguna awam. Seluruh preset dan kontrol tersedia gratis selama 365 hari tanpa akun, kartu pembayaran, langganan, tagihan otomatis, atau kewajiban membeli.
 
 <p align="center">
   <a href="https://masarray.github.io/vst-enhancer/">
@@ -43,6 +43,17 @@ Current metadata points to **v0.5.12**:
 
 Use the [latest release page](https://github.com/masarray/vst-enhancer/releases/latest) as the source of truth. The landing page reads `site/release.json` and enables direct download buttons only when public distribution is explicitly enabled.
 
+## Public landing experience
+
+The bilingual landing page is designed for several reading levels without splitting the product into separate marketing pages:
+
+- **First-time users:** plain-language VST3 and Standalone explanations, preset-first guidance, and a four-step installation path.
+- **Musicians and creators:** vocal, instrument, acoustic, stereo, podcast, and creative starting points.
+- **Producers:** mastering and mix-bus workflows, fast A/B comparison, body, glue, depth, focus, and air.
+- **Audio engineers:** track/bus/master placement, matched-gain comparison, stereo and low-end translation, and final peak/loudness verification reminders.
+
+The page also provides a three-minute evaluation method, practical “listen for” guidance for every control, compatibility requirements, privacy information, 15 bilingual FAQs, and a separated optional-activation path.
+
 ## Free 365-day evaluation / Evaluasi gratis 365 hari
 
 | English | Bahasa Indonesia |
@@ -53,9 +64,9 @@ Use the [latest release page](https://github.com/masarray/vst-enhancer/releases/
 | No purchase obligation exists when the evaluation ends. | Tidak ada kewajiban membeli ketika masa evaluasi berakhir. |
 | After evaluation, existing projects and saved processing are designed to continue in project-safe read-only mode. | Setelah evaluasi, project lama dan pemrosesan tersimpan dirancang tetap berjalan dalam mode project-safe read-only. |
 
-The free evaluation is intentionally separated from payment information. The main landing page is designed to help users download, test the product in their own music, compare at matched loudness, and decide by listening.
+The free evaluation is intentionally separated from payment information. The main landing page helps users understand the product, choose the right format, download, install, test familiar audio, compare at matched loudness, and decide by listening.
 
-Evaluasi gratis sengaja dipisahkan dari informasi pembayaran. Landing page utama dirancang agar pengguna dapat mengunduh, mencoba produk pada musik mereka sendiri, membandingkan pada loudness yang seimbang, dan memutuskan berdasarkan hasil yang didengar.
+Evaluasi gratis sengaja dipisahkan dari informasi pembayaran. Landing page utama membantu pengguna memahami produk, memilih format yang tepat, mengunduh, menginstal, mencoba audio yang familiar, membandingkan pada loudness yang seimbang, dan memutuskan berdasarkan hasil yang didengar.
 
 ## Optional activation / Aktivasi opsional
 
@@ -74,8 +85,8 @@ Pembelian aktivasi memberikan hak lisensi yang nyata; pembayaran tersebut bukan 
 ## Compatibility
 
 - Windows 10/11, 64-bit
-- VST3 plug-in
-- Standalone application
+- VST3 plug-in for use inside a compatible DAW
+- Standalone application for supported audio-device workflows
 - macOS, Linux, VST2, AAX, and Audio Unit are not currently distributed
 - Compatibility varies by DAW, driver, audio interface, sample rate, buffer, device, and security policy
 - Evaluate in your own workflow before critical delivery or broadcast
@@ -83,7 +94,7 @@ Pembelian aktivasi memberikan hak lisensi yang nyata; pembayaran tersebut bukan 
 ## Install and verify / Instalasi dan verifikasi
 
 1. Open the [latest official release](https://github.com/masarray/vst-enhancer/releases/latest).
-2. Choose the installer, VST3 ZIP, or Standalone ZIP.
+2. Choose the installer, VST3 ZIP, or Standalone ZIP. Most users should choose the installer.
 3. Download `SHA256SUMS.txt` from the same release.
 4. Verify the exact installer name:
 
@@ -97,7 +108,7 @@ Get-FileHash .\ArSonKuPik-v0.5.12-Windows-x64-Setup.exe -Algorithm SHA256
 
 ### Unsigned Windows package
 
-The current package is distributed without a commercial Windows code-signing certificate. Windows SmartScreen may therefore show an unknown-publisher or reputation warning. This information is placed in the installation and verification section rather than the product hero so users receive it at the correct decision point.
+The current package is distributed without a commercial Windows code-signing certificate. Windows SmartScreen may therefore show an unknown-publisher or reputation warning. The landing page keeps this disclosure in the installation and verification section so it appears at the correct decision point rather than interrupting the product introduction.
 
 A matching SHA-256 value verifies file identity against the value published in the same release. It does not replace antivirus scanning, endpoint protection, backups, or compatibility testing.
 
@@ -152,7 +163,7 @@ Optionally validate the public release URLs from a connected machine:
 .\tools\validate-public-release.ps1 --check-remote
 ```
 
-The PowerShell wrapper runs both the repository/release validator and the trial-first funnel validator. The manual GitHub workflow uses a self-hosted runner and `workflow_dispatch` only. It intentionally does not execute untrusted pull-request code on the local runner.
+The PowerShell wrapper runs repository/release, trial-first funnel, and public-audience readability validators. The manual GitHub workflow uses a self-hosted runner and `workflow_dispatch` only. It intentionally does not execute untrusted pull-request code on the local runner.
 
 ## Safe feedback
 
