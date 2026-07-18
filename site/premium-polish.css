@@ -1,0 +1,438 @@
+/*
+ * P1 premium landing polish.
+ * Keeps the trial-first content and release logic intact while reducing dashboard density.
+ */
+
+html {
+  scroll-padding-top: 78px;
+}
+
+.status-bar {
+  display: none !important;
+}
+
+.nav-download {
+  border-color: rgba(190, 145, 255, .48);
+  background: linear-gradient(135deg, rgba(112, 62, 218, .92), rgba(166, 108, 255, .88));
+  color: #fff;
+  box-shadow: 0 9px 24px rgba(94, 45, 190, .24), inset 0 1px 0 rgba(255, 255, 255, .18);
+}
+
+.nav-download:hover {
+  border-color: rgba(213, 183, 255, .78);
+  box-shadow: 0 12px 30px rgba(94, 45, 190, .34), inset 0 1px 0 rgba(255, 255, 255, .22);
+}
+
+.trial-hero {
+  padding-top: 80px;
+  padding-bottom: 76px;
+}
+
+.trial-hero .hero-grid {
+  grid-template-columns: minmax(350px, .84fr) minmax(520px, 1.16fr);
+  gap: clamp(42px, 5vw, 70px);
+}
+
+.trial-hero .hero-copy {
+  align-self: center;
+}
+
+.trial-hero .lead {
+  max-width: 620px;
+}
+
+.hero-promises,
+.hero-trust,
+.product-stage .stage-label,
+.product-stage figcaption {
+  display: none !important;
+}
+
+.trial-hero .actions {
+  margin-top: 27px;
+}
+
+.trial-hero .release-line {
+  margin-top: 20px;
+}
+
+.product-stage {
+  overflow: visible;
+  border: 0;
+  border-radius: 22px;
+  background: transparent;
+  box-shadow: none;
+}
+
+.product-stage::before {
+  inset: -9px;
+  border-radius: 27px;
+  opacity: .58;
+  filter: blur(11px);
+  background: linear-gradient(
+    135deg,
+    rgba(174, 124, 255, .62),
+    rgba(109, 67, 214, .08) 42%,
+    rgba(92, 215, 164, .28)
+  );
+}
+
+.product-stage .shot-glow {
+  inset: -28%;
+  opacity: .75;
+  filter: blur(50px);
+}
+
+.product-stage img {
+  border: 1px solid rgba(220, 200, 255, .19);
+  border-radius: 20px;
+  box-shadow:
+    0 38px 96px rgba(0, 0, 0, .56),
+    0 0 0 1px rgba(151, 102, 255, .06),
+    0 0 86px rgba(129, 72, 224, .11);
+}
+
+.trust-strip {
+  border: 0;
+  background: linear-gradient(180deg, #0d0b11, #0b090e);
+}
+
+.trust-grid {
+  padding-block: 20px;
+}
+
+.trust-grid > div {
+  position: relative;
+  min-height: 0;
+  padding: 5px 25px;
+  border: 0 !important;
+}
+
+.trust-grid > div + div::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 4px;
+  bottom: 4px;
+  width: 1px;
+  background: rgba(255, 255, 255, .08);
+}
+
+.trust-grid strong {
+  font-size: 12px;
+}
+
+.trust-grid span {
+  max-width: 230px;
+  margin-top: 5px;
+  color: #a69eac;
+  line-height: 1.55;
+}
+
+.section {
+  border-top: 0;
+}
+
+.section.alt {
+  background:
+    radial-gradient(circle at 50% 0, rgba(155, 104, 255, .035), transparent 38%),
+    #141119;
+}
+
+.audience-compact {
+  gap: 28px;
+  overflow: visible;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.audience-compact article {
+  min-height: 0;
+  padding: 2px 0 2px 18px;
+  border-left: 1px solid rgba(199, 164, 255, .22);
+  background: transparent;
+}
+
+.audience-compact strong {
+  color: #d3b7ff;
+}
+
+.audience-compact span {
+  color: #aaa3b0;
+}
+
+.test-flow {
+  gap: 0;
+  overflow: visible;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.test-flow article {
+  min-height: 0;
+  padding: 2px 28px 2px 0;
+  background: transparent;
+}
+
+.test-flow article + article {
+  padding-left: 28px;
+  border-left: 1px solid rgba(255, 255, 255, .09);
+}
+
+.test-flow article > span {
+  display: inline-flex;
+  width: 28px;
+  height: 28px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  color: #eadfff;
+  background: rgba(155, 104, 255, .14);
+  letter-spacing: .04em;
+}
+
+.test-flow h3 {
+  margin-top: 15px;
+}
+
+.listening-controls article {
+  border-color: rgba(255, 255, 255, .075);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, .023), rgba(255, 255, 255, .008));
+}
+
+.preset-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  overflow: visible;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.preset-strip > div {
+  display: inline-flex;
+  min-height: 0;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px;
+  border: 1px solid rgba(255, 255, 255, .085);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .018);
+}
+
+.preset-strip strong {
+  color: #d0b2ff;
+}
+
+.preset-strip span {
+  color: #aaa2ae;
+}
+
+.format-inline {
+  gap: 0;
+  overflow: visible;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.format-inline > span {
+  position: relative;
+  min-height: 0;
+  padding: 2px 24px;
+  background: transparent;
+}
+
+.format-inline > span + span {
+  border-left: 1px solid rgba(255, 255, 255, .09);
+}
+
+.download-release-status {
+  display: flex;
+  max-width: 980px;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin: 20px auto 0;
+  color: #9f97a5;
+  font-size: var(--copy);
+}
+
+.download-release-status strong {
+  color: #e9e1ee;
+  font-weight: 760;
+}
+
+.download-release-status a {
+  margin-left: 3px;
+  color: #d0b5f5;
+  text-decoration: none;
+}
+
+.download-release-status a:hover {
+  color: #fff;
+}
+
+.download-option {
+  border-color: rgba(255, 255, 255, .075);
+}
+
+.download-option.recommended {
+  border-color: rgba(190, 145, 255, .34);
+  box-shadow: 0 18px 45px rgba(0, 0, 0, .18);
+}
+
+.privacy-compact {
+  padding: 3px 0 3px 18px;
+  border: 0;
+  border-left: 2px solid rgba(103, 217, 163, .34);
+  border-radius: 0;
+  background: transparent;
+}
+
+.legal-compact {
+  border-color: rgba(255, 255, 255, .07);
+  background: transparent;
+}
+
+.final-cta {
+  border-top: 0;
+}
+
+@media (max-width: 1060px) {
+  .trial-hero .hero-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .trial-hero .hero-copy {
+    order: 1;
+  }
+
+  .trial-hero .product-stage {
+    order: 2;
+    width: min(100%, 900px);
+    margin: 4px auto 0;
+  }
+
+  .trust-grid > div {
+    padding: 8px 22px;
+  }
+
+  .trust-grid > div:nth-child(3)::before {
+    display: none;
+  }
+}
+
+@media (max-width: 860px) {
+  .test-flow article {
+    padding: 18px 0;
+  }
+
+  .test-flow article:first-child {
+    padding-top: 0;
+  }
+
+  .test-flow article + article {
+    padding-left: 0;
+    border-left: 0;
+    border-top: 1px solid rgba(255, 255, 255, .09);
+  }
+
+  .format-inline > span {
+    padding: 16px 0;
+  }
+
+  .format-inline > span:first-child {
+    padding-top: 0;
+  }
+
+  .format-inline > span + span {
+    border-left: 0;
+    border-top: 1px solid rgba(255, 255, 255, .09);
+  }
+}
+
+@media (max-width: 740px) {
+  html {
+    scroll-padding-top: 68px;
+  }
+
+  .trial-hero {
+    padding-top: 46px;
+    padding-bottom: 58px;
+  }
+
+  .trial-hero .hero-grid {
+    gap: 34px;
+  }
+
+  .trial-hero .lead {
+    max-width: none;
+  }
+
+  .trial-hero .release-line {
+    gap: 6px;
+  }
+
+  .trial-hero .release-line span {
+    padding: 5px 8px;
+  }
+
+  .product-stage img {
+    border-radius: 15px;
+  }
+
+  .trust-grid {
+    padding-block: 12px;
+  }
+
+  .trust-grid > div {
+    padding: 14px 0;
+  }
+
+  .trust-grid > div + div::before {
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: auto;
+    width: auto;
+    height: 1px;
+  }
+
+  .trust-grid > div:nth-child(3)::before {
+    display: block;
+  }
+
+  .trust-grid span {
+    max-width: none;
+  }
+
+  .audience-compact {
+    gap: 0;
+  }
+
+  .audience-compact article {
+    padding: 15px 0;
+    border-left: 0;
+  }
+
+  .audience-compact article + article {
+    border-top: 1px solid rgba(255, 255, 255, .08);
+  }
+
+  .preset-strip > div {
+    width: 100%;
+    justify-content: space-between;
+    border-radius: 11px;
+  }
+
+  .download-release-status {
+    justify-content: flex-start;
+    margin-top: 16px;
+  }
+}
