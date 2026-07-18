@@ -3,6 +3,12 @@
 
   const CANONICAL_URL = 'https://masarray.github.io/vst-enhancer/';
 
+  const latestReleaseScript = document.createElement('script');
+  latestReleaseScript.src = 'latest-release.js';
+  latestReleaseScript.async = true;
+  latestReleaseScript.setAttribute('data-release-resolver', 'github-latest');
+  document.head.append(latestReleaseScript);
+
   const mobileTypography = document.createElement('style');
   mobileTypography.id = 'mobile-readable-type';
   mobileTypography.textContent = `
