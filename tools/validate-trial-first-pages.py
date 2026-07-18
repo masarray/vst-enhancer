@@ -112,7 +112,12 @@ def main() -> int:
     require("../latest-release.js" in activation_js, "Activation page must load the latest-release resolver")
     require("document.title" not in app_js, "app.js must not mutate canonical SEO metadata")
 
-    require("https://api.github.com/repos/masarray/vst-enhancer/releases/latest" in latest_release_js, "Resolver must query GitHub's latest release endpoint")
+    require("const REPOSITORY = 'masarray/vst-enhancer';" in latest_release_js, "Resolver repository constant is incorrect")
+    require(
+        "const LATEST_API = `https://api.github.com/repos/${REPOSITORY}/releases/latest`;" in latest_release_js,
+        "Resolver must construct GitHub's latest release endpoint",
+    )
+    require("fetch(LATEST_API" in latest_release_js, "Resolver must request GitHub's latest release endpoint")
     require("browser_download_url" in latest_release_js, "Resolver must use official release asset URLs")
     require("name.endsWith('.exe')" in latest_release_js, "Resolver must select a Windows executable asset")
     require("scoreInstaller" in latest_release_js, "Resolver must rank installer assets explicitly")
