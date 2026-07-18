@@ -31,28 +31,32 @@
 >
 > Unduh hanya melalui website resmi atau GitHub Releases repository ini. Hindari mirror dan paket yang diunggah ulang. Verifikasi `SHA256SUMS.txt` dari rilis yang sama sebelum menjalankan file.
 
-## Current public release
+## Automatic latest-installer routing
 
-Current metadata points to **v0.5.12**:
+The public website does not permanently pin its download buttons to one release version. At page load it:
 
-- Windows x64 installer
-- VST3 ZIP package
-- Standalone ZIP package
-- SHA-256 checksum list
-- JUCE 8.0.14 reviewed dependency baseline
+1. Requests GitHub's latest published full release metadata.
+2. Validates that the release and its assets belong to `masarray/vst-enhancer` over HTTPS.
+3. Selects the official Windows installer `.exe` while rejecting portable executables, activation utilities, and key tools.
+4. Points every installer CTA directly to the selected latest `.exe` asset.
+5. Updates the displayed version, VST3/Standalone/checksum links, checksum command, release links, and structured download metadata.
 
-Use the [latest release page](https://github.com/masarray/vst-enhancer/releases/latest) as the source of truth. The landing page reads `site/release.json` and enables direct download buttons only when public distribution is explicitly enabled.
+This applies to the navigation button, hero CTA, installer card, final CTA, mobile sticky CTA, and the free-download button on `/activation/`.
+
+If GitHub's latest-release API cannot be resolved, the website falls back only to the repository's [`/releases/latest`](https://github.com/masarray/vst-enhancer/releases/latest) page. It does **not** fall back to an older version-specific installer.
+
+`site/release.json` remains reviewed local metadata for distribution state, evaluation terms, checkout separation, and static fallback information. The reviewed fallback manifest currently records **v0.5.12**, but it is not the authoritative selector for the newest installer shown by the live website.
 
 ## Public landing experience
 
-The bilingual landing page is designed for several reading levels without splitting the product into separate marketing pages:
+The bilingual landing page supports several reading levels without splitting the product into separate marketing pages:
 
-- **First-time users:** plain-language VST3 and Standalone explanations, preset-first guidance, and a four-step installation path.
-- **Musicians and creators:** vocal, instrument, acoustic, stereo, podcast, and creative starting points.
-- **Producers:** mastering and mix-bus workflows, fast A/B comparison, body, glue, depth, focus, and air.
-- **Audio engineers:** track/bus/master placement, matched-gain comparison, stereo and low-end translation, and final peak/loudness verification reminders.
+- **First-time users:** preset-first guidance and plain-language VST3/Standalone explanations.
+- **Musicians and creators:** vocal, instrument, demo, podcast, stereo, and creative starting points.
+- **Producers:** mastering, mix-bus, track processing, fast direction, and honest A/B comparison.
+- **Audio engineers:** matched-gain comparison, stereo and low-end translation, and final peak/loudness verification reminders.
 
-The page also provides a three-minute evaluation method, practical “listen for” guidance for every control, compatibility requirements, privacy information, 15 bilingual FAQs, and a separated optional-activation path.
+The compact journey combines a three-minute evaluation method, practical “listen for” guidance, compatibility, package selection, installation, checksum verification, privacy, eight essential bilingual FAQs, and a separated optional-activation path.
 
 ## Free 365-day evaluation / Evaluasi gratis 365 hari
 
@@ -64,9 +68,9 @@ The page also provides a three-minute evaluation method, practical “listen for
 | No purchase obligation exists when the evaluation ends. | Tidak ada kewajiban membeli ketika masa evaluasi berakhir. |
 | After evaluation, existing projects and saved processing are designed to continue in project-safe read-only mode. | Setelah evaluasi, project lama dan pemrosesan tersimpan dirancang tetap berjalan dalam mode project-safe read-only. |
 
-The free evaluation is intentionally separated from payment information. The main landing page helps users understand the product, choose the right format, download, install, test familiar audio, compare at matched loudness, and decide by listening.
+The free evaluation is intentionally separated from payment information. The main landing helps users understand the product, choose the right format, download, install, test familiar audio, compare at matched loudness, and decide by listening.
 
-Evaluasi gratis sengaja dipisahkan dari informasi pembayaran. Landing page utama membantu pengguna memahami produk, memilih format yang tepat, mengunduh, menginstal, mencoba audio yang familiar, membandingkan pada loudness yang seimbang, dan memutuskan berdasarkan hasil yang didengar.
+Evaluasi gratis sengaja dipisahkan dari informasi pembayaran. Landing utama membantu pengguna memahami produk, memilih format yang tepat, mengunduh, menginstal, mencoba audio yang familiar, membandingkan pada loudness yang seimbang, dan memutuskan berdasarkan hasil yang didengar.
 
 ## Optional activation / Aktivasi opsional
 
@@ -93,13 +97,13 @@ Pembelian aktivasi memberikan hak lisensi yang nyata; pembayaran tersebut bukan 
 
 ## Install and verify / Instalasi dan verifikasi
 
-1. Open the [latest official release](https://github.com/masarray/vst-enhancer/releases/latest).
-2. Choose the installer, VST3 ZIP, or Standalone ZIP. Most users should choose the installer.
+1. Use the website installer button or open the [latest official release](https://github.com/masarray/vst-enhancer/releases/latest).
+2. Download the Windows x64 setup `.exe` selected from the latest release.
 3. Download `SHA256SUMS.txt` from the same release.
-4. Verify the exact installer name:
+4. Verify the exact downloaded filename:
 
 ```powershell
-Get-FileHash .\ArSonKuPik-v0.5.12-Windows-x64-Setup.exe -Algorithm SHA256
+Get-FileHash .\<downloaded-installer-name>.exe -Algorithm SHA256
 ```
 
 5. Compare the result with `SHA256SUMS.txt`. Do not continue if the values differ.
@@ -108,7 +112,7 @@ Get-FileHash .\ArSonKuPik-v0.5.12-Windows-x64-Setup.exe -Algorithm SHA256
 
 ### Unsigned Windows package
 
-The current package is distributed without a commercial Windows code-signing certificate. Windows SmartScreen may therefore show an unknown-publisher or reputation warning. The landing page keeps this disclosure in the installation and verification section so it appears at the correct decision point rather than interrupting the product introduction.
+Current public packages may be distributed without a commercial Windows code-signing certificate. Windows SmartScreen may therefore show an unknown-publisher or reputation warning. The landing keeps this disclosure in the installation and verification section so it appears at the correct decision point rather than interrupting the product introduction.
 
 A matching SHA-256 value verifies file identity against the value published in the same release. It does not replace antivirus scanning, endpoint protection, backups, or compatibility testing.
 
@@ -163,7 +167,7 @@ Optionally validate the public release URLs from a connected machine:
 .\tools\validate-public-release.ps1 --check-remote
 ```
 
-The PowerShell wrapper runs repository/release, trial-first funnel, and public-audience readability validators. The manual GitHub workflow uses a self-hosted runner and `workflow_dispatch` only. It intentionally does not execute untrusted pull-request code on the local runner.
+The PowerShell wrapper runs repository/release, latest-download funnel, and public-audience readability validators. The manual GitHub workflow uses a self-hosted runner and `workflow_dispatch` only. It intentionally does not execute untrusted pull-request code on the local runner.
 
 ## Safe feedback
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the compact trial-first funnel, release controller, mobile CTA and activation readiness."""
+"""Validate the compact trial-first funnel, latest-release resolver, mobile CTA and activation readiness."""
 
 from __future__ import annotations
 
@@ -61,6 +61,7 @@ def main() -> int:
     trial_css = read(root / "site" / "trial.css")
     app_js = read(root / "site" / "app.js")
     trial_js = read(root / "site" / "trial-page.js")
+    latest_release_js = read(root / "site" / "latest-release.js")
     activation_js = read(root / "site" / "activation" / "activation.js")
     release = json.loads(read(root / "site" / "release.json"))
 
@@ -101,13 +102,27 @@ def main() -> int:
     require(landing.find("commercially code-signed") > landing.find('id="download"'), "Unsigned disclosure must stay in download flow")
     require('id="mobile-download-bar"' in landing, "Landing must include a mobile sticky download bar")
 
-    require(app_js.count("fetch('./release.json'") == 1, "app.js must be the single release.json requester")
+    require(app_js.count("fetch('./release.json'") == 1, "app.js must retain one local manifest request")
     require("fetch(" not in trial_js and "release.json" not in trial_js, "trial-page.js must not fetch release metadata")
     require("querySelectorAll('[data-installer-cta]')" in app_js, "Central controller must manage every installer CTA")
     require("button.dataset[currentLanguage]" in app_js, "CTA labels must remain contextual and bilingual")
     require("IntersectionObserver" in trial_js, "Mobile CTA visibility must respond to hero visibility")
     require("mobile-download-bar" in trial_js, "Mobile CTA controller is missing")
+    require("latest-release.js" in trial_js, "Main landing must load the latest-release resolver")
+    require("../latest-release.js" in activation_js, "Activation page must load the latest-release resolver")
     require("document.title" not in app_js, "app.js must not mutate canonical SEO metadata")
+
+    require("https://api.github.com/repos/masarray/vst-enhancer/releases/latest" in latest_release_js, "Resolver must query GitHub's latest release endpoint")
+    require("browser_download_url" in latest_release_js, "Resolver must use official release asset URLs")
+    require("name.endsWith('.exe')" in latest_release_js, "Resolver must select a Windows executable asset")
+    require("scoreInstaller" in latest_release_js, "Resolver must rank installer assets explicitly")
+    require("portable" in latest_release_js, "Resolver must reject portable executables for the installer CTA")
+    require("activator" in latest_release_js and "key" in latest_release_js, "Resolver must reject activation tools and key utilities")
+    require("OFFICIAL_DOWNLOAD_PREFIX" in latest_release_js, "Resolver must restrict assets to this repository")
+    require("expectedInstallerUrl" in latest_release_js, "Resolver must lock CTAs against stale manifest overwrites")
+    require("MutationObserver" in latest_release_js, "Resolver must protect direct installer links from late stale writes")
+    require("github-latest-page-fallback" in latest_release_js, "Resolver must fall back to the latest release page, not an old installer")
+    require("software.downloadUrl = release.installerUrl" in latest_release_js, "Structured data must point to the resolved latest installer")
 
     require("trustedCheckoutUrl" in activation_js, "Activation page must validate checkout URL")
     require("purchaseAllowedHosts" in activation_js, "Activation page must require allowed checkout hosts")
@@ -127,15 +142,16 @@ def main() -> int:
     require("font-size: 13px" in trial_js, "Mobile default body typography must be 13 px")
     require("font-family: Inter" in trial_css or "font-family: Inter" in styles_css, "Inter must remain primary")
 
+    public_text = "\n".join((landing, activation, trial_css, app_js, trial_js, latest_release_js, activation_js))
     for token in ("BEGIN PRIVATE KEY", "BEGIN RSA PRIVATE KEY", "ArSonKuPikKeyActivator"):
-        require(token not in "\n".join((landing, activation, trial_css, app_js, trial_js, activation_js)), f"Prohibited token: {token}")
+        require(token not in public_text, f"Prohibited token: {token}")
 
     print(
-        "P2 validation passed: "
+        "Latest-release validation passed: "
         f"{landing_parser.translated} bilingual elements, "
         f"{landing_parser.details} compact FAQ/disclosures, "
-        "single release controller, readable 12-13 px mobile typography, mobile CTA, "
-        "consistent funding copy, checkout readiness."
+        "direct latest .exe resolver, stale-link protection, readable 12-13 px mobile typography, "
+        "mobile CTA, consistent funding copy and checkout readiness."
     )
     return 0
 
