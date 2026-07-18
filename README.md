@@ -1,4 +1,4 @@
-# ArSonKuPik VST — Official Product and Distribution Repository
+# ArSonKuPik VST — Official Public Product and Distribution Repository
 
 [![Website](https://img.shields.io/badge/Website-ArSonKuPik-9b68ff)](https://masarray.github.io/vst-enhancer/)
 [![Latest release](https://img.shields.io/github/v/release/masarray/vst-enhancer?label=Latest%20release)](https://github.com/masarray/vst-enhancer/releases/latest)
@@ -27,38 +27,36 @@
 - **[Support guide / Panduan dukungan](SUPPORT.md)**
 - **[Public changelog / Catatan perubahan](CHANGELOG.md)**
 
-> Download only from the official website or this repository's GitHub Releases. Avoid mirrors and re-uploaded packages. Verify `SHA256SUMS.txt` from the same release before running a file.
+> **Distribution safety / Keamanan distribusi:** Download only from the official website or this repository's GitHub Releases. Avoid mirrors and re-uploaded packages. Verify `SHA256SUMS.txt` from the same release before running a file.
 >
 > Unduh hanya melalui website resmi atau GitHub Releases repository ini. Hindari mirror dan paket yang diunggah ulang. Verifikasi `SHA256SUMS.txt` dari rilis yang sama sebelum menjalankan file.
 
 ## Automatic latest-installer routing
 
-The public website does not pin its download buttons permanently to one release version.
+The public website does not permanently pin its download buttons to one release version. At page load it:
 
-At page load it:
-
-1. Requests GitHub's latest published release metadata.
-2. Validates that release and every asset belong to `masarray/vst-enhancer` over HTTPS.
+1. Requests GitHub's latest published full release metadata.
+2. Validates that the release and its assets belong to `masarray/vst-enhancer` over HTTPS.
 3. Selects the official Windows installer `.exe` while rejecting portable executables, activation utilities, and key tools.
-4. Points every installer CTA directly to that latest `.exe` asset.
-5. Updates the displayed version, package links, checksum command, and structured download metadata.
+4. Points every installer CTA directly to the selected latest `.exe` asset.
+5. Updates the displayed version, VST3/Standalone/checksum links, checksum command, release links, and structured download metadata.
 
-The behaviour applies to the navigation button, hero CTA, download card, final CTA, mobile sticky CTA, and the free-download button on `/activation/`.
+This applies to the navigation button, hero CTA, installer card, final CTA, mobile sticky CTA, and the free-download button on `/activation/`.
 
 If GitHub's latest-release API cannot be resolved, the website falls back only to the repository's [`/releases/latest`](https://github.com/masarray/vst-enhancer/releases/latest) page. It does **not** fall back to an older version-specific installer.
 
-`site/release.json` remains reviewed local metadata for distribution state, evaluation terms, checkout separation, and static fallback information. The reviewed fallback manifest currently records **v0.5.12**, but it is not the authoritative selector for the newest installer asset shown by the live website.
+`site/release.json` remains reviewed local metadata for distribution state, evaluation terms, checkout separation, and static fallback information. The reviewed fallback manifest currently records **v0.5.12**, but it is not the authoritative selector for the newest installer shown by the live website.
 
 ## Public landing experience
 
-The bilingual landing keeps the path compact while serving four audience groups:
+The bilingual landing page supports several reading levels without splitting the product into separate marketing pages:
 
 - **First-time users:** preset-first guidance and plain-language VST3/Standalone explanations.
-- **Musicians and creators:** vocals, instruments, demos, podcasts, and creative starting points.
-- **Producers:** mastering, mix-bus, track processing, and honest A/B comparison.
-- **Audio engineers:** matched gain, translation checks, and final metering reminders.
+- **Musicians and creators:** vocal, instrument, demo, podcast, stereo, and creative starting points.
+- **Producers:** mastering, mix-bus, track processing, fast direction, and honest A/B comparison.
+- **Audio engineers:** matched-gain comparison, stereo and low-end translation, and final peak/loudness verification reminders.
 
-The current flow combines the three-minute listening test, six controls, preset roles, compatibility, package selection, installation, checksum verification, the free-year terms, privacy, essential FAQ, and legal links without turning the landing into a documentation wall.
+The compact journey combines a three-minute evaluation method, practical “listen for” guidance, compatibility, package selection, installation, checksum verification, privacy, eight essential bilingual FAQs, and a separated optional-activation path.
 
 ## Free 365-day evaluation / Evaluasi gratis 365 hari
 
@@ -68,7 +66,11 @@ The current flow combines the three-minute listening test, six controls, preset 
 | No account, payment card, subscription, automatic renewal, automatic charge, or audio watermark is required to begin. | Tidak memerlukan akun, kartu pembayaran, langganan, perpanjangan otomatis, tagihan otomatis, atau watermark audio untuk memulai. |
 | Personal and commercial audio-production use is permitted during evaluation, subject to the EULA. | Penggunaan produksi audio personal dan komersial diizinkan selama evaluasi, tunduk pada EULA. |
 | No purchase obligation exists when the evaluation ends. | Tidak ada kewajiban membeli ketika masa evaluasi berakhir. |
-| Existing projects and saved processing are designed to continue in project-safe read-only mode after evaluation. | Project lama dan pemrosesan tersimpan dirancang tetap berjalan dalam mode project-safe read-only setelah evaluasi. |
+| After evaluation, existing projects and saved processing are designed to continue in project-safe read-only mode. | Setelah evaluasi, project lama dan pemrosesan tersimpan dirancang tetap berjalan dalam mode project-safe read-only. |
+
+The free evaluation is intentionally separated from payment information. The main landing helps users understand the product, choose the right format, download, install, test familiar audio, compare at matched loudness, and decide by listening.
+
+Evaluasi gratis sengaja dipisahkan dari informasi pembayaran. Landing utama membantu pengguna memahami produk, memilih format yang tepat, mengunduh, menginstal, mencoba audio yang familiar, membandingkan pada loudness yang seimbang, dan memutuskan berdasarkan hasil yang didengar.
 
 ## Optional activation / Aktivasi opsional
 
@@ -77,6 +79,12 @@ There is no obligation to buy. Users who later decide that ArSonKuPik has earned
 The published standard plan for the v0.5 evaluation cohort is a **USD 25 one-time perpetual editing activation**, before applicable tax, with no subscription or automatic renewal. Paid checkout is not currently enabled.
 
 An activation purchase provides concrete licence rights; it is not a donation. Revenue may help sustain independent development, JUCE licensing when applicable, testing, documentation, user support, and trusted Windows code signing and distribution. This is not a promise that each payment is earmarked for a specific vendor, certificate, or expense.
+
+Tidak ada kewajiban membeli. Pengguna yang kemudian merasa ArSonKuPik layak menjadi bagian tetap dari workflow mereka dapat membaca [halaman Aktivasi Opsional](https://masarray.github.io/vst-enhancer/activation/).
+
+Rencana standar yang dipublikasikan untuk pengguna evaluasi v0.5 adalah **aktivasi editing perpetual satu kali sebesar USD 25**, sebelum pajak yang berlaku, tanpa langganan atau perpanjangan otomatis. Checkout berbayar saat ini belum diaktifkan.
+
+Pembelian aktivasi memberikan hak lisensi yang nyata; pembayaran tersebut bukan donasi. Pendapatan dapat membantu pengembangan independen, lisensi JUCE bila berlaku, testing, dokumentasi, dukungan pengguna, serta trusted Windows code signing dan distribusi. Ini bukan janji bahwa setiap pembayaran dialokasikan kepada vendor, sertifikat, atau biaya tertentu.
 
 ## Compatibility
 
@@ -89,7 +97,7 @@ An activation purchase provides concrete licence rights; it is not a donation. R
 
 ## Install and verify / Instalasi dan verifikasi
 
-1. Use the website's installer button or open the [latest official release](https://github.com/masarray/vst-enhancer/releases/latest).
+1. Use the website installer button or open the [latest official release](https://github.com/masarray/vst-enhancer/releases/latest).
 2. Download the Windows x64 setup `.exe` selected from the latest release.
 3. Download `SHA256SUMS.txt` from the same release.
 4. Verify the exact downloaded filename:
@@ -104,7 +112,9 @@ Get-FileHash .\<downloaded-installer-name>.exe -Algorithm SHA256
 
 ### Unsigned Windows package
 
-Current public packages may be distributed without a commercial Windows code-signing certificate. Windows SmartScreen may therefore show an unknown-publisher or reputation warning. A matching SHA-256 value verifies file identity against the value published in the same release; it does not replace antivirus scanning, endpoint protection, backups, or compatibility testing.
+Current public packages may be distributed without a commercial Windows code-signing certificate. Windows SmartScreen may therefore show an unknown-publisher or reputation warning. The landing keeps this disclosure in the installation and verification section so it appears at the correct decision point rather than interrupting the product introduction.
+
+A matching SHA-256 value verifies file identity against the value published in the same release. It does not replace antivirus scanning, endpoint protection, backups, or compatibility testing.
 
 ## Privacy summary / Ringkasan privasi
 
@@ -131,13 +141,19 @@ See [PRIVACY.txt](PRIVACY.txt).
 - [Steinberg VST3 SDK MIT Notice](Steinberg-VST3-SDK-MIT.txt)
 - [Plus Jakarta Sans OFL 1.1](Plus-Jakarta-Sans-OFL-1.1.txt)
 
+The website and README provide plain-language explanations. The controlling EULA, applicable purchase and checkout terms, receipt terms, third-party notices, and mandatory applicable law govern actual use and completed transactions.
+
 ## Repository scope
 
 This repository is public for product information, website source, release metadata, checksums, supported downloads, feedback, and public legal notices.
 
 The proprietary DSP implementation, preset recipes, application source, private signing material, Key Activator, and customer activation records are not included.
 
+The separately published MIT-licensed ArSonKuPik project remains governed by its original MIT terms. Its publication does not make this proprietary VST product open source.
+
 ## Local and self-hosted validation
+
+Validation does not require GitHub-hosted runner minutes.
 
 Run locally on Windows:
 
@@ -145,13 +161,13 @@ Run locally on Windows:
 .\tools\validate-public-release.ps1
 ```
 
-Optionally verify the current public URLs:
+Optionally validate the public release URLs from a connected machine:
 
 ```powershell
 .\tools\validate-public-release.ps1 --check-remote
 ```
 
-The wrapper runs repository/release, latest-download funnel, and audience/readability validators. The manual GitHub workflow uses a self-hosted runner and `workflow_dispatch` only; it does not execute public pull-request code automatically.
+The PowerShell wrapper runs repository/release, latest-download funnel, and public-audience readability validators. The manual GitHub workflow uses a self-hosted runner and `workflow_dispatch` only. It intentionally does not execute untrusted pull-request code on the local runner.
 
 ## Safe feedback
 
