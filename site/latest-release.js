@@ -7,6 +7,9 @@
   const LATEST_API = `https://api.github.com/repos/${REPOSITORY}/releases/latest`;
   const OFFICIAL_DOWNLOAD_PREFIX = `/masarray/vst-enhancer/releases/download/`;
 
+  let expectedInstallerUrl = RELEASES_LATEST;
+  const protectedLinks = new WeakSet();
+
   const directInstallerLinks = () => [
     ...document.querySelectorAll('[data-installer-cta]'),
     document.getElementById('free-download-link')
@@ -92,22 +95,29 @@
     .then(parseLatestRelease)
     .catch(() => null);
 
-  const setDirectLinks = (url) => {
+  const syncDirectLinks = () => {
     directInstallerLinks().forEach((link) => {
-      if (link.getAttribute('href') !== url) link.setAttribute('href', url);
+      if (link.getAttribute('href') !== expectedInstallerUrl) {
+        link.setAttribute('href', expectedInstallerUrl);
+      }
       link.removeAttribute('aria-disabled');
       link.removeAttribute('data-release-pending');
+
+      if (!protectedLinks.has(link)) {
+        const observer = new MutationObserver(() => {
+          if (link.getAttribute('href') !== expectedInstallerUrl) {
+            link.setAttribute('href', expectedInstallerUrl);
+          }
+        });
+        observer.observe(link, { attributes: true, attributeFilter: ['href'] });
+        protectedLinks.add(link);
+      }
     });
   };
 
-  const protectDirectLinks = (url) => {
-    directInstallerLinks().forEach((link) => {
-      if (link.getAttribute('href') !== url) link.setAttribute('href', url);
-      const observer = new MutationObserver(() => {
-        if (link.getAttribute('href') !== url) link.setAttribute('href', url);
-      });
-      observer.observe(link, { attributes: true, attributeFilter: ['href'] });
-    });
+  const setExpectedInstaller = (url) => {
+    expectedInstallerUrl = url;
+    syncDirectLinks();
   };
 
   const updateStructuredData = (release) => {
@@ -129,14 +139,12 @@
 
   const applyLatestRelease = (release) => {
     if (!release) {
-      setDirectLinks(RELEASES_LATEST);
-      protectDirectLinks(RELEASES_LATEST);
+      setExpectedInstaller(RELEASES_LATEST);
       document.documentElement.setAttribute('data-release-source', 'github-latest-page-fallback');
       return;
     }
 
-    setDirectLinks(release.installerUrl);
-    protectDirectLinks(release.installerUrl);
+    setExpectedInstaller(release.installerUrl);
     document.getElementById('release-version')?.replaceChildren(release.version);
 
     const packageTargets = [
@@ -160,11 +168,7 @@
     document.dispatchEvent(new CustomEvent('askp:latest-release-resolved', { detail: release }));
   };
 
-  const resolveForPage = async () => {
-    // Never expose a stale version-specific installer while the latest release is resolving.
-    setDirectLinks(RELEASES_LATEST);
-    applyLatestRelease(await latestReleasePromise);
-  };
-
-  resolveForPage();
+  // Lock every CTA to the moving latest-release target before legacy metadata can resolve.
+  syncDirectLinks();
+  latestReleasePromise.then(applyLatestRelease);
 })();
