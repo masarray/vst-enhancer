@@ -47,7 +47,7 @@ The behaviour applies to the navigation button, hero CTA, download card, final C
 
 If GitHub's latest-release API cannot be resolved, the website falls back only to the repository's [`/releases/latest`](https://github.com/masarray/vst-enhancer/releases/latest) page. It does **not** fall back to an older version-specific installer.
 
-`site/release.json` remains reviewed local metadata for distribution state, evaluation terms, checkout separation, and static fallback information. It is not the authoritative selector for the newest installer asset.
+`site/release.json` remains reviewed local metadata for distribution state, evaluation terms, checkout separation, and static fallback information. The reviewed fallback manifest currently records **v0.5.12**, but it is not the authoritative selector for the newest installer asset shown by the live website.
 
 ## Public landing experience
 
