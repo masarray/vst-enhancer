@@ -256,3 +256,11 @@
     }
   })();
 })();
+
+(() => {
+  const latestReleaseScript = document.createElement('script');
+  latestReleaseScript.src = '../latest-release.js';
+  latestReleaseScript.async = true;
+  latestReleaseScript.setAttribute('data-release-resolver', 'github-latest');
+  document.head.append(latestReleaseScript);
+})();
