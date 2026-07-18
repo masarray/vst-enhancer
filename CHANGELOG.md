@@ -2,6 +2,22 @@
 
 This changelog covers the public product website, distribution metadata, legal notices, supported packages, and public support surface. Proprietary DSP implementation details are not published in this repository.
 
+## Unreleased — latest-release direct downloads
+
+### Download routing
+
+- Changed every public installer CTA to resolve the latest published GitHub Release dynamically.
+- Selects the official Windows installer `.exe` from the latest release assets instead of relying on a version-pinned `release.json` URL.
+- Updates the visible version, installer checksum command, package links, release links, and structured download metadata from the resolved release.
+- Applies the same latest-installer behaviour to the main landing, mobile sticky CTA, final CTA, download card, navigation CTA, and optional-activation page.
+- Rejects portable executables, activation utilities, key tools, non-HTTPS URLs, and assets outside this repository's official release-download path.
+- Locks installer href values so a late response from older local metadata cannot overwrite the latest installer.
+- Falls back only to the repository's `/releases/latest` page when GitHub's latest-release API cannot be resolved; it does not fall back to an older version-specific installer.
+
+### Validation
+
+- Added regression checks for GitHub's latest-release endpoint, official `browser_download_url` use, direct `.exe` selection, stale-link protection, safe fallback behaviour, and activation-page coverage.
+
 ## Unreleased — compact trial-first public landing
 
 ### Conversion and information architecture
