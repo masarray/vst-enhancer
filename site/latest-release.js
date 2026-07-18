@@ -81,11 +81,8 @@
   };
 
   const latestReleasePromise = fetch(LATEST_API, {
-    cache: 'no-store',
-    headers: {
-      Accept: 'application/vnd.github+json',
-      'X-GitHub-Api-Version': '2022-11-28'
-    },
+    cache: 'no-cache',
+    headers: { Accept: 'application/vnd.github+json' },
     referrerPolicy: 'no-referrer'
   })
     .then((response) => {
