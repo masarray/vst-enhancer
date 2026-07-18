@@ -100,6 +100,16 @@
     });
   };
 
+  const protectDirectLinks = (url) => {
+    directInstallerLinks().forEach((link) => {
+      if (link.getAttribute('href') !== url) link.setAttribute('href', url);
+      const observer = new MutationObserver(() => {
+        if (link.getAttribute('href') !== url) link.setAttribute('href', url);
+      });
+      observer.observe(link, { attributes: true, attributeFilter: ['href'] });
+    });
+  };
+
   const updateStructuredData = (release) => {
     const script = document.getElementById('software-structured-data');
     if (!script) return;
@@ -120,10 +130,13 @@
   const applyLatestRelease = (release) => {
     if (!release) {
       setDirectLinks(RELEASES_LATEST);
+      protectDirectLinks(RELEASES_LATEST);
+      document.documentElement.setAttribute('data-release-source', 'github-latest-page-fallback');
       return;
     }
 
     setDirectLinks(release.installerUrl);
+    protectDirectLinks(release.installerUrl);
     document.getElementById('release-version')?.replaceChildren(release.version);
 
     const packageTargets = [
@@ -147,30 +160,11 @@
     document.dispatchEvent(new CustomEvent('askp:latest-release-resolved', { detail: release }));
   };
 
-  const protectActivationLink = (release) => {
-    const link = document.getElementById('free-download-link');
-    if (!link) return;
-    const expected = release?.installerUrl || RELEASES_LATEST;
-    link.setAttribute('href', expected);
-
-    const observer = new MutationObserver(() => {
-      if (link.getAttribute('href') !== expected) link.setAttribute('href', expected);
-    });
-    observer.observe(link, { attributes: true, attributeFilter: ['href'] });
-  };
-
   const resolveForPage = async () => {
-    // Never leave a stale version-specific installer while the latest release is resolving.
+    // Never expose a stale version-specific installer while the latest release is resolving.
     setDirectLinks(RELEASES_LATEST);
-    const release = await latestReleasePromise;
-    applyLatestRelease(release);
-    protectActivationLink(release);
+    applyLatestRelease(await latestReleasePromise);
   };
 
-  if (document.querySelector('[data-installer-cta]')) {
-    document.addEventListener('askp:release-ready', resolveForPage, { once: true });
-    window.setTimeout(resolveForPage, 3500);
-  } else {
-    resolveForPage();
-  }
+  resolveForPage();
 })();
