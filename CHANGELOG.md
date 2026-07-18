@@ -1,5 +1,26 @@
 # Public Distribution Changelog
 
+## v0.5.13 â€” 18 July 2026
+
+### Performance and UX
+
+- Reduced editor repaint and static-background rendering overhead.
+- Reduced creative-parameter retune work during automation and small buffers.
+- Skipped inactive colour lanes and fused wrapper buffer passes.
+- Added high-accuracy fast nonlinear colour processing with SSE2 stereo acceleration and scalar fallback.
+
+### Smart-liquid visual
+
+- Removed the centre radial overlay that obscured the liquid.
+- Kept the upper glass reflection while cleaning the centre of the sphere.
+- Blended and removed small bubbles before they reach the clean upper violet liquid area.
+
+### Compatibility
+
+- Windows x64 VST3 and Standalone.
+- Reviewed JUCE 8.0.14 dependency baseline.
+- Same 365-day evaluation and project-safe read-only behaviour.
+
 This changelog covers the public product website, distribution metadata, legal notices, supported packages, and public support surface. Proprietary DSP implementation details are not published in this repository.
 
 ## Unreleased — latest-release direct downloads
