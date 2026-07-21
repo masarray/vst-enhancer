@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate ArSonKuPik release integrity, localized pages and V4 runtime."""
+"""Validate ArSonKuPik release integrity, localized pages, V4 runtime and V5 typography."""
 from __future__ import annotations
 
 import argparse, json, re, sys, urllib.error, urllib.request
@@ -97,24 +97,28 @@ def validate_sitemap(root: Path) -> None:
 
 
 def validate_runtime(root: Path) -> None:
-    app=read(root/"site/app.js"); trial=read(root/"site/trial-page.js"); experience=read(root/"site/experience-v4.js"); styles=read(root/"site/experience-v4.css")
+    app=read(root/"site/app.js"); trial=read(root/"site/trial-page.js"); experience=read(root/"site/experience-v4.js"); styles=read(root/"site/experience-v4.css"); typography=read(root/"site/typography-v5.css")
     for token in ("ID_URL","window.location.assign","ensureAlternate('en'","ensureAlternate('id'","latest-release.js","IntersectionObserver","stopImmediatePropagation","askp:release-ready"):
         require(token in trial, f"Stable locale runtime missing {token}")
     require("experience-v4.js" in trial and "v4-audio-motion" in trial, "V4 experience is not loaded")
+    require("typography-v5.css" in trial and "v5-readable" in trial, "V5 typography is not loaded")
     for token in ("setupProductPreview","setupPresetExplorer","preset-explorer-ready","preset-browser","setupScrollReveals","setupNavigationState","setupPointerDepth","prefers-reduced-motion"):
         require(token in experience, f"V4 runtime missing {token}")
     for selector in (".product-preview-dialog",".preset-universe.preset-explorer-ready",".preset-browser",".preset-toolbar",".motion-ready [data-reveal]",".landing-nav.is-scrolled"):
         require(selector in styles, f"V4 styles missing {selector}")
+    for token in ("--landing-copy: 16px","--type-card: 14.5px",".faq-grid p","--type-card: 15px"):
+        require(token in typography, f"V5 typography contract missing {token}")
     require("browser.append(toolbar, groupsContainer)" in experience, "Preset browser DOM contract missing")
     require("minmax(0, 1.32fr)" in styles, "Preset browser desktop grid contract missing")
     require("@media (prefers-reduced-motion: reduce)" in styles, "Reduced-motion safety missing")
+    require(typography.count("{")==typography.count("}"), "Typography stylesheet has unbalanced braces")
     require("premium-polish.css" not in trial and "landing-v2.css" not in trial, "Core visual CSS must remain static")
     require("fetch('./release.json'" in app, "Release controller must retain its reviewed local manifest request")
 
 
 def remote_check(urls: list[str]) -> None:
     for url in urls:
-        req=urllib.request.Request(url,method="HEAD",headers={"User-Agent":"ArSonKuPik-validator/4.0"})
+        req=urllib.request.Request(url,method="HEAD",headers={"User-Agent":"ArSonKuPik-validator/5.0"})
         try:
             with urllib.request.urlopen(req,timeout=20) as response: require(200<=response.status<400, f"Remote status {response.status}: {url}")
         except (urllib.error.HTTPError,urllib.error.URLError) as exc: raise AssertionError(f"Remote URL failed: {url} ({exc})") from exc
@@ -134,6 +138,6 @@ def main() -> int:
         if args.check_remote: remote_check([str(release[k]) for k in ("releaseUrl","installerUrl","vst3Url","standaloneUrl","checksumsUrl")])
     except (AssertionError,json.JSONDecodeError,ElementTree.ParseError,StopIteration,ValueError) as exc:
         print(f"VALIDATION FAILED: {exc}",file=sys.stderr); return 1
-    print(f"Validation passed: product-first EN/ID pages, stable V4 preset layout, audio motion and release {release['version']}."); return 0
+    print(f"Validation passed: product-first EN/ID pages, V4 audio motion, V5 readable typography and release {release['version']}."); return 0
 
 if __name__=="__main__": raise SystemExit(main())
