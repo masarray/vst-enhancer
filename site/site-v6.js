@@ -99,8 +99,10 @@
       if (state.version) element.textContent = state.version;
     });
 
-    const status = document.getElementById('release-status-text');
-    if (status) status.textContent = state.type === 'enabled' ? copy.enabled : state.type === 'paused' ? copy.paused : copy.error;
+    const statusText = state.type === 'enabled' ? copy.enabled : state.type === 'paused' ? copy.paused : copy.error;
+    document.querySelectorAll('[data-release-status]').forEach((element) => {
+      element.textContent = statusText;
+    });
 
     const banner = document.getElementById('distribution-banner');
     if (banner) banner.dataset.state = state.type;
