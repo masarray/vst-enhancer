@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate ArSonKuPik release integrity and localized public pages."""
+"""Validate ArSonKuPik release integrity, localized pages and V3 runtime."""
 from __future__ import annotations
 
 import argparse, json, re, sys, urllib.error, urllib.request
@@ -97,15 +97,21 @@ def validate_sitemap(root: Path) -> None:
 
 
 def validate_runtime(root: Path) -> None:
-    js=read(root/"site/trial-page.js")
-    for token in ("ID_URL","window.location.assign","ensureAlternate('en'","ensureAlternate('id'","latest-release.js","IntersectionObserver","document.title"):
-        require(token in js, f"Localized runtime missing {token}")
-    require("premium-polish.css" not in js and "landing-v2.css" not in js, "Visual CSS must remain static")
+    app=read(root/"site/app.js"); trial=read(root/"site/trial-page.js"); experience=read(root/"site/experience-v3.js"); styles=read(root/"site/experience-v3.css")
+    for token in ("ID_URL","window.location.assign","ensureAlternate('en'","ensureAlternate('id'","latest-release.js","IntersectionObserver","stopImmediatePropagation","askp:release-ready"):
+        require(token in trial, f"Stable locale runtime missing {token}")
+    require("experience-v3.js" in trial and "v3-professional-proof" in trial, "V3 experience is not loaded")
+    for token in ("setupProductPreview","setupPresetExplorer","HTMLDialogElement","data-experience-layer"):
+        require(token in experience, f"V3 proof runtime missing {token}")
+    for selector in (".product-preview-dialog",".preset-toolbar",".preset-filter",".preset-chip"):
+        require(selector in styles, f"V3 proof styles missing {selector}")
+    require("premium-polish.css" not in trial and "landing-v2.css" not in trial, "Core visual CSS must remain static")
+    require("fetch('./release.json'" in app, "Release controller must retain its reviewed local manifest request")
 
 
 def remote_check(urls: list[str]) -> None:
     for url in urls:
-        req=urllib.request.Request(url,method="HEAD",headers={"User-Agent":"ArSonKuPik-validator/3.0"})
+        req=urllib.request.Request(url,method="HEAD",headers={"User-Agent":"ArSonKuPik-validator/4.0"})
         try:
             with urllib.request.urlopen(req,timeout=20) as response: require(200<=response.status<400, f"Remote status {response.status}: {url}")
         except (urllib.error.HTTPError,urllib.error.URLError) as exc: raise AssertionError(f"Remote URL failed: {url} ({exc})") from exc
@@ -121,6 +127,6 @@ def main() -> int:
         if args.check_remote: remote_check([str(release[k]) for k in ("releaseUrl","installerUrl","vst3Url","standaloneUrl","checksumsUrl")])
     except (AssertionError,json.JSONDecodeError,ElementTree.ParseError,StopIteration,ValueError) as exc:
         print(f"VALIDATION FAILED: {exc}",file=sys.stderr); return 1
-    print(f"Validation passed: product-first EN/ID pages, sitemap hreflang, localized JSON-LD and release {release['version']}."); return 0
+    print(f"Validation passed: product-first EN/ID pages, stable locale runtime, V3 proof experience and release {release['version']}."); return 0
 
 if __name__=="__main__": raise SystemExit(main())
