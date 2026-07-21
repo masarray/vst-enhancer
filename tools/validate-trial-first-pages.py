@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate product-first EN/ID pages, release routing and optional activation readiness."""
+"""Validate product-first EN/ID pages, release routing and the V4 audio UX layer."""
 
 from __future__ import annotations
 
@@ -59,10 +59,10 @@ def main() -> int:
     localized = read(root / "site" / "id" / "index.html")
     activation = read(root / "site" / "activation" / "index.html")
     landing_css = read(root / "site" / "landing-v2.css")
-    experience_css = read(root / "site" / "experience-v3.css")
+    experience_css = read(root / "site" / "experience-v4.css")
     app_js = read(root / "site" / "app.js")
     trial_js = read(root / "site" / "trial-page.js")
-    experience_js = read(root / "site" / "experience-v3.js")
+    experience_js = read(root / "site" / "experience-v4.js")
     latest_release_js = read(root / "site" / "latest-release.js")
     activation_js = read(root / "site" / "activation" / "activation.js")
     release = json.loads(read(root / "site" / "release.json"))
@@ -106,13 +106,33 @@ def main() -> int:
     require("latest-release.js" in trial_js, "Landing must retain latest-release fallback resolution")
     require("window.location.assign" in trial_js and "stopImmediatePropagation" in trial_js, "Language controls must use stable locale URLs")
     require("askp:release-ready" in trial_js, "Canonical locale must be restored after release rendering")
-    require("experience-v3.js" in trial_js, "V3 product experience is not loaded")
+    require("experience-v4.js" in trial_js and "v4-audio-motion" in trial_js, "V4 product experience is not loaded")
     require("IntersectionObserver" in trial_js, "Mobile CTA visibility must remain viewport-aware")
 
-    for token in ("setupProductPreview", "setupPresetExplorer", "HTMLDialogElement", "data-preset-filter"):
-        require(token in experience_js, f"V3 experience is missing {token}")
-    for selector in (".product-preview-dialog", ".preset-toolbar", ".preset-chip"):
-        require(selector in experience_css, f"V3 experience CSS is missing {selector}")
+    for token in (
+        "setupProductPreview",
+        "setupPresetExplorer",
+        "preset-explorer-ready",
+        "preset-browser",
+        "setupScrollReveals",
+        "setupNavigationState",
+        "setupPointerDepth",
+        "prefers-reduced-motion",
+    ):
+        require(token in experience_js, f"V4 experience is missing {token}")
+    for selector in (
+        ".product-preview-dialog",
+        ".preset-universe.preset-explorer-ready",
+        ".preset-browser",
+        ".preset-toolbar",
+        ".preset-chip",
+        ".motion-ready [data-reveal]",
+        ".landing-nav.is-scrolled",
+    ):
+        require(selector in experience_css, f"V4 experience CSS is missing {selector}")
+
+    require("browser.append(toolbar, groupsContainer)" in experience_js, "Preset toolbar and groups must remain in one browser column")
+    require("grid-template-columns: minmax(280px, .68fr) minmax(0, 1.32fr);" in experience_css, "Desktop preset layout contract is missing")
 
     require("fetch(LATEST_API" in latest_release_js, "Latest resolver must request GitHub release metadata")
     require("browser_download_url" in latest_release_js, "Latest resolver must use official asset URLs")
@@ -125,7 +145,8 @@ def main() -> int:
     require("purchaseUrl" not in release, "Disabled checkout must not publish a purchase URL")
 
     require("--landing-copy: 15px" in landing_css, "Landing body typography must remain readable")
-    require("@media (max-width: 740px)" in experience_css, "V3 mobile enhancement is missing")
+    require("@media (max-width: 740px)" in experience_css, "V4 mobile enhancement is missing")
+    require("@media (prefers-reduced-motion: reduce)" in experience_css, "Reduced-motion support is missing")
     require(landing_css.count("{") == landing_css.count("}"), "Landing stylesheet has unbalanced braces")
     require(experience_css.count("{") == experience_css.count("}"), "Experience stylesheet has unbalanced braces")
 
@@ -134,8 +155,8 @@ def main() -> int:
         require(token not in public_text, f"Prohibited token: {token}")
 
     print(
-        "Product-first validation passed: stable EN/ID routes, Mas Ari Signature story, "
-        "filterable preset explorer, accessible interface preview, release routing and optional activation separation."
+        "Product-first V4 validation passed: stable EN/ID routes, fixed preset browser grid, "
+        "restrained audio motion, accessible interface preview, release routing and optional activation separation."
     )
     return 0
 
