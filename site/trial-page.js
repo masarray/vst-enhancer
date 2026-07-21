@@ -6,6 +6,12 @@
   const siteBase = document.documentElement.dataset.siteBase || (location.pathname.includes('/id/') ? '..' : '.');
   const pageLanguage = location.pathname.includes('/id/') ? 'id' : 'en';
 
+  const typographyStylesheet = document.createElement('link');
+  typographyStylesheet.rel = 'stylesheet';
+  typographyStylesheet.href = `${siteBase}/typography-v5.css`;
+  typographyStylesheet.setAttribute('data-typography-layer', 'v5-readable');
+  document.head.append(typographyStylesheet);
+
   const latestReleaseScript = document.createElement('script');
   latestReleaseScript.src = `${siteBase}/latest-release.js`;
   latestReleaseScript.async = true;
@@ -19,6 +25,7 @@
   document.head.append(experienceScript);
 
   document.documentElement.setAttribute('data-visual-polish', 'v4-audio-motion');
+  document.documentElement.setAttribute('data-typography-version', 'v5-readable');
 
   const translateToPageLanguage = (root = document) => {
     document.documentElement.lang = pageLanguage;
