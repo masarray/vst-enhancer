@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate product-first EN/ID pages, release routing and the V4 audio UX layer."""
+"""Validate product-first EN/ID pages, release routing, V4 audio UX and V5 readable typography."""
 
 from __future__ import annotations
 
@@ -60,6 +60,7 @@ def main() -> int:
     activation = read(root / "site" / "activation" / "index.html")
     landing_css = read(root / "site" / "landing-v2.css")
     experience_css = read(root / "site" / "experience-v4.css")
+    typography_css = read(root / "site" / "typography-v5.css")
     app_js = read(root / "site" / "app.js")
     trial_js = read(root / "site" / "trial-page.js")
     experience_js = read(root / "site" / "experience-v4.js")
@@ -107,6 +108,7 @@ def main() -> int:
     require("window.location.assign" in trial_js and "stopImmediatePropagation" in trial_js, "Language controls must use stable locale URLs")
     require("askp:release-ready" in trial_js, "Canonical locale must be restored after release rendering")
     require("experience-v4.js" in trial_js and "v4-audio-motion" in trial_js, "V4 product experience is not loaded")
+    require("typography-v5.css" in trial_js and "v5-readable" in trial_js, "V5 readable typography is not loaded")
     require("IntersectionObserver" in trial_js, "Mobile CTA visibility must remain viewport-aware")
 
     for token in (
@@ -134,6 +136,18 @@ def main() -> int:
     require("browser.append(toolbar, groupsContainer)" in experience_js, "Preset toolbar and groups must remain in one browser column")
     require("grid-template-columns: minmax(280px, .68fr) minmax(0, 1.32fr);" in experience_css, "Desktop preset layout contract is missing")
 
+    for token in (
+        "--landing-copy: 16px",
+        "--type-card: 14.5px",
+        "--type-support: 13.5px",
+        ".section-lead",
+        ".faq-grid p",
+        ".freedom-facts span",
+        ".support-inner",
+        "--type-card: 15px",
+    ):
+        require(token in typography_css, f"Readable typography contract is missing {token}")
+
     require("fetch(LATEST_API" in latest_release_js, "Latest resolver must request GitHub release metadata")
     require("browser_download_url" in latest_release_js, "Latest resolver must use official asset URLs")
     require("scoreInstaller" in latest_release_js, "Latest resolver must rank installer assets")
@@ -144,19 +158,21 @@ def main() -> int:
     require(release.get("purchaseCheckoutAvailable") is False, "Checkout must remain disabled until configured")
     require("purchaseUrl" not in release, "Disabled checkout must not publish a purchase URL")
 
-    require("--landing-copy: 15px" in landing_css, "Landing body typography must remain readable")
+    require("font-weight: 610" in landing_css, "Refined headline weight must remain")
     require("@media (max-width: 740px)" in experience_css, "V4 mobile enhancement is missing")
+    require("@media (max-width: 740px)" in typography_css, "V5 mobile typography is missing")
     require("@media (prefers-reduced-motion: reduce)" in experience_css, "Reduced-motion support is missing")
     require(landing_css.count("{") == landing_css.count("}"), "Landing stylesheet has unbalanced braces")
     require(experience_css.count("{") == experience_css.count("}"), "Experience stylesheet has unbalanced braces")
+    require(typography_css.count("{") == typography_css.count("}"), "Typography stylesheet has unbalanced braces")
 
-    public_text = "\n".join((landing, localized, activation, landing_css, experience_css, app_js, trial_js, experience_js, latest_release_js, activation_js))
+    public_text = "\n".join((landing, localized, activation, landing_css, experience_css, typography_css, app_js, trial_js, experience_js, latest_release_js, activation_js))
     for token in ("BEGIN PRIVATE KEY", "BEGIN RSA PRIVATE KEY", "ArSonKuPikKeyActivator"):
         require(token not in public_text, f"Prohibited token: {token}")
 
     print(
-        "Product-first V4 validation passed: stable EN/ID routes, fixed preset browser grid, "
-        "restrained audio motion, accessible interface preview, release routing and optional activation separation."
+        "Product-first V5 validation passed: stable EN/ID routes, fixed preset browser, restrained audio motion, "
+        "16 px body typography, readable paragraphs, release routing and optional activation separation."
     )
     return 0
 
