@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the V4 professional audio-product experience and motion layer."""
+"""Validate the V5 readable typography and V4 professional audio-product experience."""
 
 from __future__ import annotations
 
@@ -25,11 +25,14 @@ def main() -> int:
     trial_js = read(root / "site" / "trial-page.js")
     experience_js = read(root / "site" / "experience-v4.js")
     experience_css = read(root / "site" / "experience-v4.css")
+    typography_css = read(root / "site" / "typography-v5.css")
     landing_css = read(root / "site" / "landing-v2.css")
 
     require('href="landing-v2.css"' in landing, "Core V2 layout must remain statically loaded")
     require("experience-v4.js" in trial_js, "Landing must load the V4 audio experience")
     require("v4-audio-motion" in trial_js, "V4 experience version marker is missing")
+    require("typography-v5.css" in trial_js, "Landing must load the V5 readable typography layer")
+    require("v5-readable" in trial_js, "V5 typography marker is missing")
     require("premium-polish.css" not in trial_js, "Legacy visual CSS must not return")
 
     for phrase in (
@@ -79,11 +82,24 @@ def main() -> int:
     require("browser.append(toolbar, groupsContainer)" in experience_js, "Toolbar and preset groups must share one browser column")
     require("groupsContainer.before(browser)" in experience_js, "Preset browser must be inserted as the second grid child")
 
-    require("--landing-copy: 15px" in landing_css, "Readable 15 px landing typography must remain")
+    for token in (
+        "--landing-copy: 16px",
+        "--type-card: 14.5px",
+        "--type-lead: clamp(16.5px",
+        'font-family: "Segoe UI Variable Text"',
+        "text-wrap: pretty",
+        ".faq-grid p",
+        "font-size: 15px",
+        "--type-card: 15px",
+    ):
+        require(token in typography_css, f"V5 readable typography is missing {token}")
+
     require("font-weight: 610" in landing_css, "Refined headline weight must remain")
     require("@media (max-width: 740px)" in experience_css, "V4 mobile treatment is missing")
+    require("@media (max-width: 740px)" in typography_css, "V5 mobile typography treatment is missing")
     require("@media (prefers-reduced-motion: reduce)" in experience_css, "Reduced-motion safety is missing")
     require(experience_css.count("{") == experience_css.count("}"), "V4 stylesheet has unbalanced braces")
+    require(typography_css.count("{") == typography_css.count("}"), "V5 typography stylesheet has unbalanced braces")
     require(experience_js.count("{") == experience_js.count("}"), "V4 script has unbalanced braces")
 
     require("window.location.assign" in trial_js, "Language controls must navigate to stable locale URLs")
@@ -91,12 +107,13 @@ def main() -> int:
     require("askp:release-ready" in trial_js, "Canonical page language must be restored after release rendering")
     require("IntersectionObserver" in trial_js, "Mobile download CTA must remain viewport-aware")
 
+    public_text = "\n".join((landing, localized, trial_js, experience_js, experience_css, typography_css))
     for token in ("BEGIN PRIVATE KEY", "BEGIN RSA PRIVATE KEY", "ArSonKuPikKeyActivator"):
-        require(token not in "\n".join((landing, localized, trial_js, experience_js, experience_css)), f"Prohibited token: {token}")
+        require(token not in public_text, f"Prohibited token: {token}")
 
     print(
-        "V4 premium validation passed: stable preset browser layout, active navigation, restrained reveal motion, "
-        "pointer depth, accessible product preview and reduced-motion support."
+        "V5 premium validation passed: readable 16 px body typography, 14.5-15 px content paragraphs, "
+        "stable preset browser, restrained audio motion, accessible preview and reduced-motion support."
     )
     return 0
 
