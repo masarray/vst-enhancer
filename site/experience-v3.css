@@ -1,0 +1,30 @@
+@import url("./experience-v4.css");
+
+/* Compatibility for browsers that cached the former V3 script.
+   The old script inserted toolbar and groups as separate grid children. */
+.preset-universe > .preset-intro {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+}
+
+.preset-universe > .preset-toolbar {
+  grid-column: 2;
+  grid-row: 1;
+  align-self: start;
+}
+
+.preset-universe > .preset-groups {
+  grid-column: 2;
+  grid-row: 2;
+  min-width: 0;
+  width: 100%;
+}
+
+@media (max-width: 1080px) {
+  .preset-universe > .preset-intro,
+  .preset-universe > .preset-toolbar,
+  .preset-universe > .preset-groups {
+    grid-column: 1;
+    grid-row: auto;
+  }
+}
