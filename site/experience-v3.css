@@ -1,0 +1,177 @@
+/* Progressive V3 product proof enhancements. Core layout remains in landing-v2.css. */
+.product-stage img[role="button"] {
+  cursor: zoom-in;
+}
+
+.product-stage img[role="button"]:focus-visible {
+  outline: 2px solid rgba(211, 174, 255, .92);
+  outline-offset: 5px;
+}
+
+.product-preview-dialog {
+  width: min(1180px, calc(100vw - 28px));
+  max-width: none;
+  padding: 0;
+  border: 1px solid rgba(221, 199, 255, .24);
+  border-radius: 18px;
+  background: #09070d;
+  box-shadow: 0 36px 110px rgba(0, 0, 0, .78);
+  color: #f6f1fa;
+}
+
+.product-preview-dialog::backdrop {
+  background: rgba(3, 2, 5, .84);
+  backdrop-filter: blur(10px);
+}
+
+.product-preview-shell {
+  position: relative;
+  display: grid;
+  gap: 0;
+}
+
+.product-preview-shell img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 17px 17px 0 0;
+}
+
+.product-preview-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 13px 15px;
+  color: #aaa2b0;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.product-preview-close {
+  flex: 0 0 auto;
+  min-height: 34px;
+  padding: 6px 12px;
+  border: 1px solid rgba(255, 255, 255, .14);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .035);
+  color: #f3edf7;
+  font: inherit;
+  cursor: pointer;
+}
+
+.product-preview-close:hover,
+.product-preview-close:focus-visible {
+  border-color: rgba(205, 168, 255, .56);
+  background: rgba(155, 104, 255, .1);
+}
+
+.preset-toolbar {
+  display: flex;
+  max-width: 1160px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin: 22px auto 14px;
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 255, 255, .08);
+  border-radius: 13px;
+  background: rgba(255, 255, 255, .018);
+}
+
+.preset-filter-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.preset-filter {
+  min-height: 32px;
+  padding: 6px 11px;
+  border: 1px solid rgba(255, 255, 255, .09);
+  border-radius: 999px;
+  background: transparent;
+  color: #aaa2b0;
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.preset-filter:hover,
+.preset-filter:focus-visible {
+  border-color: rgba(199, 164, 255, .34);
+  color: #f1e9f7;
+}
+
+.preset-filter[aria-pressed="true"] {
+  border-color: rgba(199, 164, 255, .48);
+  background: rgba(155, 104, 255, .13);
+  color: #eadbff;
+}
+
+.preset-result-count {
+  flex: 0 0 auto;
+  color: #918899;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.preset-group[hidden] {
+  display: none !important;
+}
+
+.preset-group .preset-chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin: 0;
+}
+
+.preset-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 29px;
+  padding: 5px 9px;
+  border: 1px solid rgba(255, 255, 255, .075);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, .018);
+  color: #b9b0c0;
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.preset-group.flagship .preset-chip {
+  border-color: rgba(199, 164, 255, .24);
+  color: #e4d5fa;
+}
+
+@media (max-width: 740px) {
+  .product-preview-dialog {
+    width: calc(100vw - 16px);
+    border-radius: 13px;
+  }
+
+  .product-preview-shell img {
+    border-radius: 12px 12px 0 0;
+  }
+
+  .product-preview-footer {
+    align-items: flex-start;
+    font-size: 12px;
+  }
+
+  .preset-toolbar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .preset-result-count {
+    white-space: normal;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .product-preview-dialog {
+    scroll-behavior: auto;
+  }
+}
