@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the P1 premium visual hierarchy for the public landing."""
+"""Validate the V2 product-first premium hierarchy for the public landing."""
 
 from __future__ import annotations
 
@@ -22,64 +22,58 @@ def main() -> int:
     root = Path(__file__).resolve().parents[1]
     landing = read(root / "site" / "index.html")
     trial_js = read(root / "site" / "trial-page.js")
-    premium_css = read(root / "site" / "premium-polish.css")
-    trial_css = read(root / "site" / "trial.css")
+    landing_css = read(root / "site" / "landing-v2.css")
 
-    require("premium-polish.css" in trial_js, "Landing must load the P1 premium visual layer")
-    require("data-visual-polish" in trial_js, "Landing must expose the active visual-polish version")
+    require('href="landing-v2.css"' in landing, "Landing must load the V2 visual layer statically")
+    require("premium-polish.css" not in trial_js, "Visual CSS must not be injected after first paint")
+    require("data-visual-polish', 'v2-product-first'" in trial_js, "Landing must expose the V2 polish version")
 
-    require('id="distribution-banner"' in landing, "Static release status markup must remain available")
-    require("statusBar.hidden = true" in trial_js, "Top release status must be hidden from the product journey")
-    require(".status-bar" in premium_css and "display: none !important" in premium_css, "Status bar CSS guard is missing")
-    require("download-release-status" in trial_js, "Release status must be represented in the download flow")
-    require("Latest published release" in trial_js, "Download release summary is missing")
+    for phrase in (
+        "Musical VST3 audio enhancer for Windows",
+        "Fuller, clearer and more dimensional sound",
+        "Mas Ari Signature brings the music closer.",
+        "More alive",
+        "Detail you can feel",
+        "Live-like dimension",
+        "Shape the result, not the complexity.",
+        "40 curated starting points",
+        "Premium sound. Focused workflow. Zero pressure.",
+    ):
+        require(phrase in landing, f"Missing product-first story: {phrase}")
 
     for selector in (
-        ".hero-promises",
-        ".hero-trust",
-        ".product-stage .stage-label",
-        ".product-stage figcaption",
+        ".landing-hero",
+        ".product-stage",
+        ".signature-grid",
+        ".signature-panel",
+        ".signature-pillars",
+        ".outcome-grid",
+        ".preset-universe",
+        ".preset-groups",
+        ".freedom-grid",
+        ".mobile-download-bar",
     ):
-        require(selector in premium_css, f"Hero simplification rule is missing: {selector}")
-        require(selector in trial_js, f"Hero accessibility simplification is missing: {selector}")
+        require(selector in landing_css, f"Missing premium visual rule: {selector}")
 
-    require("trustFacts" in trial_js, "Trust strip must be rewritten around compatibility and trust")
-    for phrase in (
-        "Windows 10/11 x64",
-        "VST3 + Standalone",
-        "Local processing",
-        "Official releases",
-        "Direct installer with SHA-256 verification.",
-    ):
-        require(phrase in trial_js, f"Compatibility trust fact is missing: {phrase}")
+    require("--landing-copy: 15px" in landing_css, "Desktop body typography must remain 15 px")
+    require("font-size: clamp(2.45rem" in landing_css, "Hero typography scale is missing")
+    require("font-weight: 610" in landing_css, "Headline weight must remain refined rather than heavy")
+    require("grid-template-columns: repeat(4" in landing_css, "Four sonic outcomes must retain their desktop hierarchy")
+    require("@media (max-width: 740px)" in landing_css, "Mobile hierarchy breakpoint is missing")
+    require("font-size: 15px" in landing_css, "Mobile body typography must remain readable")
+    require(landing_css.count("{") == landing_css.count("}"), "Landing stylesheet has unbalanced braces")
 
-    require(".nav-download" in premium_css, "Download navigation style is missing")
-    require("rgba(190, 145, 255" in premium_css, "Primary download CTA must use the violet action family")
-    require("rgba(103, 217, 163, .42)" not in premium_css, "Primary CTA must not return to the green status treatment")
-
-    require("@media (max-width: 1060px)" in premium_css, "Tablet hierarchy breakpoint is missing")
-    require(".trial-hero .hero-copy" in premium_css and "order: 1" in premium_css, "Hero copy must appear first on tablet/mobile")
-    require(".trial-hero .product-stage" in premium_css and "order: 2" in premium_css, "Product screenshot must follow hero copy")
-
-    require(".section" in premium_css and "border-top: 0" in premium_css, "Repeated section separators must be removed")
-    require(".audience-compact" in premium_css and "background: transparent" in premium_css, "Audience area must use an open editorial treatment")
-    require(".test-flow" in premium_css and "border-radius: 0" in premium_css, "Three-minute test must not remain a boxed dashboard block")
-    require(".preset-strip" in premium_css and "display: flex" in premium_css, "Preset roles must use compact chips")
-    require(".format-inline" in premium_css and "background: transparent" in premium_css, "Format summary must use an open layout")
-    require(".privacy-compact" in premium_css and "border-left: 2px solid" in premium_css, "Privacy note must use a restrained editorial accent")
-
-    require("--micro: 10px" in trial_css, "Desktop micro typography must remain 10 px")
-    require("--copy: 12px" in trial_css, "Desktop body typography must remain 12 px")
-    require("--micro: 12px" in trial_js and "--copy: 13px" in trial_js, "Mobile typography must remain 12-13 px")
-    require(premium_css.count("{") == premium_css.count("}"), "Premium stylesheet has unbalanced braces")
+    require('id="distribution-banner"' in landing, "Static release status markup must remain available")
+    require("statusBar.hidden = true" in trial_js, "Top release status must stay out of the product introduction")
+    require("download-release-status" in trial_js, "Release status must remain near the download decision")
+    require("IntersectionObserver" in trial_js, "Mobile download CTA must remain viewport-aware")
 
     for token in ("BEGIN PRIVATE KEY", "BEGIN RSA PRIVATE KEY", "ArSonKuPikKeyActivator"):
-        require(token not in "\n".join((landing, trial_js, premium_css)), f"Prohibited token: {token}")
+        require(token not in "\n".join((landing, trial_js, landing_css)), f"Prohibited token: {token}")
 
     print(
-        "P1 premium landing validation passed: "
-        "status moved to download, simplified hero, violet CTA system, copy-first responsive order, "
-        "open editorial surfaces and retained 12-13 px mobile typography."
+        "V2 premium landing validation passed: product-category hero, Mas Ari Signature flagship story, "
+        "sonic outcomes, 40-preset universe, refined typography, static CSS and responsive download journey."
     )
     return 0
 
