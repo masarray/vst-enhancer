@@ -39,20 +39,31 @@
 
   document.documentElement.setAttribute('data-canonical-mode', 'single-url');
 
+  const currentLanguage = () => document.documentElement.lang === 'id' ? 'id' : 'en';
+
+  const translateDynamic = (root = document) => {
+    const language = currentLanguage();
+    root.querySelectorAll('[data-en][data-id]').forEach((element) => {
+      element.textContent = element.dataset[language] || element.dataset.en || element.textContent;
+    });
+  };
+
   const setMeta = (selector, value) => {
     const element = document.querySelector(selector);
     if (element) element.setAttribute('content', value);
   };
 
   const applyMetadata = () => {
-    const language = document.documentElement.lang === 'id' ? 'id' : 'en';
-    const copy = METADATA[language];
+    const copy = METADATA[currentLanguage()];
     document.title = copy.title;
     setMeta('meta[name="description"]', copy.description);
     setMeta('meta[property="og:title"]', copy.socialTitle);
     setMeta('meta[property="og:description"]', copy.socialDescription);
     setMeta('meta[name="twitter:title"]', copy.socialTitle);
     setMeta('meta[name="twitter:description"]', copy.socialDescription);
+
+    const dynamicReleaseStatus = document.getElementById('download-release-status');
+    if (dynamicReleaseStatus) translateDynamic(dynamicReleaseStatus);
   };
 
   applyMetadata();
@@ -81,10 +92,7 @@
          data-id="Detail rilis">Release details</a>
     `;
 
-    const language = document.documentElement.lang === 'id' ? 'id' : 'en';
-    releaseStatus.querySelectorAll('[data-en][data-id]').forEach((element) => {
-      element.textContent = element.dataset[language] || element.dataset.en || element.textContent;
-    });
+    translateDynamic(releaseStatus);
     downloadHeading.after(releaseStatus);
 
     const sourceVersion = document.getElementById('release-version');
