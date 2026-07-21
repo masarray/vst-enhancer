@@ -1,4 +1,5 @@
 @import url("./experience-v4.css");
+@import url("./typography-v5.css");
 
 /* Compatibility for browsers that cached the former V3 script.
    The old script inserted toolbar and groups as separate grid children. */
