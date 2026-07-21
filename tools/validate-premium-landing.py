@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the V3 professional product experience and progressive proof layer."""
+"""Validate the V4 professional audio-product experience and motion layer."""
 
 from __future__ import annotations
 
@@ -23,13 +23,13 @@ def main() -> int:
     landing = read(root / "site" / "index.html")
     localized = read(root / "site" / "id" / "index.html")
     trial_js = read(root / "site" / "trial-page.js")
-    experience_js = read(root / "site" / "experience-v3.js")
-    experience_css = read(root / "site" / "experience-v3.css")
+    experience_js = read(root / "site" / "experience-v4.js")
+    experience_css = read(root / "site" / "experience-v4.css")
     landing_css = read(root / "site" / "landing-v2.css")
 
     require('href="landing-v2.css"' in landing, "Core V2 layout must remain statically loaded")
-    require("experience-v3.js" in trial_js, "Landing must load the V3 progressive experience")
-    require("v3-professional-proof" in trial_js, "V3 experience version marker is missing")
+    require("experience-v4.js" in trial_js, "Landing must load the V4 audio experience")
+    require("v4-audio-motion" in trial_js, "V4 experience version marker is missing")
     require("premium-polish.css" not in trial_js, "Legacy visual CSS must not return")
 
     for phrase in (
@@ -47,30 +47,44 @@ def main() -> int:
 
     for token in (
         "setupProductPreview",
-        "HTMLDialogElement",
-        "aria-haspopup",
         "setupPresetExplorer",
-        "data-preset-filter",
-        "preset-chip",
+        "preset-explorer-ready",
+        "preset-browser",
+        "setupScrollReveals",
+        "setupNavigationState",
+        "setupPointerDepth",
+        "setupSignalAccent",
+        "prefers-reduced-motion",
         "data-experience-layer",
     ):
-        require(token in experience_js, f"V3 experience is missing {token}")
+        require(token in experience_js, f"V4 experience is missing {token}")
 
     for selector in (
-        ".product-preview-dialog",
-        ".product-preview-close",
+        ".preset-universe.preset-explorer-ready",
+        ".preset-browser",
         ".preset-toolbar",
         ".preset-filter",
-        ".preset-result-count",
         ".preset-chip",
+        ".motion-ready [data-reveal]",
+        ".landing-nav.is-scrolled",
+        ".signal-accent",
+        ".product-preview-dialog",
     ):
-        require(selector in experience_css, f"V3 experience style is missing {selector}")
+        require(selector in experience_css, f"V4 experience style is missing {selector}")
+
+    require(
+        "grid-template-columns: minmax(280px, .68fr) minmax(0, 1.32fr);" in experience_css,
+        "Preset explorer must preserve the two-column desktop layout",
+    )
+    require("browser.append(toolbar, groupsContainer)" in experience_js, "Toolbar and preset groups must share one browser column")
+    require("groupsContainer.before(browser)" in experience_js, "Preset browser must be inserted as the second grid child")
 
     require("--landing-copy: 15px" in landing_css, "Readable 15 px landing typography must remain")
     require("font-weight: 610" in landing_css, "Refined headline weight must remain")
-    require("@media (max-width: 740px)" in experience_css, "V3 mobile treatment is missing")
-    require(experience_css.count("{") == experience_css.count("}"), "V3 stylesheet has unbalanced braces")
-    require(experience_js.count("{") == experience_js.count("}"), "V3 script has unbalanced braces")
+    require("@media (max-width: 740px)" in experience_css, "V4 mobile treatment is missing")
+    require("@media (prefers-reduced-motion: reduce)" in experience_css, "Reduced-motion safety is missing")
+    require(experience_css.count("{") == experience_css.count("}"), "V4 stylesheet has unbalanced braces")
+    require(experience_js.count("{") == experience_js.count("}"), "V4 script has unbalanced braces")
 
     require("window.location.assign" in trial_js, "Language controls must navigate to stable locale URLs")
     require("stopImmediatePropagation" in trial_js, "Legacy in-page language handlers must be neutralised")
@@ -81,8 +95,8 @@ def main() -> int:
         require(token not in "\n".join((landing, localized, trial_js, experience_js, experience_css)), f"Prohibited token: {token}")
 
     print(
-        "V3 premium validation passed: stable locale routing, accessible full-size product preview, "
-        "filterable 40-preset explorer, readable typography and responsive progressive enhancement."
+        "V4 premium validation passed: stable preset browser layout, active navigation, restrained reveal motion, "
+        "pointer depth, accessible product preview and reduced-motion support."
     )
     return 0
 
