@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-site-base="." data-visual-polish="v4-audio-motion" data-typography-version="v5-readable" data-global-shell="v6">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -12,6 +12,9 @@
   <meta name="referrer" content="strict-origin-when-cross-origin">
 
   <link id="canonical-link" rel="canonical" href="https://masarray.github.io/vst-enhancer/">
+  <link rel="alternate" hreflang="en" href="https://masarray.github.io/vst-enhancer/">
+  <link rel="alternate" hreflang="id" href="https://masarray.github.io/vst-enhancer/id/">
+  <link rel="alternate" hreflang="x-default" href="https://masarray.github.io/vst-enhancer/">
   <link rel="sitemap" type="application/xml" href="https://masarray.github.io/vst-enhancer/sitemap.xml">
   <link rel="preload" as="image" href="assets/arsonkupik-vst-ui-v050.webp" type="image/webp">
 
@@ -23,21 +26,22 @@
   <meta property="og:image" content="https://masarray.github.io/vst-enhancer/assets/arsonkupik-vst-ui-v050.webp">
   <meta property="og:image:width" content="1080">
   <meta property="og:image:height" content="612">
-  <meta property="og:image:alt" content="ArSonKuPik VST interface with Mas Ari Signature preset, musical enhancement controls, A/B comparison and level meters">
+  <meta property="og:image:alt" content="ArSonKuPik VST interface with Mas Ari Signature preset and six musical enhancement controls">
   <meta property="og:locale" content="en_US">
   <meta property="og:locale:alternate" content="id_ID">
-
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="ArSonKuPik — Musical VST3 Audio Enhancer">
   <meta name="twitter:description" content="Fuller, clearer and more dimensional sound without a complex plug-in chain.">
   <meta name="twitter:image" content="https://masarray.github.io/vst-enhancer/assets/arsonkupik-vst-ui-v050.webp">
-  <meta name="twitter:image:alt" content="ArSonKuPik VST interface">
 
   <link rel="icon" href="assets/arsonkupik-vst-favicon.ico" sizes="any">
   <link rel="icon" type="image/png" href="assets/arsonkupik-vst-favicon-96.png" sizes="96x96">
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="trial.css">
   <link rel="stylesheet" href="landing-v2.css">
+  <link rel="stylesheet" href="experience-v4.css">
+  <link rel="stylesheet" href="typography-v5.css">
+  <link rel="stylesheet" href="hardening-v6.css">
 
   <script id="software-structured-data" type="application/ld+json">
   {
@@ -48,7 +52,7 @@
         "@id": "https://masarray.github.io/vst-enhancer/#website",
         "url": "https://masarray.github.io/vst-enhancer/",
         "name": "ArSonKuPik",
-        "inLanguage": ["en", "id"]
+        "inLanguage": "en"
       },
       {
         "@type": "Organization",
@@ -73,7 +77,7 @@
         "softwareRequirements": "Windows 10 or Windows 11, 64-bit; a VST3-compatible host for plug-in use",
         "license": "https://github.com/masarray/vst-enhancer/blob/main/EULA.txt",
         "isAccessibleForFree": true,
-        "inLanguage": ["en", "id"],
+        "inLanguage": "en",
         "featureList": [
           "Focused six-control musical enhancement workflow",
           "Mas Ari Signature flagship preset",
@@ -99,281 +103,124 @@
   </script>
 </head>
 <body>
-  <a class="skip-link" href="#main" data-en="Skip to main content" data-id="Lewati ke konten utama">Skip to main content</a>
+  <a class="skip-link" href="#main">Skip to main content</a>
 
   <header class="nav landing-nav">
     <div class="container nav-inner">
       <a class="brand" href="./" aria-label="ArSonKuPik home">
         <img src="assets/arsonkupik-vst-favicon-96.png" width="32" height="32" alt="">
-        <span class="brand-lockup"><b>ARSON<em>KUPIK</em></b><small data-en="Musical VST3 audio enhancer" data-id="VST3 audio enhancer musikal">Musical VST3 audio enhancer</small></span>
+        <span class="brand-lockup"><b>ARSON<em>KUPIK</em></b><small>Musical VST3 audio enhancer</small></span>
       </a>
       <nav aria-label="Main navigation">
-        <a href="#for-you" data-en="Sound" data-id="Karakter Suara">Sound</a>
-        <a href="#workflow" data-en="Workflow" data-id="Workflow">Workflow</a>
-        <a href="#presets" data-en="Presets" data-id="Preset">Presets</a>
-        <a href="#download" data-en="Download" data-id="Unduh">Download</a>
+        <a href="#for-you">Sound</a>
+        <a href="#workflow">Workflow</a>
+        <a href="#presets">Presets</a>
+        <a href="#download">Download</a>
         <a href="#faq">FAQ</a>
       </nav>
       <div class="nav-actions">
-        <div class="language-switch" role="group" aria-label="Language / Bahasa">
-          <button type="button" data-lang-button="id" aria-pressed="false">ID</button>
-          <button type="button" data-lang-button="en" aria-pressed="true">EN</button>
+        <div class="language-switch" aria-label="Language / Bahasa">
+          <a href="id/" hreflang="id" lang="id">ID</a>
+          <a href="./" hreflang="en" lang="en" aria-current="page">EN</a>
         </div>
-        <a class="nav-release nav-download" id="installer-link" data-installer-cta href="https://github.com/masarray/vst-enhancer/releases/latest" data-en="Download free" data-id="Unduh gratis">Download free</a>
+        <details class="mobile-nav">
+          <summary><span>Menu</span></summary>
+          <div class="mobile-nav-panel">
+            <a href="#for-you">Sound</a>
+            <a href="#workflow">Workflow</a>
+            <a href="#presets">Presets</a>
+            <a href="#download">Download</a>
+            <a href="#faq">FAQ</a>
+          </div>
+        </details>
+        <a class="nav-release nav-download" id="installer-link" data-installer-cta href="https://github.com/masarray/vst-enhancer/releases/latest">Download free</a>
       </div>
     </div>
   </header>
 
   <div class="status-bar" id="distribution-banner" role="status" aria-live="polite">
-    <div class="container status-inner">
-      <span class="status-dot" aria-hidden="true"></span>
-      <strong id="distribution-title">Release status</strong>
-      <span id="distribution-message">Checking official distribution status…</span>
-      <a id="distribution-link" href="https://github.com/masarray/vst-enhancer/releases/latest" data-en="Release details" data-id="Detail rilis">Release details</a>
-    </div>
+    <div class="container status-inner"><span class="status-dot" aria-hidden="true"></span><strong>Release status</strong><span id="release-status-text">Checking official distribution…</span><a id="distribution-link" href="https://github.com/masarray/vst-enhancer/releases/latest">Release details</a></div>
   </div>
 
   <main id="main">
     <section class="hero trial-hero landing-hero">
       <div class="container hero-grid">
         <div class="hero-copy">
-          <span class="eyebrow" data-en="Musical VST3 audio enhancer for Windows" data-id="VST3 audio enhancer musikal untuk Windows">Musical VST3 audio enhancer for Windows</span>
-          <h1 data-en="Fuller, clearer and more dimensional sound—without a complex plug-in chain." data-id="Suara lebih berisi, jernih, dan berdimensi—tanpa rangkaian plug-in yang rumit.">Fuller, clearer and more dimensional sound—without a complex plug-in chain.</h1>
-          <p class="lead" data-en="ArSonKuPik helps creators shape body, vocal focus, stereo depth and polished air through six intuitive controls, practical presets and one focused workflow." data-id="ArSonKuPik membantu kreator membentuk body, fokus vokal, kedalaman stereo, dan polished air melalui enam kontrol intuitif, preset praktis, dan satu workflow yang fokus.">ArSonKuPik helps creators shape body, vocal focus, stereo depth and polished air through six intuitive controls, practical presets and one focused workflow.</p>
-          <div class="hero-values" aria-label="Product value">
-            <span data-en="Musical, not complicated" data-id="Musikal, tidak rumit">Musical, not complicated</span>
-            <span data-en="40 curated presets" data-id="40 preset terkurasi">40 curated presets</span>
-            <span data-en="VST3 + Standalone" data-id="VST3 + Standalone">VST3 + Standalone</span>
-            <span data-en="Local processing" data-id="Processing lokal">Local processing</span>
-          </div>
-          <div class="actions">
-            <a class="button primary" id="installer-link-bottom" data-installer-cta href="https://github.com/masarray/vst-enhancer/releases/latest" data-en="Download free for Windows" data-id="Unduh gratis untuk Windows">Download free for Windows</a>
-            <a class="button secondary" href="#for-you" data-en="Explore Mas Ari Signature" data-id="Jelajahi Mas Ari Signature">Explore Mas Ari Signature</a>
-          </div>
-          <div class="release-line" aria-label="Product information">
-            <span id="release-version">v0.5.13</span>
-            <span>Windows 10/11 x64</span>
-            <span>VST3 + Standalone</span>
-            <span data-en="Personal & commercial audio work" data-id="Pekerjaan audio personal & komersial">Personal & commercial audio work</span>
-          </div>
-          <p class="hero-disclosure hero-trust" data-en="No account or card · No subscription · No automatic charge · Optional activation only" data-id="Tanpa akun atau kartu · Tanpa langganan · Tanpa tagihan otomatis · Aktivasi hanya bersifat opsional">No account or card · No subscription · No automatic charge · Optional activation only</p>
+          <span class="eyebrow">Musical VST3 audio enhancer for Windows</span>
+          <h1>Fuller, clearer and more dimensional sound—without a complex plug-in chain.</h1>
+          <p class="lead">ArSonKuPik helps creators shape body, vocal focus, stereo depth and polished air through six intuitive controls, practical presets and one focused workflow.</p>
+          <div class="hero-values" aria-label="Product value"><span>Musical, not complicated</span><span>40 curated presets</span><span>VST3 + Standalone</span><span>Local processing</span></div>
+          <div class="actions"><a class="button primary" id="installer-link-bottom" data-installer-cta href="https://github.com/masarray/vst-enhancer/releases/latest">Download free for Windows</a><a class="button secondary" href="#for-you">Explore Mas Ari Signature</a></div>
+          <div class="release-line" aria-label="Product information"><span data-release-version>v0.5.13</span><span>Windows 10/11 x64</span><span>VST3 + Standalone</span><span>Personal &amp; commercial audio work</span></div>
+          <p class="hero-disclosure hero-trust">No account or card · No subscription · No automatic charge · Optional activation only</p>
         </div>
         <figure class="product-shot product-stage">
           <div class="shot-glow" aria-hidden="true"></div>
-          <div class="stage-label" data-en="Actual interface · Mas Ari Signature" data-id="Tampilan asli · Mas Ari Signature">Actual interface · Mas Ari Signature</div>
-          <img src="assets/arsonkupik-vst-ui-v050.webp" width="1080" height="612" loading="eager" fetchpriority="high" decoding="async" alt="ArSonKuPik interface showing the Mas Ari Signature preset, Enhance, Smart Bass, Smart Treble, Vocal, Stereo, Smart Protect, A/B comparison and input-output meters">
-          <figcaption data-en="The flagship Mas Ari Signature preset is tuned for a more alive, detailed and live-like listening experience." data-id="Preset flagship Mas Ari Signature dituning untuk pengalaman mendengarkan yang lebih hidup, detail, dan terasa seperti live music.">The flagship Mas Ari Signature preset is tuned for a more alive, detailed and live-like listening experience.</figcaption>
+          <div class="stage-label">Actual interface · Mas Ari Signature</div>
+          <img src="assets/arsonkupik-vst-ui-v050.webp" width="1080" height="612" loading="eager" fetchpriority="high" decoding="async" alt="ArSonKuPik interface showing Mas Ari Signature, Enhance, Smart Bass, Smart Treble, Vocal, Stereo and Smart Protect">
+          <figcaption>The flagship Mas Ari Signature preset is tuned for a more alive, detailed and live-like listening experience.</figcaption>
         </figure>
       </div>
     </section>
 
     <section class="trust-strip" aria-label="Product compatibility and trust">
       <div class="container trust-grid">
-        <div><strong data-en="VST3 + Standalone" data-id="VST3 + Standalone">VST3 + Standalone</strong><span data-en="Inside a compatible DAW or as a separate Windows application." data-id="Di dalam DAW kompatibel atau sebagai aplikasi Windows terpisah.">Inside a compatible DAW or as a separate Windows application.</span></div>
-        <div><strong data-en="Six focused controls" data-id="Enam kontrol fokus">Six focused controls</strong><span data-en="Professional direction without building a long processing chain." data-id="Arah profesional tanpa membangun rangkaian processing yang panjang.">Professional direction without building a long processing chain.</span></div>
-        <div><strong data-en="Local processing" data-id="Processing lokal">Local processing</strong><span data-en="No intentional audio upload or automatic usage telemetry." data-id="Tanpa unggahan audio atau telemetri penggunaan otomatis yang disengaja.">No intentional audio upload or automatic usage telemetry.</span></div>
-        <div><strong data-en="Official download" data-id="Unduhan resmi">Official download</strong><span data-en="GitHub Release packages with SHA-256 verification." data-id="Paket GitHub Release dengan verifikasi SHA-256.">GitHub Release packages with SHA-256 verification.</span></div>
+        <div><strong>VST3 + Standalone</strong><span>Inside a compatible DAW or as a separate Windows application.</span></div>
+        <div><strong>Six focused controls</strong><span>Professional direction without building a long processing chain.</span></div>
+        <div><strong>Local processing</strong><span>No intentional audio upload or automatic usage telemetry.</span></div>
+        <div><strong>Official download</strong><span>GitHub Release packages with SHA-256 verification.</span></div>
       </div>
     </section>
 
     <section id="for-you" class="section signature-section">
       <div class="container signature-grid">
-        <div class="signature-copy">
-          <span class="eyebrow" data-en="The flagship starting point" data-id="Titik awal flagship">The flagship starting point</span>
-          <h2 data-en="Mas Ari Signature brings the music closer." data-id="Mas Ari Signature membawa musik terasa lebih dekat.">Mas Ari Signature brings the music closer.</h2>
-          <p class="section-lead" data-en="Built to make familiar recordings feel more alive, reveal fine detail and create a more convincing live-music impression—without asking the listener to manage a complex technical chain." data-id="Dibuat agar rekaman yang familiar terasa lebih hidup, menampilkan detail halus, dan menciptakan kesan live music yang lebih meyakinkan—tanpa meminta pendengar mengelola rangkaian teknis yang rumit.">Built to make familiar recordings feel more alive, reveal fine detail and create a more convincing live-music impression—without asking the listener to manage a complex technical chain.</p>
-          <div class="audience-tags" aria-label="ArSonKuPik audiences">
-            <span data-en="First-time user" data-id="Pengguna awam">First-time user</span>
-            <span data-en="Musician & creator" data-id="Musisi & kreator">Musician & creator</span>
-            <span data-en="Producer" data-id="Produser">Producer</span>
-            <span data-en="Audio engineer" data-id="Audio engineer">Audio engineer</span>
-          </div>
-        </div>
-        <div class="signature-panel">
-          <div class="signature-title"><span data-en="FLAGSHIP PRESET" data-id="PRESET FLAGSHIP">FLAGSHIP PRESET</span><strong>Mas Ari Signature</strong><small data-en="A musical balance of energy, clarity, depth and polish." data-id="Keseimbangan musikal antara energi, clarity, depth, dan polish.">A musical balance of energy, clarity, depth and polish.</small></div>
-          <div class="signature-pillars">
-            <article><span>01</span><h3 data-en="More alive" data-id="Lebih hidup">More alive</h3><p data-en="Energy and presence feel closer without turning the result into a harsh loudness trick." data-id="Energi dan presence terasa lebih dekat tanpa mengubah hasil menjadi trik loudness yang kasar.">Energy and presence feel closer without turning the result into a harsh loudness trick.</p></article>
-            <article><span>02</span><h3 data-en="Detail you can feel" data-id="Detail yang terasa">Detail you can feel</h3><p data-en="Low-level texture, vocal articulation and polished air become easier to perceive." data-id="Tekstur level rendah, artikulasi vokal, dan polished air menjadi lebih mudah dirasakan.">Low-level texture, vocal articulation and polished air become easier to perceive.</p></article>
-            <article><span>03</span><h3 data-en="Live-like dimension" data-id="Dimensi seperti live">Live-like dimension</h3><p data-en="A grounded centre with deeper space creates a more convincing sense of performance." data-id="Centre yang kokoh dengan ruang lebih dalam menciptakan kesan pertunjukan yang lebih meyakinkan.">A grounded centre with deeper space creates a more convincing sense of performance.</p></article>
-          </div>
-        </div>
+        <div class="signature-copy"><span class="eyebrow">The flagship starting point</span><h2>Mas Ari Signature brings the music closer.</h2><p class="section-lead">Built to make familiar recordings feel more alive, reveal fine detail and create a more convincing live-music impression—without asking the listener to manage a complex technical chain.</p><div class="audience-tags"><span>First-time user</span><span>Musician &amp; creator</span><span>Producer</span><span>Audio engineer</span></div></div>
+        <div class="signature-panel"><div class="signature-title"><span>FLAGSHIP PRESET</span><strong>Mas Ari Signature</strong><small>A musical balance of energy, clarity, depth and polish.</small></div><div class="signature-pillars"><article><span>01</span><h3>More alive</h3><p>Energy and presence feel closer without turning the result into a harsh loudness trick.</p></article><article><span>02</span><h3>Detail you can feel</h3><p>Low-level texture, vocal articulation and polished air become easier to perceive.</p></article><article><span>03</span><h3>Live-like dimension</h3><p>A grounded centre with deeper space creates a more convincing sense of performance.</p></article></div></div>
       </div>
-      <div class="container outcome-grid">
-        <article><span class="outcome-mark">LOW</span><h3 data-en="Fuller body" data-id="Body lebih berisi">Fuller body</h3><p data-en="Controlled low-end weight that supports the music without swallowing the mix." data-id="Bobot low-end terkontrol yang menopang musik tanpa menelan mix.">Controlled low-end weight that supports the music without swallowing the mix.</p></article>
-        <article><span class="outcome-mark">FOCUS</span><h3 data-en="Clearer presence" data-id="Presence lebih jelas">Clearer presence</h3><p data-en="Vocals and important elements remain readable inside dense material." data-id="Vokal dan elemen penting tetap terbaca di dalam material yang padat.">Vocals and important elements remain readable inside dense material.</p></article>
-        <article><span class="outcome-mark">SPACE</span><h3 data-en="Deeper dimension" data-id="Dimensi lebih dalam">Deeper dimension</h3><p data-en="Width and depth expand while the centre remains musically grounded." data-id="Width dan depth berkembang sementara centre tetap kokoh secara musikal.">Width and depth expand while the centre remains musically grounded.</p></article>
-        <article><span class="outcome-mark">AIR</span><h3 data-en="Polished detail" data-id="Detail yang polished">Polished detail</h3><p data-en="Openness and fine detail without forcing brittle or tiring brightness." data-id="Openness dan detail halus tanpa memaksakan brightness yang rapuh atau melelahkan.">Openness and fine detail without forcing brittle or tiring brightness.</p></article>
-      </div>
+      <div class="container outcome-grid"><article><span class="outcome-mark">LOW</span><h3>Fuller body</h3><p>Controlled low-end weight that supports the music without swallowing the mix.</p></article><article><span class="outcome-mark">FOCUS</span><h3>Clearer presence</h3><p>Vocals and important elements remain readable inside dense material.</p></article><article><span class="outcome-mark">SPACE</span><h3>Deeper dimension</h3><p>Width and depth expand while the centre remains musically grounded.</p></article><article><span class="outcome-mark">AIR</span><h3>Polished detail</h3><p>Openness and fine detail without forcing brittle or tiring brightness.</p></article></div>
     </section>
 
     <section id="workflow" class="section alt workflow-section">
-      <div class="container">
-        <div class="section-heading centered compact">
-          <span class="eyebrow" data-en="Your own audio is the real demo" data-id="Audio Anda sendiri adalah demo nyata">Your own audio is the real demo</span>
-          <h2 data-en="A fair three-minute comparison." data-id="Perbandingan jujur dalam tiga menit.">A fair three-minute comparison.</h2>
-          <p class="section-lead" data-en="ArSonKuPik is designed to earn its place by listening—not by making the processed signal merely louder." data-id="ArSonKuPik dirancang untuk membuktikan nilainya melalui pendengaran—bukan hanya membuat sinyal processing menjadi lebih keras.">ArSonKuPik is designed to earn its place by listening—not by making the processed signal merely louder.</p>
-        </div>
-        <div class="test-flow">
-          <article><span>01</span><h3 data-en="Load familiar audio" data-id="Buka audio yang familiar">Load familiar audio</h3><p data-en="Use a song, vocal, instrument, podcast or mix that you already know well." data-id="Gunakan lagu, vokal, instrumen, podcast, atau mix yang sudah sangat Anda kenal.">Use a song, vocal, instrument, podcast or mix that you already know well.</p></article>
-          <article><span>02</span><h3 data-en="Start with Mas Ari Signature" data-id="Mulai dari Mas Ari Signature">Start with Mas Ari Signature</h3><p data-en="Hear the flagship balance first, then explore a preset created for your exact role." data-id="Dengarkan keseimbangan flagship lebih dulu, lalu jelajahi preset yang dibuat untuk fungsi spesifik Anda.">Hear the flagship balance first, then explore a preset created for your exact role.</p></article>
-          <article><span>03</span><h3 data-en="A/B at similar loudness" data-id="A/B pada loudness serupa">A/B at similar loudness</h3><p data-en="Keep the processing only when the music is genuinely better—not merely louder." data-id="Pertahankan processing hanya ketika musik benar-benar lebih baik—bukan sekadar lebih keras.">Keep the processing only when the music is genuinely better—not merely louder.</p></article>
-        </div>
-      </div>
+      <div class="container"><div class="section-heading centered compact"><span class="eyebrow">Your own audio is the real demo</span><h2>A fair three-minute comparison.</h2><p class="section-lead">ArSonKuPik is designed to earn its place by listening—not by making the processed signal merely louder.</p></div><div class="test-flow"><article><span>01</span><h3>Load familiar audio</h3><p>Use a song, vocal, instrument, podcast or mix that you already know well.</p></article><article><span>02</span><h3>Start with Mas Ari Signature</h3><p>Hear the flagship balance first, then explore a preset created for your exact role.</p></article><article><span>03</span><h3>A/B at similar loudness</h3><p>Keep the processing only when the music is genuinely better—not merely louder.</p></article></div></div>
     </section>
 
     <section id="features" class="section controls-section">
       <div class="container">
-        <div class="section-heading centered compact">
-          <span class="eyebrow" data-en="Six musical controls" data-id="Enam kontrol musikal">Six musical controls</span>
-          <h2 data-en="Shape the result, not the complexity." data-id="Bentuk hasil suaranya, bukan kerumitannya.">Shape the result, not the complexity.</h2>
-          <p class="section-lead" data-en="Every control has a clear listening purpose, so beginners can move quickly while experienced users can refine the result with intention." data-id="Setiap kontrol memiliki tujuan pendengaran yang jelas, sehingga pemula dapat bergerak cepat sementara pengguna berpengalaman dapat menyempurnakan hasil dengan terarah.">Every control has a clear listening purpose, so beginners can move quickly while experienced users can refine the result with intention.</p>
-        </div>
-        <div class="benefit-grid listening-controls">
-          <article><span class="benefit-icon">01</span><h3>Enhance</h3><p data-en="Controls the overall musical enhancement amount." data-id="Mengontrol jumlah enhancement musikal secara keseluruhan.">Controls the overall musical enhancement amount.</p><small data-en="Listen for: energy, cohesion and polish" data-id="Dengarkan: energi, cohesion, dan polish">Listen for: energy, cohesion and polish</small></article>
-          <article><span class="benefit-icon">02</span><h3>Smart Bass</h3><p data-en="Adds controlled low-end weight and body." data-id="Menambahkan bobot dan body low-end yang terkontrol.">Adds controlled low-end weight and body.</p><small data-en="Listen for: fullness without boom or masking" data-id="Dengarkan: fullness tanpa boomy atau masking">Listen for: fullness without boom or masking</small></article>
-          <article><span class="benefit-icon">03</span><h3>Smart Treble</h3><p data-en="Reveals clarity, openness and polished air." data-id="Menampilkan clarity, openness, dan polished air.">Reveals clarity, openness and polished air.</p><small data-en="Listen for: detail without brittle fatigue" data-id="Dengarkan: detail tanpa fatigue yang tajam">Listen for: detail without brittle fatigue</small></article>
-          <article><span class="benefit-icon">04</span><h3>Vocal</h3><p data-en="Brings lead presence forward inside a busy mix." data-id="Membawa lead presence lebih maju di dalam mix yang ramai.">Brings lead presence forward inside a busy mix.</p><small data-en="Listen for: articulation, focus and intelligibility" data-id="Dengarkan: artikulasi, fokus, dan kejelasan">Listen for: articulation, focus and intelligibility</small></article>
-          <article><span class="benefit-icon">05</span><h3>Stereo</h3><p data-en="Creates width and depth around a grounded centre." data-id="Menciptakan width dan depth di sekitar centre yang kokoh.">Creates width and depth around a grounded centre.</p><small data-en="Listen for: space without blur or a hollow middle" data-id="Dengarkan: ruang tanpa blur atau centre yang kosong">Listen for: space without blur or a hollow middle</small></article>
-          <article><span class="benefit-icon">06</span><h3>Smart Protect</h3><p data-en="Provides final protection when the output becomes hot." data-id="Memberikan proteksi akhir ketika output menjadi tinggi.">Provides final protection when the output becomes hot.</p><small data-en="Verify final peak and loudness with your normal meters" data-id="Verifikasi peak dan loudness akhir dengan meter normal Anda">Verify final peak and loudness with your normal meters</small></article>
-        </div>
-
-        <div id="presets" class="preset-universe">
-          <div class="preset-intro">
-            <span class="eyebrow" data-en="40 curated starting points" data-id="40 titik awal terkurasi">40 curated starting points</span>
-            <h2 data-en="Choose a musical direction, then refine by listening." data-id="Pilih arah musikal, lalu sempurnakan dengan mendengarkan.">Choose a musical direction, then refine by listening.</h2>
-            <p data-en="The preset library covers mastering, mix bus, tracks, content work and creative listening—from clean control to genre-specific character." data-id="Library preset mencakup mastering, mix bus, track, pekerjaan konten, dan creative listening—dari kontrol clean hingga karakter spesifik genre.">The preset library covers mastering, mix bus, tracks, content work and creative listening—from clean control to genre-specific character.</p>
-          </div>
-          <div class="preset-groups">
-            <article class="preset-group flagship"><header><strong>Signature</strong><span>1</span></header><h3>Mas Ari Signature</h3><p data-en="Alive, detailed and convincingly live-like." data-id="Hidup, detail, dan terasa meyakinkan seperti live music.">Alive, detailed and convincingly live-like.</p></article>
-            <article class="preset-group"><header><strong>Master</strong><span>8</span></header><p>Master Clean · Master Modern · Master Warm · Master Open 3D · Master Low-End Control · Master Vocal Focus · Master Streaming Safe · Master Dynamic</p></article>
-            <article class="preset-group"><header><strong>Mix Bus</strong><span>6</span></header><p>Mix Glue · Mix Punch · Mix Depth · Mix Air · Mix Warmth · Mix Clean-Up</p></article>
-            <article class="preset-group"><header><strong data-en="Track" data-id="Track">Track</strong><span>6</span></header><p>Vocal Polish · Drum Punch · Bass Tight · Guitar / Synth Width · Acoustic Natural · Podcast</p></article>
-            <article class="preset-group creative"><header><strong>Creative</strong><span>19</span></header><p>Max Enhancer · SonKu Deep Chest · Movie Sub · Night Listening · Open Air · Dangdut Koplo · EDM Festival · Reggae Dub · Rock Arena · Pop Radio · Jazz Club · Hip-Hop Punch · R&amp;B Silk · Metal Impact · Acoustic Live · Lo-Fi Warm · K-Pop Gloss · Campursari · Radio Mas Ari</p></article>
-          </div>
-        </div>
+        <div class="section-heading centered compact"><span class="eyebrow">Six musical controls</span><h2>Shape the result, not the complexity.</h2><p class="section-lead">Every control has a clear listening purpose, so beginners can move quickly while experienced users can refine the result with intention.</p></div>
+        <div class="benefit-grid listening-controls"><article><span class="benefit-icon">01</span><h3>Enhance</h3><p>Controls the overall musical enhancement amount.</p><small>Listen for: energy, cohesion and polish</small></article><article><span class="benefit-icon">02</span><h3>Smart Bass</h3><p>Adds controlled low-end weight and body.</p><small>Listen for: fullness without boom or masking</small></article><article><span class="benefit-icon">03</span><h3>Smart Treble</h3><p>Reveals clarity, openness and polished air.</p><small>Listen for: detail without brittle fatigue</small></article><article><span class="benefit-icon">04</span><h3>Vocal</h3><p>Brings lead presence forward inside a busy mix.</p><small>Listen for: articulation, focus and intelligibility</small></article><article><span class="benefit-icon">05</span><h3>Stereo</h3><p>Creates width and depth around a grounded centre.</p><small>Listen for: space without blur or a hollow middle</small></article><article><span class="benefit-icon">06</span><h3>Smart Protect</h3><p>Provides final protection when the output becomes hot.</p><small>Verify final peak and loudness with your normal meters</small></article></div>
+        <div id="presets" class="preset-universe"><div class="preset-intro"><span class="eyebrow">40 curated starting points</span><h2>Choose a musical direction, then refine by listening.</h2><p>The preset library covers mastering, mix bus, tracks, content work and creative listening—from clean control to genre-specific character.</p></div><div class="preset-groups"><article class="preset-group flagship"><header><strong>Signature</strong><span>1</span></header><h3>Mas Ari Signature</h3><p>Alive, detailed and convincingly live-like.</p></article><article class="preset-group"><header><strong>Master</strong><span>8</span></header><p>Master Clean · Master Modern · Master Warm · Master Open 3D · Master Low-End Control · Master Vocal Focus · Master Streaming Safe · Master Dynamic</p></article><article class="preset-group"><header><strong>Mix Bus</strong><span>6</span></header><p>Mix Glue · Mix Punch · Mix Depth · Mix Air · Mix Warmth · Mix Clean-Up</p></article><article class="preset-group"><header><strong>Track</strong><span>6</span></header><p>Vocal Polish · Drum Punch · Bass Tight · Guitar / Synth Width · Acoustic Natural · Podcast</p></article><article class="preset-group creative"><header><strong>Creative</strong><span>19</span></header><p>Max Enhancer · SonKu Deep Chest · Movie Sub · Night Listening · Open Air · Dangdut Koplo · EDM Festival · Reggae Dub · Rock Arena · Pop Radio · Jazz Club · Hip-Hop Punch · R&amp;B Silk · Metal Impact · Acoustic Live · Lo-Fi Warm · K-Pop Gloss · Campursari · Radio Mas Ari</p></article></div></div>
       </div>
     </section>
 
     <section id="download" class="section alt download-section">
       <div class="container">
-        <div class="section-heading centered compact">
-          <span class="eyebrow" data-en="Official Windows download" data-id="Unduhan Windows resmi">Official Windows download</span>
-          <h2 data-en="Install it, load familiar music and listen." data-id="Instal, buka musik yang familiar, lalu dengarkan.">Install it, load familiar music and listen.</h2>
-          <p class="section-lead" data-en="The installer is recommended for most users. Manual VST3 and Standalone packages remain available when you prefer direct file control." data-id="Installer direkomendasikan untuk kebanyakan pengguna. Paket manual VST3 dan Standalone tetap tersedia jika Anda menginginkan kontrol file langsung.">The installer is recommended for most users. Manual VST3 and Standalone packages remain available when you prefer direct file control.</p>
-        </div>
-        <div id="technical" class="format-inline">
-          <span><strong>VST3</strong><small data-en="Track, bus or master inside a compatible DAW" data-id="Track, bus, atau master di dalam DAW kompatibel">Track, bus or master inside a compatible DAW</small></span>
-          <span><strong>Standalone</strong><small data-en="A separate Windows application for supported audio-device workflows" data-id="Aplikasi Windows terpisah untuk workflow audio device yang didukung">A separate Windows application for supported audio-device workflows</small></span>
-          <span><strong data-en="Local processing" data-id="Processing lokal">Local processing</strong><small data-en="Internet is not required for normal audio processing" data-id="Internet tidak diperlukan untuk processing audio normal">Internet is not required for normal audio processing</small></span>
-        </div>
-        <div class="download-grid">
-          <article class="download-option recommended"><span class="download-tag" data-en="Recommended" data-id="Direkomendasikan">Recommended</span><h3 data-en="Windows installer" data-id="Installer Windows">Windows installer</h3><p data-en="Installs the VST3 to the standard location and includes the Standalone application." data-id="Memasang VST3 ke lokasi standar dan menyertakan aplikasi Standalone.">Installs the VST3 to the standard location and includes the Standalone application.</p><a class="button primary" data-installer-cta href="https://github.com/masarray/vst-enhancer/releases/latest" data-en="Download installer free" data-id="Unduh installer gratis">Download installer free</a></article>
-          <article class="download-option"><span class="download-tag">VST3 ZIP</span><h3 data-en="Manual plug-in package" data-id="Paket plug-in manual">Manual plug-in package</h3><p data-en="Inspect and place the VST3 bundle manually when you manage plug-in files yourself." data-id="Periksa dan tempatkan bundle VST3 secara manual jika Anda mengelola file plug-in sendiri.">Inspect and place the VST3 bundle manually when you manage plug-in files yourself.</p><a class="button secondary" id="vst3-link" href="https://github.com/masarray/vst-enhancer/releases/latest" data-en="Download VST3 ZIP" data-id="Unduh ZIP VST3">Download VST3 ZIP</a></article>
-          <article class="download-option"><span class="download-tag">Standalone ZIP</span><h3 data-en="Portable application package" data-id="Paket aplikasi portable">Portable application package</h3><p data-en="Run the separate application without a DAW, subject to audio-device configuration." data-id="Jalankan aplikasi terpisah tanpa DAW, bergantung pada konfigurasi audio device.">Run the separate application without a DAW, subject to audio-device configuration.</p><a class="button secondary" id="standalone-link" href="https://github.com/masarray/vst-enhancer/releases/latest" data-en="Download Standalone ZIP" data-id="Unduh ZIP Standalone">Download Standalone ZIP</a></article>
-        </div>
-        <details class="install-disclosure">
-          <summary data-en="Installation and verification — four steps" data-id="Instalasi dan verifikasi — empat langkah">Installation and verification — four steps</summary>
-          <div class="install-compact">
-            <ol>
-              <li data-en="Download only from the official release." data-id="Unduh hanya dari rilis resmi.">Download only from the official release.</li>
-              <li data-en="Compare the installer SHA-256 with SHA256SUMS.txt." data-id="Bandingkan SHA-256 installer dengan SHA256SUMS.txt.">Compare the installer SHA-256 with SHA256SUMS.txt.</li>
-              <li data-en="Run the installer and keep the standard VST3 location." data-id="Jalankan installer dan gunakan lokasi VST3 standar.">Run the installer and keep the standard VST3 location.</li>
-              <li data-en="Rescan VST3 plug-ins in your DAW when needed." data-id="Lakukan rescan plug-in VST3 di DAW bila diperlukan.">Rescan VST3 plug-ins in your DAW when needed.</li>
-            </ol>
-            <div class="verification-command">
-              <code id="checksum-command">Get-FileHash .\ArSonKuPik-v0.5.13-Windows-x64-Setup.exe -Algorithm SHA256</code>
-              <a id="checksums-link" href="https://github.com/masarray/vst-enhancer/releases/latest" data-en="Open SHA256SUMS.txt" data-id="Buka SHA256SUMS.txt">Open SHA256SUMS.txt</a>
-            </div>
-            <p data-en="The current package is not commercially code-signed yet, so SmartScreen may show an unknown-publisher warning. Keep antivirus enabled and stop if the checksum differs." data-id="Paket saat ini belum memiliki commercial code signing, sehingga SmartScreen dapat menampilkan peringatan unknown publisher. Tetap aktifkan antivirus dan hentikan jika checksum berbeda.">The current package is not commercially code-signed yet, so SmartScreen may show an unknown-publisher warning. Keep antivirus enabled and stop if the checksum differs.</p>
-          </div>
-        </details>
+        <div class="section-heading centered compact"><span class="eyebrow">Official Windows download</span><h2>Install it, load familiar music and listen.</h2><p class="section-lead">The installer is recommended for most users. Manual VST3 and Standalone packages remain available when you prefer direct file control.</p></div>
+        <div class="download-release-status"><span id="release-status-text">Official release available</span><strong data-release-version>v0.5.13</strong><span aria-hidden="true">·</span><span>Direct Windows installer</span><span aria-hidden="true">·</span><span>SHA-256 available</span></div>
+        <div id="technical" class="format-inline"><span><strong>VST3</strong><small>Track, bus or master inside a compatible DAW</small></span><span><strong>Standalone</strong><small>A separate Windows application for supported audio-device workflows</small></span><span><strong>Local processing</strong><small>Internet is not required for normal audio processing</small></span></div>
+        <div class="download-grid"><article class="download-option recommended"><span class="download-tag">Recommended</span><h3>Windows installer</h3><p>Installs the VST3 to the standard location and includes the Standalone application.</p><a class="button primary" data-installer-cta href="https://github.com/masarray/vst-enhancer/releases/latest">Download free for Windows</a></article><article class="download-option"><span class="download-tag">VST3 ZIP</span><h3>Manual plug-in package</h3><p>Inspect and place the VST3 bundle manually when you manage plug-in files yourself.</p><a class="button secondary" id="vst3-link" href="https://github.com/masarray/vst-enhancer/releases/latest">Download VST3 ZIP</a></article><article class="download-option"><span class="download-tag">Standalone ZIP</span><h3>Portable application package</h3><p>Run the separate application without a DAW, subject to audio-device configuration.</p><a class="button secondary" id="standalone-link" href="https://github.com/masarray/vst-enhancer/releases/latest">Download Standalone ZIP</a></article></div>
+        <details class="install-disclosure"><summary>Installation and verification — four steps</summary><div class="install-compact"><ol><li>Download only from the official release.</li><li>Compare the installer SHA-256 with SHA256SUMS.txt.</li><li>Run the installer and keep the standard VST3 location.</li><li>Rescan VST3 plug-ins in your DAW when needed.</li></ol><div class="verification-command"><code id="checksum-command">Get-FileHash .\ArSonKuPik-v0.5.13-Windows-x64-Setup.exe -Algorithm SHA256</code><a id="checksums-link" href="https://github.com/masarray/vst-enhancer/releases/latest">Open SHA256SUMS.txt</a></div><p>The current package is not commercially code-signed yet, so SmartScreen may show an unknown-publisher warning. Keep antivirus enabled and stop if the checksum differs.</p></div></details>
+        <p class="global-proof-note"><strong>Transparent distribution:</strong> the website points only to official repository releases, validates release URLs before applying them and keeps SHA-256 verification visible.</p>
       </div>
     </section>
 
     <section id="evaluation" class="section freedom-section">
-      <div class="container freedom-grid">
-        <div class="freedom-copy">
-          <span class="eyebrow" data-en="Use it without pressure" data-id="Gunakan tanpa tekanan">Use it without pressure</span>
-          <h2 data-en="The product comes first. Paying is never automatic." data-id="Produk adalah yang utama. Pembayaran tidak pernah otomatis.">The product comes first. Paying is never automatic.</h2>
-          <p class="section-lead" data-en="Every preset and editing control is available during a full-featured evaluation. There is no account, payment card, subscription, automatic renewal or automatic charge." data-id="Seluruh preset dan kontrol editing tersedia selama evaluasi dengan fitur lengkap. Tidak ada akun, kartu pembayaran, langganan, perpanjangan otomatis, atau tagihan otomatis.">Every preset and editing control is available during a full-featured evaluation. There is no account, payment card, subscription, automatic renewal or automatic charge.</p>
-          <a class="text-link activation-soft-link" href="activation/" data-en="Optional support and activation details" data-id="Detail dukungan dan aktivasi opsional">Optional support and activation details</a>
-          <span id="purchase-status" hidden data-en="Paid checkout is not currently enabled." data-id="Checkout berbayar saat ini belum diaktifkan.">Paid checkout is not currently enabled.</span>
-        </div>
-        <div class="freedom-facts">
-          <article><strong data-en="No account or card" data-id="Tanpa akun atau kartu">No account or card</strong><span data-en="Download and begin without registration or payment information." data-id="Unduh dan mulai tanpa registrasi atau informasi pembayaran.">Download and begin without registration or payment information.</span></article>
-          <article><strong data-en="No automatic charge" data-id="Tanpa tagihan otomatis">No automatic charge</strong><span data-en="The evaluation never converts into a subscription or an automatic payment." data-id="Evaluasi tidak pernah berubah menjadi langganan atau pembayaran otomatis.">The evaluation never converts into a subscription or an automatic payment.</span></article>
-          <article><strong data-en="No obligation to buy" data-id="Tanpa kewajiban membeli">No obligation to buy</strong><span data-en="Existing projects and processing are designed to continue in project-safe read-only mode after full editing ends." data-id="Project dan processing lama dirancang tetap berjalan dalam mode read-only yang aman setelah full editing berakhir.">Existing projects and processing are designed to continue in project-safe read-only mode after full editing ends.</span></article>
-          <article><strong data-en="Support is a decision" data-id="Dukungan adalah keputusan">Support is a decision</strong><span data-en="Optional activation keeps editing available and may help sustain independent development, testing and trusted distribution." data-id="Aktivasi opsional mempertahankan kemampuan editing dan dapat membantu keberlanjutan pengembangan independen, testing, serta distribusi tepercaya.">Optional activation keeps editing available and may help sustain independent development, testing and trusted distribution.</span></article>
-        </div>
-        <aside id="privacy" class="privacy-compact">
-          <strong data-en="Privacy by design" data-id="Privasi sejak desain">Privacy by design</strong>
-          <span data-en="Audio stays on your computer. Normal processing has no intentional audio upload, crash analytics, usage analytics or payment-data collection." data-id="Audio tetap di komputer Anda. Processing normal tidak melakukan unggahan audio, crash analytics, usage analytics, atau pengumpulan data pembayaran secara sengaja.">Audio stays on your computer. Normal processing has no intentional audio upload, crash analytics, usage analytics or payment-data collection.</span>
-          <a href="https://github.com/masarray/vst-enhancer/blob/main/PRIVACY.txt" data-en="Read the privacy notice" data-id="Baca pemberitahuan privasi">Read the privacy notice</a>
-        </aside>
-      </div>
+      <div class="container freedom-grid"><div class="freedom-copy"><span class="eyebrow">Use it without pressure</span><h2>The product comes first. Paying is never automatic.</h2><p class="section-lead">Every preset and editing control is available during a full-featured evaluation. There is no account, payment card, subscription, automatic renewal or automatic charge.</p><a class="text-link activation-soft-link" href="activation/">Optional support and activation details</a></div><div class="freedom-facts"><article><strong>No account or card</strong><span>Download and begin without registration or payment information.</span></article><article><strong>No automatic charge</strong><span>The evaluation never converts into a subscription or an automatic payment.</span></article><article><strong>No obligation to buy</strong><span>Existing projects and processing are designed to continue in project-safe read-only mode after full editing ends.</span></article><article><strong>Support is a decision</strong><span>Optional activation keeps editing available and may help sustain independent development, testing and trusted distribution.</span></article></div><aside id="privacy" class="privacy-compact"><strong>Privacy by design</strong><span>Audio stays on your computer. Normal processing has no intentional audio upload, crash analytics, usage analytics or payment-data collection.</span><a href="https://github.com/masarray/vst-enhancer/blob/main/PRIVACY.txt">Read the privacy notice</a></aside></div>
     </section>
 
     <section id="faq" class="section alt faq-section">
-      <div class="container">
-        <div class="section-heading centered compact">
-          <span class="eyebrow" data-en="Frequently asked questions" data-id="Pertanyaan yang sering diajukan">Frequently asked questions</span>
-          <h2 data-en="The essentials before you download." data-id="Hal penting sebelum mengunduh.">The essentials before you download.</h2>
-        </div>
-        <div class="faq-grid">
-          <details><summary data-en="What is ArSonKuPik?" data-id="Apa itu ArSonKuPik?">What is ArSonKuPik?</summary><p data-en="A focused, musical Windows VST3 and Standalone audio enhancer for master, mix bus, tracks, vocals, podcasts, creative processing and everyday listening." data-id="Audio enhancer Windows VST3 dan Standalone yang fokus dan musikal untuk master, mix bus, track, vokal, podcast, processing kreatif, dan everyday listening.">A focused, musical Windows VST3 and Standalone audio enhancer for master, mix bus, tracks, vocals, podcasts, creative processing and everyday listening.</p></details>
-          <details><summary data-en="What makes Mas Ari Signature special?" data-id="Apa yang membuat Mas Ari Signature istimewa?">What makes Mas Ari Signature special?</summary><p data-en="It is the flagship balance created to make familiar music feel more alive, reveal fine detail and produce a convincing live-like dimension without requiring a complex chain." data-id="Ini adalah keseimbangan flagship yang dibuat agar musik familiar terasa lebih hidup, menampilkan detail halus, dan menghasilkan dimensi seperti live yang meyakinkan tanpa memerlukan chain yang rumit.">It is the flagship balance created to make familiar music feel more alive, reveal fine detail and produce a convincing live-like dimension without requiring a complex chain.</p></details>
-          <details><summary data-en="VST3 or Standalone?" data-id="VST3 atau Standalone?">VST3 or Standalone?</summary><p data-en="VST3 runs inside a compatible DAW. Standalone runs as a separate Windows application for supported audio-device workflows." data-id="VST3 berjalan di dalam DAW kompatibel. Standalone berjalan sebagai aplikasi Windows terpisah untuk workflow audio device yang didukung.">VST3 runs inside a compatible DAW. Standalone runs as a separate Windows application for supported audio-device workflows.</p></details>
-          <details><summary data-en="How long is full editing available?" data-id="Berapa lama full editing tersedia?">How long is full editing available?</summary><p data-en="Every preset and editing control is available for 365 days from first launch on each computer, without an account, card, subscription, automatic charge or purchase obligation." data-id="Seluruh preset dan kontrol editing tersedia selama 365 hari sejak pertama kali dijalankan pada tiap komputer, tanpa akun, kartu, langganan, tagihan otomatis, atau kewajiban membeli.">Every preset and editing control is available for 365 days from first launch on each computer, without an account, card, subscription, automatic charge or purchase obligation.</p></details>
-          <details><summary data-en="What happens after full editing ends?" data-id="Apa yang terjadi setelah full editing berakhir?">What happens after full editing ends?</summary><p data-en="Existing projects, saved values, meters, automation playback and audio processing are designed to continue in project-safe read-only mode. Optional activation is relevant only for continued editing." data-id="Project lama, nilai tersimpan, meter, playback automation, dan processing audio dirancang tetap berjalan dalam mode read-only yang aman. Aktivasi opsional hanya relevan untuk melanjutkan editing.">Existing projects, saved values, meters, automation playback and audio processing are designed to continue in project-safe read-only mode. Optional activation is relevant only for continued editing.</p></details>
-          <details><summary data-en="Can I use it for paid work?" data-id="Bolehkah digunakan untuk pekerjaan berbayar?">Can I use it for paid work?</summary><p data-en="Yes, during the evaluation for personal and commercial audio-production work, subject to the EULA. Your audio and projects remain yours." data-id="Ya, selama evaluasi untuk produksi audio personal dan komersial, tunduk pada EULA. Audio dan project tetap milik Anda.">Yes, during the evaluation for personal and commercial audio-production work, subject to the EULA. Your audio and projects remain yours.</p></details>
-          <details><summary data-en="Does it upload audio or track usage?" data-id="Apakah aplikasi mengunggah audio atau melacak penggunaan?">Does it upload audio or track usage?</summary><p data-en="Normal operation has no intentional audio upload, crash analytics or usage analytics. Update checking happens only when you request it." data-id="Operasi normal tidak melakukan unggahan audio, crash analytics, atau usage analytics secara sengaja. Pemeriksaan update hanya terjadi saat Anda memintanya.">Normal operation has no intentional audio upload, crash analytics or usage analytics. Update checking happens only when you request it.</p></details>
-          <details><summary data-en="Why can SmartScreen show a warning?" data-id="Mengapa SmartScreen dapat menampilkan peringatan?">Why can SmartScreen show a warning?</summary><p data-en="The current package is unsigned. Download only from the official release, verify SHA-256 and keep normal antivirus protection enabled." data-id="Paket saat ini belum ditandatangani. Unduh hanya dari rilis resmi, verifikasi SHA-256, dan tetap aktifkan antivirus.">The current package is unsigned. Download only from the official release, verify SHA-256 and keep normal antivirus protection enabled.</p></details>
-        </div>
-
-        <details id="legal" class="legal-compact">
-          <summary data-en="Legal, support and transparency documents" data-id="Dokumen legal, dukungan, dan transparansi">Legal, support and transparency documents</summary>
-          <div class="legal-links">
-            <a href="https://github.com/masarray/vst-enhancer/blob/main/EULA.txt">EULA</a>
-            <a href="https://github.com/masarray/vst-enhancer/blob/main/PRIVACY.txt">Privacy</a>
-            <a href="https://github.com/masarray/vst-enhancer/blob/main/PURCHASE_TERMS.txt">Optional Activation Terms</a>
-            <a href="https://github.com/masarray/vst-enhancer/blob/main/SECURITY.md">Security</a>
-            <a href="https://github.com/masarray/vst-enhancer/blob/main/SUPPORT.md">Support</a>
-            <a href="https://github.com/masarray/vst-enhancer/blob/main/THIRD_PARTY_NOTICES.txt">Third-Party Notices</a>
-            <a href="https://github.com/masarray/vst-enhancer/blob/main/LICENSE.txt">Repository Notice</a>
-            <a href="https://github.com/masarray/vst-enhancer/blob/main/CHANGELOG.md">Changelog</a>
-          </div>
-        </details>
-      </div>
+      <div class="container"><div class="section-heading centered compact"><span class="eyebrow">Frequently asked questions</span><h2>The essentials before you download.</h2></div><div class="faq-grid"><details><summary>What is ArSonKuPik?</summary><p>A focused, musical Windows VST3 and Standalone audio enhancer for master, mix bus, tracks, vocals, podcasts, creative processing and everyday listening.</p></details><details><summary>What makes Mas Ari Signature special?</summary><p>It is the flagship balance created to make familiar music feel more alive, reveal fine detail and produce a convincing live-like dimension without requiring a complex chain.</p></details><details><summary>VST3 or Standalone?</summary><p>VST3 runs inside a compatible DAW. Standalone runs as a separate Windows application for supported audio-device workflows.</p></details><details><summary>How long is full editing available?</summary><p>Every preset and editing control is available for 365 days from first launch on each computer, without an account, card, subscription, automatic charge or purchase obligation.</p></details><details><summary>What happens after full editing ends?</summary><p>Existing projects, saved values, meters, automation playback and audio processing are designed to continue in project-safe read-only mode. Optional activation is relevant only for continued editing.</p></details><details><summary>Can I use it for paid work?</summary><p>Yes, during the evaluation for personal and commercial audio-production work, subject to the EULA. Your audio and projects remain yours.</p></details><details><summary>Does it upload audio or track usage?</summary><p>Normal operation has no intentional audio upload, crash analytics or usage analytics. Update checking happens only when you request it.</p></details><details><summary>Why can SmartScreen show a warning?</summary><p>The current package is unsigned. Download only from the official release, verify SHA-256 and keep normal antivirus protection enabled.</p></details></div><details id="legal" class="legal-compact"><summary>Legal, support and transparency documents</summary><div class="legal-links"><a href="https://github.com/masarray/vst-enhancer/blob/main/EULA.txt">EULA</a><a href="https://github.com/masarray/vst-enhancer/blob/main/PRIVACY.txt">Privacy</a><a href="https://github.com/masarray/vst-enhancer/blob/main/PURCHASE_TERMS.txt">Optional Activation Terms</a><a href="https://github.com/masarray/vst-enhancer/blob/main/SECURITY.md">Security</a><a href="https://github.com/masarray/vst-enhancer/blob/main/SUPPORT.md">Support</a><a href="https://github.com/masarray/vst-enhancer/blob/main/CHANGELOG.md">Changelog</a></div></details></div>
     </section>
 
-    <section class="section final-cta">
-      <div class="container cta-card">
-        <div><span class="eyebrow" data-en="Premium sound. Focused workflow. Zero pressure." data-id="Suara premium. Workflow fokus. Tanpa tekanan.">Premium sound. Focused workflow. Zero pressure.</span><h2 data-en="Let familiar music show you what ArSonKuPik changes." data-id="Biarkan musik yang familiar menunjukkan perubahan dari ArSonKuPik.">Let familiar music show you what ArSonKuPik changes.</h2><p data-en="Start with Mas Ari Signature, compare at a similar loudness and keep the processing only when the result is genuinely more musical." data-id="Mulai dari Mas Ari Signature, bandingkan pada loudness serupa, dan pertahankan processing hanya ketika hasilnya benar-benar lebih musikal.">Start with Mas Ari Signature, compare at a similar loudness and keep the processing only when the result is genuinely more musical.</p></div>
-        <div class="cta-actions"><a class="button primary large" id="installer-link-final" data-installer-cta href="https://github.com/masarray/vst-enhancer/releases/latest" data-en="Download free for Windows" data-id="Unduh gratis untuk Windows">Download free for Windows</a><a class="text-link" id="release-link" href="https://github.com/masarray/vst-enhancer/releases/latest" data-en="Release notes and files" data-id="Catatan rilis dan file">Release notes and files</a></div>
-      </div>
-    </section>
+    <section class="section final-cta"><div class="container cta-card"><div><span class="eyebrow">Premium sound. Focused workflow. Zero pressure.</span><h2>Let familiar music show you what ArSonKuPik changes.</h2><p>Start with Mas Ari Signature, compare at a similar loudness and keep the processing only when the result is genuinely more musical.</p></div><div class="cta-actions"><a class="button primary large" id="installer-link-final" data-installer-cta href="https://github.com/masarray/vst-enhancer/releases/latest">Download free for Windows</a><a class="text-link" id="release-link" href="https://github.com/masarray/vst-enhancer/releases/latest">Release notes and files</a></div></div></section>
 
-    <section class="support-strip">
-      <div class="container support-inner"><p data-en="Need help or found a reproducible issue?" data-id="Perlu bantuan atau menemukan masalah yang dapat direproduksi?">Need help or found a reproducible issue?</p><a href="https://github.com/masarray/vst-enhancer/issues/new/choose" data-en="Public bug report" data-id="Laporan bug publik">Public bug report</a><a href="https://github.com/masarray/vst-enhancer/security/advisories/new" data-en="Private security report" data-id="Laporan keamanan privat">Private security report</a></div>
-    </section>
+    <section class="support-strip"><div class="container support-inner"><p>Need help or found a reproducible issue?</p><a href="https://github.com/masarray/vst-enhancer/issues/new/choose">Public bug report</a><a href="https://github.com/masarray/vst-enhancer/security/advisories/new">Private security report</a></div></section>
   </main>
 
-  <footer>
-    <div class="container footer-grid">
-      <div><a class="brand footer-brand" href="./"><img src="assets/arsonkupik-vst-favicon-96.png" width="28" height="28" alt=""><span class="brand-lockup"><b>ARSON<em>KUPIK</em></b><small data-en="Musical VST3 audio enhancer" data-id="VST3 audio enhancer musikal">Musical VST3 audio enhancer</small></span></a><p data-en="Focused audio enhancement for fuller, clearer and more dimensional sound on Windows VST3 and Standalone." data-id="Audio enhancement yang fokus untuk suara lebih berisi, jernih, dan berdimensi pada Windows VST3 dan Standalone.">Focused audio enhancement for fuller, clearer and more dimensional sound on Windows VST3 and Standalone.</p></div>
-      <div class="footer-links"><strong data-en="Product" data-id="Produk">Product</strong><a href="#for-you" data-en="Mas Ari Signature" data-id="Mas Ari Signature">Mas Ari Signature</a><a href="#features" data-en="Controls & presets" data-id="Kontrol & preset">Controls & presets</a><a href="#download" data-en="Free download" data-id="Unduhan gratis">Free download</a><a href="activation/" data-en="Optional support & activation" data-id="Dukungan & aktivasi opsional">Optional support & activation</a></div>
-      <div class="footer-links"><strong data-en="Support" data-id="Dukungan">Support</strong><a href="https://github.com/masarray/vst-enhancer/issues/new/choose" data-en="Report a bug" data-id="Laporkan bug">Report a bug</a><a href="https://github.com/masarray/vst-enhancer/blob/main/SECURITY.md" data-en="Security policy" data-id="Kebijakan keamanan">Security policy</a><a href="https://github.com/masarray/vst-enhancer/blob/main/SUPPORT.md" data-en="Support guide" data-id="Panduan dukungan">Support guide</a></div>
-    </div>
-    <div class="container footer-bottom"><span>© 2026 Tutorial Mas Ari / MasArray. All rights reserved.</span><span data-en="Plain-language overview; the linked legal documents and mandatory law control." data-id="Ringkasan bahasa sederhana; dokumen legal tertaut dan hukum wajib tetap berlaku.">Plain-language overview; the linked legal documents and mandatory law control.</span></div>
-  </footer>
+  <footer><div class="container footer-grid"><div><a class="brand footer-brand" href="./"><img src="assets/arsonkupik-vst-favicon-96.png" width="28" height="28" alt=""><span class="brand-lockup"><b>ARSON<em>KUPIK</em></b><small>Musical VST3 audio enhancer</small></span></a><p>Focused audio enhancement for fuller, clearer and more dimensional sound on Windows VST3 and Standalone.</p></div><div class="footer-links"><strong>Product</strong><a href="#for-you">Mas Ari Signature</a><a href="#features">Controls &amp; presets</a><a href="#download">Free download</a><a href="activation/">Optional support &amp; activation</a></div><div class="footer-links"><strong>Support</strong><a href="https://github.com/masarray/vst-enhancer/issues/new/choose">Report a bug</a><a href="https://github.com/masarray/vst-enhancer/blob/main/SECURITY.md">Security policy</a><a href="https://github.com/masarray/vst-enhancer/blob/main/SUPPORT.md">Support guide</a></div></div><div class="container footer-bottom"><span>© 2026 Tutorial Mas Ari / MasArray. All rights reserved.</span><span>Plain-language overview; linked legal documents and mandatory law control.</span></div></footer>
 
-  <div id="mobile-download-bar" class="mobile-download-bar" hidden>
-    <span><strong data-en="ArSonKuPik for Windows" data-id="ArSonKuPik untuk Windows">ArSonKuPik for Windows</strong><small data-en="No account or card" data-id="Tanpa akun atau kartu">No account or card</small></span>
-    <a class="button primary" data-installer-cta href="https://github.com/masarray/vst-enhancer/releases/latest" data-en="Download free" data-id="Unduh gratis">Download free</a>
-  </div>
-
-  <noscript><div class="noscript" lang="en">JavaScript is disabled. The English content remains readable, but language switching and live release links are unavailable. Use the official GitHub Releases page and verify SHA-256 before downloading.</div></noscript>
-  <script src="app.js"></script>
-  <script src="trial-page.js"></script>
+  <div id="mobile-download-bar" class="mobile-download-bar" hidden><span><strong>ArSonKuPik for Windows</strong><small>No account or card</small></span><a class="button primary" data-installer-cta href="https://github.com/masarray/vst-enhancer/releases/latest">Download free</a></div>
+  <noscript><div class="noscript">JavaScript is disabled. All product content and language links remain available. Use the official GitHub Releases page and verify SHA-256 before downloading.</div></noscript>
+  <script src="site-v6.js" defer></script>
+  <script src="experience-v4.js" defer></script>
 </body>
 </html>
