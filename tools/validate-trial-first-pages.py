@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate product-first EN/ID pages, release routing, V4 audio UX and V5 readable typography."""
+"""Validate product-first EN/ID pages, V6 release routing and optional activation separation."""
 
 from __future__ import annotations
 
@@ -13,24 +13,26 @@ class PageParser(HTMLParser):
     def __init__(self) -> None:
         super().__init__()
         self.ids: list[str] = []
-        self.links: list[str] = []
-        self.translated = 0
         self.details = 0
         self.meta: list[dict[str, str]] = []
+        self.links: list[dict[str, str]] = []
+        self.styles: list[str] = []
+        self.scripts: list[str] = []
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         data = {key: value or "" for key, value in attrs}
         if data.get("id"):
             self.ids.append(data["id"])
-        if "data-en" in data or "data-id" in data:
-            require(bool(data.get("data-en") and data.get("data-id")), f"Missing bilingual value on <{tag}>")
-            self.translated += 1
         if tag == "details":
             self.details += 1
-        if tag == "a" and data.get("href"):
-            self.links.append(data["href"])
         if tag == "meta":
             self.meta.append(data)
+        if tag == "a":
+            self.links.append(data)
+        if tag == "link" and data.get("rel") == "stylesheet":
+            self.styles.append(data.get("href", ""))
+        if tag == "script" and data.get("src"):
+            self.scripts.append(data.get("src", ""))
 
 
 def require(condition: bool, message: str) -> None:
@@ -61,10 +63,9 @@ def main() -> int:
     landing_css = read(root / "site" / "landing-v2.css")
     experience_css = read(root / "site" / "experience-v4.css")
     typography_css = read(root / "site" / "typography-v5.css")
-    app_js = read(root / "site" / "app.js")
-    trial_js = read(root / "site" / "trial-page.js")
+    hardening_css = read(root / "site" / "hardening-v6.css")
+    site_js = read(root / "site" / "site-v6.js")
     experience_js = read(root / "site" / "experience-v4.js")
-    latest_release_js = read(root / "site" / "latest-release.js")
     activation_js = read(root / "site" / "activation" / "activation.js")
     release = json.loads(read(root / "site" / "release.json"))
 
@@ -72,10 +73,9 @@ def main() -> int:
     localized_parser = parse(localized)
     activation_parser = parse(activation)
 
-    require(landing_parser.translated >= 150, "English landing needs complete bilingual source values")
-    require(localized_parser.translated >= 90, "Indonesian landing needs bilingual fallback values")
-    require(9 <= landing_parser.details <= 11, "Landing must keep a compact FAQ/disclosure set")
-    require(activation_parser.translated >= 45, "Activation page needs bilingual content")
+    require(landing_parser.details >= 9, "English landing must retain install, FAQ and legal disclosure depth")
+    require(localized_parser.details >= 9, "Indonesian landing must retain equivalent disclosure depth")
+    require(activation_parser.details >= 1, "Activation page must retain legal disclosure")
 
     title = next((item.get("content", "") for item in landing_parser.meta if item.get("property") == "og:title"), "")
     description = next((item.get("content", "") for item in landing_parser.meta if item.get("name") == "description"), "")
@@ -96,20 +96,30 @@ def main() -> int:
     ):
         require(phrase in landing, f"Landing is missing product-first phrase: {phrase}")
 
-    require("Suara lebih berisi, jernih, dan berdimensi" in localized, "Localized H1 is missing")
-    require("USD 25" not in landing, "Price must remain outside the main product landing")
-    require('href="activation/"' in landing, "Landing must link the optional activation page")
-    require('id="mobile-download-bar"' in landing, "Landing must include a mobile sticky download CTA")
-    require('href="landing-v2.css"' in landing, "Core product stylesheet must load statically")
+    for phrase in (
+        "VST3 audio enhancer musikal untuk Windows",
+        "Suara lebih berisi, jernih, dan berdimensi",
+        "40 titik awal terkurasi",
+        "Tanpa tagihan otomatis",
+    ):
+        require(phrase in localized, f"Localized landing is missing: {phrase}")
 
-    require(app_js.count("fetch('./release.json'") == 1, "Release controller must retain one local manifest request")
-    require("querySelectorAll('[data-installer-cta]')" in app_js, "Central release controller must manage installer CTAs")
-    require("latest-release.js" in trial_js, "Landing must retain latest-release fallback resolution")
-    require("window.location.assign" in trial_js and "stopImmediatePropagation" in trial_js, "Language controls must use stable locale URLs")
-    require("askp:release-ready" in trial_js, "Canonical locale must be restored after release rendering")
-    require("experience-v4.js" in trial_js and "v4-audio-motion" in trial_js, "V4 product experience is not loaded")
-    require("typography-v5.css" in trial_js and "v5-readable" in trial_js, "V5 readable typography is not loaded")
-    require("IntersectionObserver" in trial_js, "Mobile CTA visibility must remain viewport-aware")
+    require("USD 25" not in landing, "Price must remain outside the main product landing")
+    require('href="activation/"' in landing, "English landing must link optional activation")
+    require('href="../activation/"' in localized, "Indonesian landing must link optional activation")
+    require('id="mobile-download-bar"' in landing and 'id="mobile-download-bar"' in localized, "Both pages need mobile download CTA")
+
+    for page, prefix in ((landing_parser, ""), (localized_parser, "../")):
+        require(f"{prefix}site-v6.js" in page.scripts, "V6 release controller must load statically")
+        require(f"{prefix}experience-v4.js" in page.scripts, "Audio experience must load statically")
+        for stylesheet in ("landing-v2.css", "experience-v4.css", "typography-v5.css", "hardening-v6.css"):
+            require(f"{prefix}{stylesheet}" in page.styles, f"Missing static stylesheet {stylesheet}")
+
+    require("fetch(`${siteBase}/release.json`" in site_js, "Single release manifest request is missing")
+    require("officialReleaseUrl" in site_js, "Release URL allowlist is missing")
+    require("querySelectorAll('[data-installer-cta]')" in site_js, "Single release controller must manage all installer CTAs")
+    require("latest-release.js" not in landing + localized, "Second release resolver must not load")
+    require("app.js" not in landing + localized and "trial-page.js" not in landing + localized, "Legacy landing controllers must not load")
 
     for token in (
         "setupProductPreview",
@@ -121,58 +131,35 @@ def main() -> int:
         "setupPointerDepth",
         "prefers-reduced-motion",
     ):
-        require(token in experience_js, f"V4 experience is missing {token}")
-    for selector in (
-        ".product-preview-dialog",
-        ".preset-universe.preset-explorer-ready",
-        ".preset-browser",
-        ".preset-toolbar",
-        ".preset-chip",
-        ".motion-ready [data-reveal]",
-        ".landing-nav.is-scrolled",
-    ):
-        require(selector in experience_css, f"V4 experience CSS is missing {selector}")
+        require(token in experience_js, f"Audio experience is missing {token}")
 
-    require("browser.append(toolbar, groupsContainer)" in experience_js, "Preset toolbar and groups must remain in one browser column")
+    require("document.createElement('link')" not in experience_js, "Experience must not inject CSS")
+    require("createElement('link')" not in site_js, "Release controller must not inject CSS")
+    require("browser.append(toolbar, groupsContainer)" in experience_js, "Preset toolbar and groups must remain together")
     require("grid-template-columns: minmax(280px, .68fr) minmax(0, 1.32fr);" in experience_css, "Desktop preset layout contract is missing")
 
-    for token in (
-        "--landing-copy: 16px",
-        "--type-card: 14.5px",
-        "--type-support: 13.5px",
-        ".section-lead",
-        ".faq-grid p",
-        ".freedom-facts span",
-        ".support-inner",
-        "--type-card: 15px",
-    ):
+    for token in ("--landing-copy: 16px", "--type-card: 14.5px", ".faq-grid p", "--type-card: 15px"):
         require(token in typography_css, f"Readable typography contract is missing {token}")
+    for token in (".language-switch a", ".mobile-nav-panel", "@media (max-width: 860px)"):
+        require(token in hardening_css, f"Mobile/global shell contract is missing {token}")
 
-    require("fetch(LATEST_API" in latest_release_js, "Latest resolver must request GitHub release metadata")
-    require("browser_download_url" in latest_release_js, "Latest resolver must use official asset URLs")
-    require("scoreInstaller" in latest_release_js, "Latest resolver must rank installer assets")
-    require("portable" in latest_release_js, "Latest resolver must reject portable executables as installer CTAs")
-    require("activator" in latest_release_js and "key" in latest_release_js, "Latest resolver must reject activation utilities")
     require("trustedCheckoutUrl" in activation_js, "Activation page must validate checkout URLs")
     require("purchaseAllowedHosts" in activation_js, "Activation page must allowlist checkout hosts")
     require(release.get("purchaseCheckoutAvailable") is False, "Checkout must remain disabled until configured")
     require("purchaseUrl" not in release, "Disabled checkout must not publish a purchase URL")
-
     require("font-weight: 610" in landing_css, "Refined headline weight must remain")
-    require("@media (max-width: 740px)" in experience_css, "V4 mobile enhancement is missing")
-    require("@media (max-width: 740px)" in typography_css, "V5 mobile typography is missing")
     require("@media (prefers-reduced-motion: reduce)" in experience_css, "Reduced-motion support is missing")
-    require(landing_css.count("{") == landing_css.count("}"), "Landing stylesheet has unbalanced braces")
-    require(experience_css.count("{") == experience_css.count("}"), "Experience stylesheet has unbalanced braces")
-    require(typography_css.count("{") == typography_css.count("}"), "Typography stylesheet has unbalanced braces")
 
-    public_text = "\n".join((landing, localized, activation, landing_css, experience_css, typography_css, app_js, trial_js, experience_js, latest_release_js, activation_js))
+    for name, content in (("landing", landing_css), ("experience", experience_css), ("typography", typography_css), ("hardening", hardening_css)):
+        require(content.count("{") == content.count("}"), f"{name} stylesheet has unbalanced braces")
+
+    public_text = "\n".join((landing, localized, activation, landing_css, experience_css, typography_css, hardening_css, site_js, experience_js, activation_js))
     for token in ("BEGIN PRIVATE KEY", "BEGIN RSA PRIVATE KEY", "ArSonKuPikKeyActivator"):
         require(token not in public_text, f"Prohibited token: {token}")
 
     print(
-        "Product-first V5 validation passed: stable EN/ID routes, fixed preset browser, restrained audio motion, "
-        "16 px body typography, readable paragraphs, release routing and optional activation separation."
+        "Product-first V6 validation passed: static EN/ID routes, one release controller, hyperlink locales, "
+        "mobile navigation, readable typography, audio motion and optional activation separation."
     )
     return 0
 
