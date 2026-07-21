@@ -121,7 +121,11 @@ def remote_check(urls: list[str]) -> None:
 
 
 def main() -> int:
-    args_parser=argparse.ArgumentParser(description=__doc__); args_parser.add_argument("--check-remote",action="store_true"); args_parser.add_argument("--root",type=Path,default=Path(__file__).resolve().parents[1]); args=args_parser.parse_args(); root=args_parser.parse_args().root.resolve()
+    args_parser=argparse.ArgumentParser(description=__doc__)
+    args_parser.add_argument("--check-remote",action="store_true")
+    args_parser.add_argument("--root",type=Path,default=Path(__file__).resolve().parents[1])
+    args=args_parser.parse_args()
+    root=args.root.resolve()
     try:
         release=validate_release(root)
         validate_page(read(root/"site/index.html"),"en",ROOT_URL,str(release["version"]),False)
