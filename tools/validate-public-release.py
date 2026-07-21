@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate ArSonKuPik release integrity, localized pages and V3 runtime."""
+"""Validate ArSonKuPik release integrity, localized pages and V4 runtime."""
 from __future__ import annotations
 
 import argparse, json, re, sys, urllib.error, urllib.request
@@ -97,14 +97,17 @@ def validate_sitemap(root: Path) -> None:
 
 
 def validate_runtime(root: Path) -> None:
-    app=read(root/"site/app.js"); trial=read(root/"site/trial-page.js"); experience=read(root/"site/experience-v3.js"); styles=read(root/"site/experience-v3.css")
+    app=read(root/"site/app.js"); trial=read(root/"site/trial-page.js"); experience=read(root/"site/experience-v4.js"); styles=read(root/"site/experience-v4.css")
     for token in ("ID_URL","window.location.assign","ensureAlternate('en'","ensureAlternate('id'","latest-release.js","IntersectionObserver","stopImmediatePropagation","askp:release-ready"):
         require(token in trial, f"Stable locale runtime missing {token}")
-    require("experience-v3.js" in trial and "v3-professional-proof" in trial, "V3 experience is not loaded")
-    for token in ("setupProductPreview","setupPresetExplorer","HTMLDialogElement","data-experience-layer"):
-        require(token in experience, f"V3 proof runtime missing {token}")
-    for selector in (".product-preview-dialog",".preset-toolbar",".preset-filter",".preset-chip"):
-        require(selector in styles, f"V3 proof styles missing {selector}")
+    require("experience-v4.js" in trial and "v4-audio-motion" in trial, "V4 experience is not loaded")
+    for token in ("setupProductPreview","setupPresetExplorer","preset-explorer-ready","preset-browser","setupScrollReveals","setupNavigationState","setupPointerDepth","prefers-reduced-motion"):
+        require(token in experience, f"V4 runtime missing {token}")
+    for selector in (".product-preview-dialog",".preset-universe.preset-explorer-ready",".preset-browser",".preset-toolbar",".motion-ready [data-reveal]",".landing-nav.is-scrolled"):
+        require(selector in styles, f"V4 styles missing {selector}")
+    require("browser.append(toolbar, groupsContainer)" in experience, "Preset browser DOM contract missing")
+    require("minmax(0, 1.32fr)" in styles, "Preset browser desktop grid contract missing")
+    require("@media (prefers-reduced-motion: reduce)" in styles, "Reduced-motion safety missing")
     require("premium-polish.css" not in trial and "landing-v2.css" not in trial, "Core visual CSS must remain static")
     require("fetch('./release.json'" in app, "Release controller must retain its reviewed local manifest request")
 
@@ -118,7 +121,7 @@ def remote_check(urls: list[str]) -> None:
 
 
 def main() -> int:
-    args_parser=argparse.ArgumentParser(description=__doc__); args_parser.add_argument("--check-remote",action="store_true"); args_parser.add_argument("--root",type=Path,default=Path(__file__).resolve().parents[1]); args=args_parser.parse_args(); root=args.root.resolve()
+    args_parser=argparse.ArgumentParser(description=__doc__); args_parser.add_argument("--check-remote",action="store_true"); args_parser.add_argument("--root",type=Path,default=Path(__file__).resolve().parents[1]); args=args_parser.parse_args(); root=args_parser.parse_args().root.resolve()
     try:
         release=validate_release(root)
         validate_page(read(root/"site/index.html"),"en",ROOT_URL,str(release["version"]),False)
@@ -127,6 +130,6 @@ def main() -> int:
         if args.check_remote: remote_check([str(release[k]) for k in ("releaseUrl","installerUrl","vst3Url","standaloneUrl","checksumsUrl")])
     except (AssertionError,json.JSONDecodeError,ElementTree.ParseError,StopIteration,ValueError) as exc:
         print(f"VALIDATION FAILED: {exc}",file=sys.stderr); return 1
-    print(f"Validation passed: product-first EN/ID pages, stable locale runtime, V3 proof experience and release {release['version']}."); return 0
+    print(f"Validation passed: product-first EN/ID pages, stable V4 preset layout, audio motion and release {release['version']}."); return 0
 
 if __name__=="__main__": raise SystemExit(main())
