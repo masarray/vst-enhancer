@@ -1,7 +1,9 @@
 (() => {
   'use strict';
 
-  const CANONICAL_URL = 'https://masarray.github.io/vst-enhancer/';
+  const ROOT_URL = 'https://masarray.github.io/vst-enhancer/';
+  const ID_URL = `${ROOT_URL}id/`;
+  const siteBase = document.documentElement.dataset.siteBase || '.';
   const METADATA = {
     en: {
       title: 'ArSonKuPik — Musical VST3 Audio Enhancer for Windows',
@@ -18,29 +20,14 @@
   };
 
   const latestReleaseScript = document.createElement('script');
-  latestReleaseScript.src = 'latest-release.js';
+  latestReleaseScript.src = `${siteBase}/latest-release.js`;
   latestReleaseScript.async = true;
   latestReleaseScript.setAttribute('data-release-resolver', 'github-latest');
   document.head.append(latestReleaseScript);
 
   document.documentElement.setAttribute('data-visual-polish', 'v2-product-first');
-  document.querySelectorAll('link[rel="alternate"][hreflang]').forEach((link) => link.remove());
-
-  const canonical = document.getElementById('canonical-link');
-  if (canonical) canonical.setAttribute('href', CANONICAL_URL);
-  document.querySelector('meta[property="og:url"]')?.setAttribute('content', CANONICAL_URL);
-
-  const currentUrl = new URL(window.location.href);
-  if (currentUrl.searchParams.has('lang')) {
-    currentUrl.searchParams.delete('lang');
-    const query = currentUrl.searchParams.toString();
-    history.replaceState(null, '', `${currentUrl.pathname}${query ? `?${query}` : ''}${currentUrl.hash}`);
-  }
-
-  document.documentElement.setAttribute('data-canonical-mode', 'single-url');
 
   const currentLanguage = () => document.documentElement.lang === 'id' ? 'id' : 'en';
-
   const translateDynamic = (root = document) => {
     const language = currentLanguage();
     root.querySelectorAll('[data-en][data-id]').forEach((element) => {
@@ -65,6 +52,28 @@
     const dynamicReleaseStatus = document.getElementById('download-release-status');
     if (dynamicReleaseStatus) translateDynamic(dynamicReleaseStatus);
   };
+
+  const ensureAlternate = (language, href) => {
+    let link = document.querySelector(`link[rel="alternate"][hreflang="${language}"]`);
+    if (!link) {
+      link = document.createElement('link');
+      link.rel = 'alternate';
+      link.hreflang = language;
+      document.head.append(link);
+    }
+    link.href = href;
+  };
+  ensureAlternate('en', ROOT_URL);
+  ensureAlternate('id', ID_URL);
+  ensureAlternate('x-default', ROOT_URL);
+
+  document.querySelectorAll('[data-lang-button]').forEach((control) => {
+    control.addEventListener('click', () => {
+      const language = control.dataset.langButton === 'id' ? 'id' : 'en';
+      try { localStorage.setItem('askp-language', language); } catch (_) {}
+      window.location.assign(language === 'id' ? ID_URL : ROOT_URL);
+    });
+  });
 
   applyMetadata();
   new MutationObserver(applyMetadata).observe(document.documentElement, {
@@ -91,7 +100,6 @@
          data-en="Release details"
          data-id="Detail rilis">Release details</a>
     `;
-
     translateDynamic(releaseStatus);
     downloadHeading.after(releaseStatus);
 
