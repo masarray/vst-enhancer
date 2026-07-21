@@ -13,12 +13,12 @@
   document.head.append(latestReleaseScript);
 
   const experienceScript = document.createElement('script');
-  experienceScript.src = `${siteBase}/experience-v3.js`;
+  experienceScript.src = `${siteBase}/experience-v4.js`;
   experienceScript.defer = true;
-  experienceScript.setAttribute('data-experience-loader', 'v3-proof-ready');
+  experienceScript.setAttribute('data-experience-loader', 'v4-audio-motion');
   document.head.append(experienceScript);
 
-  document.documentElement.setAttribute('data-visual-polish', 'v3-professional-proof');
+  document.documentElement.setAttribute('data-visual-polish', 'v4-audio-motion');
 
   const translateToPageLanguage = (root = document) => {
     document.documentElement.lang = pageLanguage;
