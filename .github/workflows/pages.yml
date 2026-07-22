@@ -5,7 +5,12 @@ on:
     branches: ["main"]
     paths:
       - "site/**"
+      - "tools/sync-latest-release.py"
+      - "tools/validate-public-release.py"
+      - "tools/validate-latest-release.py"
       - ".github/workflows/pages.yml"
+  release:
+    types: [published, edited]
   workflow_dispatch:
 
 permissions:
@@ -27,13 +32,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Validate landing page and binary assets
+      - name: Synchronize latest GitHub Release
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python tools/sync-latest-release.py
+
+      - name: Validate landing page and release metadata
+        run: |
+          python tools/validate-public-release.py
+          python tools/validate-latest-release.py
+
+      - name: Validate landing page binary assets
         shell: bash
         run: |
-          test -f site/index.html
-          test -f site/styles.css
-          test -f site/app.js
-          test -f site/release.json
           test -s site/assets/arsonkupik-vst-ui-v050.webp
           test -s site/assets/arsonkupik-vst-favicon.ico
           test -s site/assets/arsonkupik-vst-favicon-96.png
