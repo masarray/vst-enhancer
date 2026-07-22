@@ -41,9 +41,12 @@ def main() -> int:
     for token in (
         "release:",
         "types: [published, edited]",
-        "python tools/sync-latest-release.py",
+        "ref: ${{ github.event.repository.default_branch }}",
+        "actions/setup-python@v5",
+        "python tools/sync-latest-release.py --allow-reviewed-fallback",
         "python tools/validate-public-release.py",
         "python tools/validate-latest-release.py",
+        "node --check site/site-v6.js",
     ):
         require(token in workflow, f"Pages workflow missing {token}")
 
@@ -53,6 +56,10 @@ def main() -> int:
         "releaseHighlights",
         "update_manifest",
         "update_html",
+        "load_reviewed_release",
+        "allow-reviewed-fallback",
+        "time.sleep",
+        "after {attempts} attempts",
     ):
         require(token in sync, f"Release synchronizer missing {token}")
 
@@ -93,11 +100,16 @@ def main() -> int:
     require(len(release["releaseHighlights"]) == 3, "Release-note highlights were not extracted")
     require(release["installerName"].endswith("Setup.exe"), "Safe installer selection failed")
 
+    reviewed = module.load_reviewed_release(root)
+    require(reviewed["version"].startswith("v"), "Reviewed fallback did not preserve a semantic version")
+    require(reviewed["installerName"].endswith("Setup.exe"), "Reviewed fallback installer is invalid")
+    require(reviewed["releaseUrl"].startswith("https://github.com/masarray/vst-enhancer/releases/"), "Reviewed fallback release URL is invalid")
+
     main_manifest = json.loads((root / "site/release.json").read_text(encoding="utf-8"))
     id_manifest = json.loads((root / "site/id/release.json").read_text(encoding="utf-8"))
     require(main_manifest == id_manifest, "Localized release manifests drifted")
 
-    print("Validated automatic latest-release resolution, highlights, asset safety, and Pages triggers.")
+    print("Validated latest-release resolution, retry/fallback resilience, asset safety, and Pages triggers.")
     return 0
 
 

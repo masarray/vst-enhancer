@@ -29,18 +29,31 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout default branch
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          fetch-depth: 1
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
 
       - name: Synchronize latest GitHub Release
         env:
           GITHUB_TOKEN: ${{ github.token }}
-        run: python tools/sync-latest-release.py
+        run: python tools/sync-latest-release.py --allow-reviewed-fallback
 
       - name: Validate landing page and release metadata
         run: |
           python tools/validate-public-release.py
           python tools/validate-latest-release.py
+
+      - name: Validate JavaScript syntax
+        run: |
+          node --check site/site-v6.js
+          node --check site/experience-v4.js
 
       - name: Validate landing page binary assets
         shell: bash
