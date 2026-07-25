@@ -87,7 +87,8 @@ def main() -> int:
         "Musical VST3 audio enhancer for Windows",
         "Fuller, clearer and more dimensional sound",
         "Mas Ari Signature",
-        "40 curated starting points",
+        "41 curated starting points",
+        "Blues Club",
         "Your own audio is the real demo",
         "Download free for Windows",
         "No account or card",
@@ -99,12 +100,13 @@ def main() -> int:
     for phrase in (
         "VST3 audio enhancer musikal untuk Windows",
         "Suara lebih berisi, jernih, dan berdimensi",
-        "40 titik awal terkurasi",
+        "41 titik awal terkurasi",
+        "Blues Club",
         "Tanpa tagihan otomatis",
     ):
         require(phrase in localized, f"Localized landing is missing: {phrase}")
 
-    require("USD 25" not in landing, "Price must remain outside the main product landing")
+    require("USD 25" not in landing + localized + activation, "Stale USD offer remains")
     require('href="activation/"' in landing, "English landing must link optional activation")
     require('href="../activation/"' in localized, "Indonesian landing must link optional activation")
     require('id="mobile-download-bar"' in landing and 'id="mobile-download-bar"' in localized, "Both pages need mobile download CTA")
@@ -122,14 +124,8 @@ def main() -> int:
     require("app.js" not in landing + localized and "trial-page.js" not in landing + localized, "Legacy landing controllers must not load")
 
     for token in (
-        "setupProductPreview",
-        "setupPresetExplorer",
-        "preset-explorer-ready",
-        "preset-browser",
-        "setupScrollReveals",
-        "setupNavigationState",
-        "setupPointerDepth",
-        "prefers-reduced-motion",
+        "setupProductPreview", "setupPresetExplorer", "preset-explorer-ready", "preset-browser",
+        "setupScrollReveals", "setupNavigationState", "setupPointerDepth", "prefers-reduced-motion",
     ):
         require(token in experience_js, f"Audio experience is missing {token}")
 
@@ -143,10 +139,14 @@ def main() -> int:
     for token in (".language-switch a", ".mobile-nav-panel", "@media (max-width: 860px)"):
         require(token in hardening_css, f"Mobile/global shell contract is missing {token}")
 
-    require("trustedCheckoutUrl" in activation_js, "Activation page must validate checkout URLs")
-    require("purchaseAllowedHosts" in activation_js, "Activation page must allowlist checkout hosts")
-    require(release.get("purchaseCheckoutAvailable") is False, "Checkout must remain disabled until configured")
-    require("purchaseUrl" not in release, "Disabled checkout must not publish a purchase URL")
+    require("trustedCheckoutUrl" in activation_js, "Activation page must preserve future direct-checkout URL validation")
+    require("purchaseAllowedHosts" in activation_js, "Activation page must preserve future checkout host allowlisting")
+    require("inAppCheckoutAvailable" in activation_js, "Activation page must describe the current in-app checkout")
+    require(release.get("purchaseCheckoutAvailable") is False, "Direct website checkout must remain disabled")
+    require(release.get("inAppCheckoutAvailable") is True, "In-app checkout must remain enabled")
+    require(release.get("activationPriceAmount") == 399000 and release.get("priceCurrency") == "IDR", "Current activation price drift")
+    require(release.get("maxActiveComputers") == 1, "Current active-computer policy drift")
+    require("purchaseUrl" not in release, "Public manifest must not publish a direct payment URL")
     require("font-weight: 610" in landing_css, "Refined headline weight must remain")
     require("@media (prefers-reduced-motion: reduce)" in experience_css, "Reduced-motion support is missing")
 
@@ -158,8 +158,8 @@ def main() -> int:
         require(token not in public_text, f"Prohibited token: {token}")
 
     print(
-        "Product-first V6 validation passed: static EN/ID routes, one release controller, hyperlink locales, "
-        "mobile navigation, readable typography, audio motion and optional activation separation."
+        "Product-first V6 validation passed: 41 presets, static EN/ID routes, one release controller, "
+        "mobile navigation, readable typography and in-app activation separation."
     )
     return 0
 
