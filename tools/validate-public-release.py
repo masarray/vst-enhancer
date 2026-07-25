@@ -108,16 +108,33 @@ def validate_release(root: Path) -> dict:
     release = json.loads(read(root / "site/release.json"))
     localized = json.loads(read(root / "site/id/release.json"))
     require(release == localized, "Localized release manifest drift")
+
     required = {
         "schemaVersion", "version", "distributionEnabled", "evaluationDays",
-        "purchaseCheckoutAvailable", "releaseUrl", "installerUrl", "vst3Url",
-        "standaloneUrl", "checksumsUrl", "unsigned", "signatureStatus"
+        "purchaseCheckoutAvailable", "inAppCheckoutAvailable", "purchaseStatus",
+        "activationPriceAmount", "activationPriceFormatted", "priceCurrency",
+        "maxActiveComputers", "activeComputerPolicy", "checkoutProvider",
+        "checkoutMethod", "purchasePageIndexable", "releaseUrl", "installerUrl",
+        "vst3Url", "standaloneUrl", "checksumsUrl", "unsigned", "signatureStatus"
     }
     require(not required.difference(release), f"release.json missing {sorted(required.difference(release))}")
     require(VERSION_RE.fullmatch(str(release["version"])) is not None, "Invalid version")
-    require(release["schemaVersion"] >= 2 and release["distributionEnabled"] is True, "Release schema/status invalid")
+    require(release["schemaVersion"] >= 3 and release["distributionEnabled"] is True, "Release schema/status invalid")
     require(release["automaticCharge"] is False and release["subscription"] is False and release["purchaseObligation"] is False, "No-pressure licence flags changed")
-    require(release["purchaseCheckoutAvailable"] is False and "purchaseUrl" not in release, "Checkout published before configuration")
+
+    # Public web checkout remains intentionally disabled. Purchase is initiated in
+    # the application through the reviewed hosted Midtrans QRIS flow.
+    require(release["purchaseCheckoutAvailable"] is False and "purchaseUrl" not in release, "Direct web checkout must stay disabled")
+    require(release["inAppCheckoutAvailable"] is True, "In-application checkout availability drift")
+    require(release["purchaseStatus"] == "available-in-app", "Purchase status must identify the in-app flow")
+    require(release["activationPriceAmount"] == 399000, "Activation amount drift")
+    require(release["activationPriceFormatted"] == "Rp399.000", "Activation display price drift")
+    require(release["priceCurrency"] == "IDR", "Activation currency drift")
+    require(release["maxActiveComputers"] == 1, "Active-computer limit drift")
+    require(release["activeComputerPolicy"] == "one-active-at-a-time", "Active-computer policy drift")
+    require(release["checkoutProvider"] == "Midtrans" and release["checkoutMethod"] == "QRIS", "Checkout provider/method drift")
+    require(release["purchasePageIndexable"] is False, "Activation information page must remain noindex without direct web checkout")
+
     version = str(release["version"])
     require(str(release["releaseUrl"]).startswith(RELEASE_ROOT) and str(release["releaseUrl"]).endswith("/tag/" + version), "Release URL mismatch")
     endings = {
@@ -146,12 +163,20 @@ def validate_page(text: str, language: str, canonical: str, version: str, prefix
     software = next(item for item in graph if item.get("@type") == "SoftwareApplication")
     require(software.get("softwareVersion") == version.lstrip("v"), f"{canonical} structured version mismatch")
     require(software.get("url") == canonical and software.get("inLanguage") == language, f"{canonical} structured locale mismatch")
+    require(any("41" in str(item) and "preset" in str(item).lower() for item in software.get("featureList", [])), f"{canonical} structured preset count drift")
+
     for item in ("main", "workflow", "features", "presets", "download", "faq"):
         require(item in parsed.ids, f"{canonical} missing #{item}")
     require("for-you" in parsed.ids or "sound" in parsed.ids, f"{canonical} missing flagship sound section")
     expected_styles = {f"{prefix}landing-v2.css", f"{prefix}experience-v4.css", f"{prefix}typography-v5.css", f"{prefix}hardening-v6.css"}
     require(expected_styles.issubset(set(parsed.styles)), f"{canonical} static styles incomplete")
     require(f"{prefix}site-v6.js" in parsed.scripts and f"{prefix}experience-v4.js" in parsed.scripts, f"{canonical} V6 scripts incomplete")
+
+    expected_count = "41 titik awal terkurasi" if language == "id" else "41 curated starting points"
+    require(expected_count in text, f"{canonical} visible preset count drift")
+    require("<strong>Creative</strong><span>20</span>" in text, f"{canonical} creative preset count drift")
+    require("Blues Club" in text, f"{canonical} Blues Club missing")
+    require("40 curated" not in text and "40 preset" not in text and "40 titik" not in text, f"{canonical} stale 40-preset copy remains")
 
 
 def validate_sitemap(root: Path) -> None:
@@ -167,6 +192,7 @@ def validate_sitemap(root: Path) -> None:
 def validate_runtime(root: Path) -> None:
     site_js = read(root / "site/site-v6.js")
     experience = read(root / "site/experience-v4.js")
+    activation = read(root / "site/activation/activation.js")
     styles = read(root / "site/experience-v4.css")
     typography = read(root / "site/typography-v5.css")
     hardening = read(root / "site/hardening-v6.css")
@@ -179,6 +205,10 @@ def validate_runtime(root: Path) -> None:
     for token in ("setupProductPreview", "setupPresetExplorer", "preset-explorer-ready", "preset-browser", "setupScrollReveals", "setupNavigationState", "setupPointerDepth", "prefers-reduced-motion"):
         require(token in experience, f"Audio runtime missing {token}")
     require("document.createElement('link')" not in experience, "Audio runtime must not inject CSS")
+
+    for token in ("inAppCheckoutAvailable", "activationPriceFormatted", "Midtrans", "QRIS", "one active"):
+        require(token in activation, f"Activation runtime missing {token}")
+
     for selector in (".product-preview-dialog", ".preset-universe.preset-explorer-ready", ".preset-browser", ".preset-toolbar", ".motion-ready [data-reveal]", ".landing-nav.is-scrolled"):
         require(selector in styles, f"Audio styles missing {selector}")
     for token in ("--landing-copy: 16px", "--type-card: 14.5px", ".faq-grid p", "--type-card: 15px"):
@@ -192,9 +222,17 @@ def validate_runtime(root: Path) -> None:
         require(content.count("{") == content.count("}"), f"{name} stylesheet has unbalanced braces")
 
 
+def validate_public_terms(root: Path) -> None:
+    combined = "\n".join(read(root / name) for name in ("README.md", "EULA.txt", "PURCHASE_TERMS.txt", "PRIVACY.txt"))
+    for token in ("IDR 399,000", "one active", "Midtrans", "QRIS"):
+        require(token.lower() in combined.lower(), f"Public terms missing {token}")
+    require("USD 25" not in combined, "Stale USD 25 public offer remains")
+    require("up to two active computers" not in combined.lower(), "Stale two-computer public offer remains")
+
+
 def remote_check(urls: list[str]) -> None:
     for url in urls:
-        request = urllib.request.Request(url, method="HEAD", headers={"User-Agent": "ArSonKuPik-validator/6.0"})
+        request = urllib.request.Request(url, method="HEAD", headers={"User-Agent": "ArSonKuPik-validator/6.1"})
         try:
             with urllib.request.urlopen(request, timeout=20) as response:
                 require(200 <= response.status < 400, f"Remote status {response.status}: {url}")
@@ -214,12 +252,13 @@ def main() -> int:
         validate_page(read(root / "site/id/index.html"), "id", ID_URL, str(release["version"]), "../")
         validate_sitemap(root)
         validate_runtime(root)
+        validate_public_terms(root)
         if args.check_remote:
             remote_check([str(release[key]) for key in ("releaseUrl", "installerUrl", "vst3Url", "standaloneUrl", "checksumsUrl")])
     except (AssertionError, json.JSONDecodeError, ElementTree.ParseError, StopIteration, ValueError) as exc:
         print(f"VALIDATION FAILED: {exc}", file=sys.stderr)
         return 1
-    print(f"Validation passed: V6 static EN/ID shell, single release runtime, audio UX, readable typography and release {release['version']}.")
+    print(f"Validation passed: bilingual 41-preset shell, IDR in-app activation policy, audio UX and release {release['version']}.")
     return 0
 
 
