@@ -27,7 +27,10 @@ function Invoke-PythonValidator {
     }
 }
 
+Invoke-PythonValidator -ScriptPath "$PSScriptRoot\sync-public-catalog.py"
+Invoke-PythonValidator -ScriptPath "$PSScriptRoot\sync-latest-release.py" -ScriptArguments @('--allow-reviewed-fallback')
 Invoke-PythonValidator -ScriptPath "$PSScriptRoot\validate-public-release.py" -ScriptArguments $args
+Invoke-PythonValidator -ScriptPath "$PSScriptRoot\validate-latest-release.py"
 Invoke-PythonValidator -ScriptPath "$PSScriptRoot\validate-trial-first-pages.py"
 Invoke-PythonValidator -ScriptPath "$PSScriptRoot\validate-premium-landing.py"
 Invoke-PythonValidator -ScriptPath "$PSScriptRoot\validate-public-audience.py"
