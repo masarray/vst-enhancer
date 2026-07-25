@@ -5,6 +5,7 @@ on:
     branches: ["main"]
     paths:
       - "site/**"
+      - "tools/sync-public-catalog.py"
       - "tools/sync-latest-release.py"
       - "tools/validate-public-release.py"
       - "tools/validate-latest-release.py"
@@ -40,6 +41,9 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Synchronize reviewed public catalog
+        run: python tools/sync-public-catalog.py
+
       - name: Synchronize latest GitHub Release
         env:
           GITHUB_TOKEN: ${{ github.token }}
@@ -54,6 +58,7 @@ jobs:
         run: |
           node --check site/site-v6.js
           node --check site/experience-v4.js
+          node --check site/activation/activation.js
 
       - name: Validate landing page binary assets
         shell: bash
