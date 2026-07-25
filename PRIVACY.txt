@@ -1,11 +1,11 @@
 ARSONKUPIK PRIVACY NOTICE
 
-Effective date: 17 July 2026
+Effective date: 25 July 2026
 
-Tutorial Mas Ari / MasArray is responsible for personal information that it
-receives directly for ArSonKuPik activation, fulfilment, or support. GitHub and
-any future authorised Merchant of Record process information under their own
-privacy terms for the services they provide.
+Tutorial Mas Ari / MasArray is responsible for personal information received
+directly for ArSonKuPik activation, fulfilment, recovery, or support. GitHub,
+Midtrans, and any other authorised infrastructure or payment provider process
+information under their own privacy terms for the services they provide.
 
 1. LOCAL AUDIO PROCESSING
 
@@ -14,22 +14,32 @@ not intentionally collect or transmit audio, DAW projects, parameter values,
 preset selections, licence codes, crash analytics, advertising identifiers, or
 usage analytics during normal operation.
 
-2. OFFLINE ACTIVATION
+2. COMPUTER REQUEST ID AND ACTIVATION
 
-The Computer Request ID is generated locally. It is not transmitted
-automatically. It is shared with Tutorial Mas Ari / MasArray or an authorised
-activation service only when the user chooses to copy and send it to request an
-activation code. Activation codes are validated locally and no permanent
-background licence service is required.
+The Computer Request ID is generated locally. It is used to bind an activation to
+a specific computer.
 
-3. MANUAL UPDATE CHECK
+The Computer Request ID is not sent during ordinary audio processing. It may be
+shared with Tutorial Mas Ari / MasArray or an authorised activation service when
+the user deliberately starts or resumes a purchase, activation, fulfilment, or
+recovery flow. Manual activation also allows the user to copy and send the value.
 
-ArSonKuPik makes a network request only when the user manually presses the update
-check control. The request reads a small public release manifest hosted through
-the project's public website or GitHub infrastructure. The hosting provider may
-receive ordinary connection information such as an IP address, timestamp, user
-agent, and request path under its own privacy terms. ArSonKuPik does not append
-audio, project, licence, preset, or analytics data to that request.
+Activation codes are validated locally. Normal audio processing does not require
+a permanent background licence service or permanent internet connection.
+
+3. BOUNDED UPDATE CHECK
+
+A small public-release metadata request may occur after the application has been
+open for about 30 seconds and no more than once per 24 hours. The user may also
+request a manual update check.
+
+The request reads a bounded public release manifest hosted through the project's
+public website or GitHub infrastructure. The request does not include audio,
+project data, presets, parameter values, licence codes, Computer Request IDs,
+order information, or usage analytics.
+
+The hosting provider may receive ordinary connection information such as IP
+address, timestamp, user agent, and request path under its own privacy terms.
 
 4. WEBSITE LANGUAGE PREFERENCE
 
@@ -38,9 +48,8 @@ The public website can store one item in the user's browser local storage:
   askp-language = en or id
 
 This value remembers the selected English or Bahasa Indonesia interface. It is
-not an advertising identifier, is not sent by the website to Tutorial Mas Ari /
-MasArray, and can be removed by clearing site data in the browser. The website
-does not intentionally install advertising or analytics cookies.
+not an advertising identifier and is not intentionally used for behavioural
+advertising or analytics. It can be removed by clearing site data in the browser.
 
 5. WEBSITE DOWNLOADS AND PUBLIC FEEDBACK
 
@@ -50,73 +59,86 @@ under its own privacy policy.
 
 Public issue reports are visible to other users. Do not post activation codes,
 Computer Request IDs, order records, proof-of-purchase documents, private project
-files, customer audio, personal information, or confidential material in a
-public issue. Security vulnerabilities must be reported privately according to
+files, customer audio, personal information, or confidential material in a public
+issue. Security vulnerabilities must be reported privately according to
 SECURITY.md.
 
-6. EVALUATION DOWNLOAD AND PAYMENT SEPARATION
+6. EVALUATION AND PAYMENT SEPARATION
 
 No payment card is required for the 365-day evaluation, and ArSonKuPik cannot
-charge a user automatically when the evaluation ends. Availability of the public
-evaluation download is separate from availability of paid checkout.
+charge a user automatically when the evaluation ends. The public evaluation
+download is separate from optional paid activation.
 
-Paid checkout is not enabled until an authorised provider can display the seller
-identity, final amount and currency, tax, payment methods, refund information,
-privacy notice, and provider terms before payment.
+A purchase begins only when the user deliberately opens or resumes the activation
+flow. The current supported purchase flow is initiated from the ArSonKuPik
+activation card and uses an authorised hosted Midtrans QRIS checkout.
 
-When a user voluntarily completes an authorised purchase, the Merchant of Record
-will process payment details, tax, fraud checks, refunds, receipts, and related
-data under its own terms and privacy notice. Tutorial Mas Ari / MasArray should
-receive only information reasonably needed for fulfilment and support, such as
-order ID, customer contact information, product, payment status, refund status,
-and licence entitlement. ArSonKuPik and its public repository do not store
-payment-card data.
+The checkout or payment provider may process contact information, payment method,
+QRIS status, transaction identifiers, amount, currency, fraud signals, receipt,
+refund, reversal, and chargeback information under its own terms and privacy
+notice. ArSonKuPik and this public repository do not store payment-card data.
 
-7. SUPPORT AND ACTIVATION RECORDS
+7. ORDER VERIFICATION AND AUTOMATIC ACTIVATION
 
-When a user voluntarily contacts the Licensor or requests activation, the
-supplied message, contact details, proof of purchase, Computer Request ID,
-activation history, and troubleshooting information may be retained as
-reasonably necessary to:
+After a purchase is initiated, ArSonKuPik may store a limited local order
+capability or order reference so the application can resume verification after a
+DAW or application restart and after a displayed QR code expires.
+
+A low-priority process-wide worker may poll the authorised service for a bounded
+period to determine whether the user-initiated order has been paid. This work is
+outside the audio and DSP paths. Polling stops after the configured verification
+window and does not run forever.
+
+After verified payment, information reasonably necessary to create and deliver a
+signed ASKP-A1 activation may be processed, including order identifier, payment
+status, product, Computer Request ID, activation status, and minimum customer
+contact information. Manual activation remains available as a fallback.
+
+8. SUPPORT, RECOVERY, AND ACTIVATION RECORDS
+
+When a user contacts the Licensor or requests purchase fulfilment, activation,
+reissue, or recovery, the supplied message, contact details, proof of purchase,
+order history, Computer Request ID, activation history, and troubleshooting
+information may be retained as reasonably necessary to:
 
 - fulfil the purchase and administer the licence;
+- verify entitlement for reinstall, repair, or replacement-computer recovery;
 - provide support and investigate reproducible defects;
-- prevent fraud, duplicated entitlement, and licence abuse;
+- prevent fraud, duplicate entitlement, and licence abuse;
 - maintain accounting and transaction records; and
 - comply with legal obligations or resolve disputes.
 
 Retention depends on the purpose, licence lifetime, support history, transaction
 status, and applicable legal or accounting requirements. Information that is no
-longer reasonably required should be deleted, anonymised, or securely archived
-as appropriate. Do not send audio, projects, identity documents, or other
-sensitive data unless specifically requested and a suitable private transfer
-method has been agreed.
+longer reasonably required should be deleted, anonymised, or securely archived as
+appropriate. Do not send audio, projects, identity documents, or other sensitive
+data unless specifically requested and a suitable private transfer method has
+been agreed.
 
-8. INTERNATIONAL SERVICE PROVIDERS
+9. INTERNATIONAL SERVICE PROVIDERS
 
-GitHub and any future checkout, email, storage, or support provider may process
-connection or transaction information in countries other than the user's own,
-according to their infrastructure and privacy terms. Any future checkout must
-identify the provider and applicable privacy information before payment.
-
-9. NO AUTOMATED AUDIO PROFILING
-
-ArSonKuPik does not use uploaded audio, project content, or usage analytics to
-build advertising profiles or make automated decisions about users. A future
-Merchant of Record may perform payment-fraud checks under its own disclosed
+GitHub, Midtrans, and any authorised checkout, email, hosting, storage, signing,
+licence, or support provider may process connection or transaction information in
+countries other than the user's own according to their infrastructure and privacy
 terms.
 
-10. USER REQUESTS AND CONTACT
+10. NO AUTOMATED AUDIO PROFILING
+
+ArSonKuPik does not use uploaded audio, project content, or usage analytics to
+build advertising profiles or make automated decisions about users. An authorised
+payment provider may perform payment-fraud checks under its disclosed terms.
+
+11. USER REQUESTS AND CONTACT
 
 Product and privacy information:
 https://github.com/masarray/vst-enhancer
 
 For a non-confidential privacy question, use the official support information in
 SUPPORT.md. Do not place personal data in a public issue. If private contact is
-needed, request a private contact route without disclosing the underlying
-personal information publicly.
+needed, request a private contact route without disclosing the underlying personal
+information publicly.
 
-11. CHANGES TO THIS NOTICE
+12. CHANGES TO THIS NOTICE
 
 This notice may be updated when the product, hosting, sales, activation, or
 support process changes. Material changes will be published with a new effective
