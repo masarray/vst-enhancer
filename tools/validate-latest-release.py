@@ -24,44 +24,39 @@ def main() -> int:
     root = Path(__file__).resolve().parents[1]
     runtime = (root / "site/site-v6.js").read_text(encoding="utf-8")
     workflow = (root / ".github/workflows/pages.yml").read_text(encoding="utf-8")
+    catalog = (root / "tools/sync-public-catalog.py").read_text(encoding="utf-8")
     sync_path = root / "tools/sync-latest-release.py"
     sync = sync_path.read_text(encoding="utf-8")
 
     for token in (
-        "api.github.com/repos/${REPOSITORY}/releases/latest",
-        "parseGitHubRelease",
-        "extractHighlights",
-        "data-release-highlights",
-        "releaseHighlights",
-        "fetchJson(LATEST_API",
-        "release.json",
+        "api.github.com/repos/${REPOSITORY}/releases/latest", "parseGitHubRelease",
+        "extractHighlights", "data-release-highlights", "releaseHighlights",
+        "fetchJson(LATEST_API", "release.json",
     ):
         require(token in runtime, f"Latest-release runtime missing {token}")
 
     for token in (
-        "release:",
-        "types: [published, edited]",
-        "ref: ${{ github.event.repository.default_branch }}",
-        "actions/setup-python@v5",
+        "release:", "types: [published, edited]",
+        "ref: ${{ github.event.repository.default_branch }}", "actions/setup-python@v5",
+        "python tools/sync-public-catalog.py",
         "python tools/sync-latest-release.py --allow-reviewed-fallback",
-        "python tools/validate-public-release.py",
-        "python tools/validate-latest-release.py",
-        "node --check site/site-v6.js",
+        "python tools/validate-public-release.py", "python tools/validate-latest-release.py",
+        "node --check site/site-v6.js", "node --check site/activation/activation.js",
     ):
         require(token in workflow, f"Pages workflow missing {token}")
 
     for token in (
-        "GITHUB_TOKEN",
-        "releases/latest",
-        "releaseHighlights",
-        "update_manifest",
-        "update_html",
-        "load_reviewed_release",
-        "allow-reviewed-fallback",
-        "time.sleep",
-        "after {attempts} attempts",
+        "GITHUB_TOKEN", "releases/latest", "releaseHighlights", "update_manifest",
+        "update_html", "load_reviewed_release", "allow-reviewed-fallback",
+        "time.sleep", "after {attempts} attempts",
     ):
         require(token in sync, f"Release synchronizer missing {token}")
+
+    for token in (
+        "41 curated starting points", "41 titik awal terkurasi", "Blues Club",
+        "Creative</strong><span>20", "structured preset count", "updater disclosure",
+    ):
+        require(token in catalog, f"Public catalog synchronizer missing {token}")
 
     module = load_module(sync_path)
     fixture = {
@@ -73,26 +68,10 @@ def main() -> int:
         "html_url": "https://github.com/masarray/vst-enhancer/releases/tag/v9.8.7",
         "body": "## Improvements\n- Faster processing.\n- More stable output level.\n- Clearer release information.",
         "assets": [
-            {
-                "name": "ArSonKuPik-v9.8.7-Windows-x64-Setup.exe",
-                "browser_download_url": "https://github.com/masarray/vst-enhancer/releases/download/v9.8.7/ArSonKuPik-v9.8.7-Windows-x64-Setup.exe",
-                "state": "uploaded",
-            },
-            {
-                "name": "ArSonKuPik-v9.8.7-Windows-x64-VST3.zip",
-                "browser_download_url": "https://github.com/masarray/vst-enhancer/releases/download/v9.8.7/ArSonKuPik-v9.8.7-Windows-x64-VST3.zip",
-                "state": "uploaded",
-            },
-            {
-                "name": "ArSonKuPik-v9.8.7-Windows-x64-Standalone.zip",
-                "browser_download_url": "https://github.com/masarray/vst-enhancer/releases/download/v9.8.7/ArSonKuPik-v9.8.7-Windows-x64-Standalone.zip",
-                "state": "uploaded",
-            },
-            {
-                "name": "SHA256SUMS.txt",
-                "browser_download_url": "https://github.com/masarray/vst-enhancer/releases/download/v9.8.7/SHA256SUMS.txt",
-                "state": "uploaded",
-            },
+            {"name": "ArSonKuPik-v9.8.7-Windows-x64-Setup.exe", "browser_download_url": "https://github.com/masarray/vst-enhancer/releases/download/v9.8.7/ArSonKuPik-v9.8.7-Windows-x64-Setup.exe", "state": "uploaded"},
+            {"name": "ArSonKuPik-v9.8.7-Windows-x64-VST3.zip", "browser_download_url": "https://github.com/masarray/vst-enhancer/releases/download/v9.8.7/ArSonKuPik-v9.8.7-Windows-x64-VST3.zip", "state": "uploaded"},
+            {"name": "ArSonKuPik-v9.8.7-Windows-x64-Standalone.zip", "browser_download_url": "https://github.com/masarray/vst-enhancer/releases/download/v9.8.7/ArSonKuPik-v9.8.7-Windows-x64-Standalone.zip", "state": "uploaded"},
+            {"name": "SHA256SUMS.txt", "browser_download_url": "https://github.com/masarray/vst-enhancer/releases/download/v9.8.7/SHA256SUMS.txt", "state": "uploaded"},
         ],
     }
     release = module.normalize_release(fixture)
@@ -109,7 +88,7 @@ def main() -> int:
     id_manifest = json.loads((root / "site/id/release.json").read_text(encoding="utf-8"))
     require(main_manifest == id_manifest, "Localized release manifests drifted")
 
-    print("Validated latest-release resolution, retry/fallback resilience, asset safety, and Pages triggers.")
+    print("Validated catalog sync, latest-release resolution, retry/fallback resilience, asset safety, and Pages triggers.")
     return 0
 
 
