@@ -64,10 +64,8 @@ def main() -> int:
 
     for page, prefix in ((landing_page, ""), (localized_page, "../")):
         expected_styles = {
-            f"{prefix}landing-v2.css",
-            f"{prefix}experience-v4.css",
-            f"{prefix}typography-v5.css",
-            f"{prefix}hardening-v6.css",
+            f"{prefix}landing-v2.css", f"{prefix}experience-v4.css",
+            f"{prefix}typography-v5.css", f"{prefix}hardening-v6.css",
         }
         require(expected_styles.issubset(set(page.styles)), f"Missing static V6 styles for prefix {prefix!r}")
         script_sources = {item.get("src", "") for item in page.scripts}
@@ -80,7 +78,8 @@ def main() -> int:
         "Fuller, clearer and more dimensional sound",
         "Mas Ari Signature brings the music closer.",
         "Shape the result, not the complexity.",
-        "40 curated starting points",
+        "41 curated starting points",
+        "Blues Club",
         "Premium sound. Focused workflow. Zero pressure.",
     ):
         require(phrase in landing, f"Missing English product story: {phrase}")
@@ -89,26 +88,21 @@ def main() -> int:
         "VST3 audio enhancer musikal untuk Windows",
         "Suara lebih berisi, jernih, dan berdimensi",
         "Mas Ari Signature membawa musik terasa lebih dekat.",
-        "40 titik awal terkurasi",
+        "41 titik awal terkurasi",
+        "Blues Club",
     ):
         require(phrase in localized, f"Missing Indonesian product story: {phrase}")
 
+    require("40 curated" not in landing and "40 titik" not in localized, "Stale 40-preset copy remains")
     require('hreflang="en"' in landing and 'hreflang="id"' in landing and 'hreflang="x-default"' in landing, "English hreflang must be static")
     require('hreflang="en"' in localized and 'hreflang="id"' in localized and 'hreflang="x-default"' in localized, "Indonesian hreflang must be static")
     require('class="mobile-nav"' in landing and 'class="mobile-nav"' in localized, "Native mobile navigation is missing")
     require('aria-current="page"' in landing and 'aria-current="page"' in localized, "Current language state is missing")
 
     for token in (
-        "setupProductPreview",
-        "setupPresetExplorer",
-        "preset-explorer-ready",
-        "preset-browser",
-        "setupScrollReveals",
-        "setupNavigationState",
-        "setupPointerDepth",
-        "setupSignalAccent",
-        "prefers-reduced-motion",
-        "data-experience-layer",
+        "setupProductPreview", "setupPresetExplorer", "preset-explorer-ready", "preset-browser",
+        "setupScrollReveals", "setupNavigationState", "setupPointerDepth", "setupSignalAccent",
+        "prefers-reduced-motion", "data-experience-layer",
     ):
         require(token in experience_js, f"Audio experience is missing {token}")
 
@@ -120,13 +114,8 @@ def main() -> int:
     require("data-release-status" in landing and "data-release-status" in localized, "Release status contract is missing")
 
     for token in (
-        "--landing-copy: 16px",
-        "--type-card: 14.5px",
-        "--type-lead: clamp(16.5px",
-        'font-family: "Segoe UI Variable Text"',
-        "text-wrap: pretty",
-        ".faq-grid p",
-        "--type-card: 15px",
+        "--landing-copy: 16px", "--type-card: 14.5px", "--type-lead: clamp(16.5px",
+        'font-family: "Segoe UI Variable Text"', "text-wrap: pretty", ".faq-grid p", "--type-card: 15px",
     ):
         require(token in typography_css, f"Readable typography is missing {token}")
 
@@ -146,8 +135,8 @@ def main() -> int:
         require(token not in public_text, f"Prohibited token: {token}")
 
     print(
-        "V6 premium validation passed: static EN/ID SEO, hyperlink language navigation, one release controller, "
-        "native mobile menu, readable typography, stable preset browser and restrained audio motion."
+        "V6 premium validation passed: 41-preset static EN/ID SEO, hyperlink language navigation, "
+        "one release controller, native mobile menu, readable typography and restrained audio motion."
     )
     return 0
 
