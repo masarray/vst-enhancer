@@ -1,6 +1,76 @@
 # Public Distribution Changelog
 
-## v0.5.13 â€” 18 July 2026
+This changelog covers the public product website, distribution metadata, legal notices, supported packages and public support surface. Proprietary DSP implementation details remain in the private development repository.
+
+## Unreleased — v0.5.18 release candidate
+
+### Stability and real-time safety
+
+- Adds the reviewed P5.3 stability and real-time-safety release candidate.
+- Keeps the audio callback free from dynamic allocation, blocking locks and background-network work.
+- Uses per-preset Gain Match state so rapid preset changes do not inherit an unrelated correction target.
+- Uses a slower, bounded Gain Match engagement after first readiness, manual enable and stale measurement recovery.
+- Reduces creative-coefficient retune scheduling while preserving the approved voicing.
+- Keeps cold-start RAW-to-DSP handover, bypass, preset switching and output protection inside the validated click/crackle limits.
+
+### Public distribution preparation
+
+- Aligns the public preset count with the 41-preset production bank, including Blues Club.
+- Aligns EULA, purchase terms, privacy notice and activation information with the IDR 399,000 one-computer hosted QRIS flow.
+- Aligns the reviewed fallback manifest with the latest actually published release until v0.5.18 binaries are published.
+- Strengthens validation against version, commercial-policy and localized-manifest drift.
+
+> This section does not claim that v0.5.18 has been published. The supported public version remains the release identified by GitHub's `releases/latest` endpoint until the v0.5.18 release and assets exist.
+
+## v0.5.17 — 22 July 2026
+
+### Musical body and preset library
+
+- Added a stable 280–820 Hz Upper Body foundation for fuller electric-guitar power chords, bass-note definition, piano and vocal warmth below 1 kHz.
+- Added the warm, touch-sensitive Blues Club creative preset.
+- Redistributed the Mas Ari Signature low-mid contour for stronger 200–800 Hz continuity while keeping the 315 Hz box region controlled.
+- Preserved the approved 41-preset, latency and JUCE 8.0.14 baseline.
+
+### Startup and level behaviour
+
+- Prewarmed both creative engines before first audio use.
+- Added a peak-safe RAW-to-DSP startup handover.
+- Verified that Gain Match remains monitoring-only and that disabling it restores the normal DSP lift.
+
+### Hosted checkout and activation
+
+- Added hosted Midtrans QRIS checkout initiated from the activation card.
+- Moved checkout polling and order verification to a bounded low-priority process-wide worker outside audio and DSP paths.
+- Preserved paid orders across restart and QR expiry.
+- Added automatic signed ASKP-A1 activation after verified payment with manual fallback.
+- Added duplicate-checkout protection and recoverable fulfilment when a service is temporarily unavailable.
+
+## v0.5.16 — 21 July 2026
+
+### Visual and responsiveness work
+
+- Reduced visualizer and editor overhead while preserving the product-first visual presentation.
+- Kept audio processing and primary meters independent from decorative visual timing.
+- Improved first-open behaviour and reduced heavy editor work during the startup quiet window.
+
+## v0.5.15 — 20 July 2026
+
+### QRIS checkout foundation
+
+- Added the first reviewed in-application QRIS checkout and activation-card workflow.
+- Separated public evaluation download availability from commercial activation.
+- Kept payment, order and activation work outside the real-time audio callback.
+
+## v0.5.14 — 19 July 2026
+
+### Quiet updater
+
+- Added a low-priority bounded update check after an initial delay.
+- Limited automatic release checks to one attempt per 24 hours while retaining manual retry.
+- Limited metadata size and connection duration.
+- Kept credentials, audio, projects, presets, licence values and analytics data out of update requests.
+
+## v0.5.13 — 18 July 2026
 
 ### Performance and UX
 
@@ -21,102 +91,29 @@
 - Reviewed JUCE 8.0.14 dependency baseline.
 - Same 365-day evaluation and project-safe read-only behaviour.
 
-This changelog covers the public product website, distribution metadata, legal notices, supported packages, and public support surface. Proprietary DSP implementation details are not published in this repository.
-
-## Unreleased — latest-release direct downloads
-
-### Download routing
-
-- Changed every public installer CTA to resolve the latest published GitHub Release dynamically.
-- Selects the official Windows installer `.exe` from the latest release assets instead of relying on a version-pinned `release.json` URL.
-- Updates the visible version, installer checksum command, package links, release links, and structured download metadata from the resolved release.
-- Applies the same latest-installer behaviour to the main landing, mobile sticky CTA, final CTA, download card, navigation CTA, and optional-activation page.
-- Rejects portable executables, activation utilities, key tools, non-HTTPS URLs, and assets outside this repository's official release-download path.
-- Locks installer href values so a late response from older local metadata cannot overwrite the latest installer.
-- Falls back only to the repository's `/releases/latest` page when GitHub's latest-release API cannot be resolved; it does not fall back to an older version-specific installer.
-
-### Validation
-
-- Added regression checks for GitHub's latest-release endpoint, official `browser_download_url` use, direct `.exe` selection, stale-link protection, safe fallback behaviour, and activation-page coverage.
-
-## Unreleased — compact trial-first public landing
-
-### Conversion and information architecture
-
-- Reduced the public landing to ten major sections with a compact four-audience strip, one three-minute evaluation flow, a combined controls-and-presets section, and a merged technical-download-installation journey.
-- Reduced the FAQ to eight essential questions and moved legal documents into one optional disclosure.
-- Added a viewport-aware mobile sticky download CTA that appears after the hero action leaves view.
-- Kept Inter as the primary font and formalised a 10 px, 11 px, and 12 px compact typography scale.
-
-### Trust and optional activation
-
-- Kept price and payment details outside the free-evaluation journey.
-- Standardised development-support wording to “may help sustain” so it does not imply that individual payments are earmarked for a vendor or expense.
-- Added future checkout safeguards requiring HTTPS, an exact hostname allowlist, seller and provider identity, currency, tax and refund disclosures, and explicit page-indexing readiness before a payment link can appear.
-- Kept paid checkout disabled and the activation page `noindex,follow` until those requirements are met.
-
-### SEO and validation
-
-- Kept the product on one deterministic canonical URL and removed query-language URLs from the sitemap.
-- Updated validators to prevent the landing from regrowing beyond ten sections or eleven disclosures.
-- Added checks for mobile CTA behaviour, the Inter 10/11/12 px scale, consistent funding language, trusted checkout fields, URL allowlisting, and owner-controlled self-hosted validation.
-
-## Unreleased — trial-first public landing
-
-### Evaluation-first product journey
-
-- Repositioned the main landing page around listening, free evaluation, download confidence, privacy, and honest A/B comparison.
-- Made the 365-day full-editing evaluation, no-account, no-card, no-subscription, no-automatic-charge, and no-purchase-obligation terms prominent.
-- Moved the unsigned Windows package disclosure from the hero into a progressive installation and file-verification section.
-- Added a three-minute evaluation workflow using familiar audio and loudness-matched A/B comparison rather than publishing unverified or misleading audio examples.
-
-### Public audience and readability
-
-- Added dedicated entry paths for first-time users, musicians and creators, producers, and audio engineers.
-- Added plain-language explanations of VST3, Standalone, Windows requirements, local audio processing, and compatibility testing.
-- Expanded the six control descriptions with practical “listen for” guidance.
-- Added task-oriented preset explanations, a visual three-step workflow, technical requirement summaries, and a four-step installation guide.
-- Expanded the bilingual FAQ with a beginner-friendly VST3 versus Standalone explanation.
-- Added responsive presentation rules for desktop, tablet, mobile, keyboard focus, and reduced-motion preferences.
-
-### Optional activation
-
-- Moved price, device limits, activation details, checkout prerequisites, and development-support messaging to a separate `/activation/` page.
-- Marked the activation page `noindex,follow` while paid checkout is not configured.
-- Clarified that activation is a purchase for concrete licence rights, not a donation.
-- Clarified that activation revenue may support independent development, applicable JUCE licensing, testing, documentation, support, security, and trusted Windows distribution without promising that individual payments are earmarked for a particular expense.
-
-### Validation
-
-- Added dependency-free checks for four audience paths, bilingual coverage, plain-language format explanations, installation guidance, price separation, release-driven download links, required visual components, duplicate IDs, and balanced CSS.
-- Kept validation local and manually triggered on the self-hosted runner.
-
 ## v0.5.12 — 17 July 2026
 
 ### Public distribution
 
 - Enabled the reviewed Windows x64 public evaluation release.
-- Published separate installer, VST3 ZIP, Standalone ZIP, and SHA-256 checksum assets.
+- Published separate installer, VST3 ZIP, Standalone ZIP and SHA-256 checksum assets.
 - Declared the JUCE 8.0.14 dependency baseline in public release metadata.
 
 ### Evaluation and licensing
 
 - Published the 365-day full-editing evaluation model.
-- Clarified no-card, no-subscription, and no-automatic-charge behaviour.
+- Clarified no-card, no-subscription and no-automatic-charge behaviour.
 - Documented project-safe read-only behaviour after evaluation.
-- Published the optional USD 25 perpetual-editing offer for the v0.5 generation.
-- Separated evaluation-download availability from paid-checkout availability.
+- Separated evaluation-download availability from optional paid activation.
 
 ### Website and repository
 
 - Rebuilt the bilingual English/Bahasa Indonesia landing page.
-- Added structured software metadata, deterministic canonical metadata, social preview metadata, sitemap support, and release-driven download links.
-- Added clear unsigned-package and SHA-256 verification guidance.
-- Added Security, Support, Privacy, EULA, Purchase Terms, and third-party transparency documents.
-- Added local and self-hosted release validation without requiring GitHub-hosted runner minutes.
+- Added structured software metadata, canonical metadata, social preview metadata, sitemap support and release-driven download links.
+- Added unsigned-package and SHA-256 verification guidance.
+- Added Security, Support, Privacy, EULA, Purchase Terms and third-party transparency documents.
 
 ### Known limitations
 
 - Current Windows packages are unsigned and may trigger Windows SmartScreen or enterprise security-policy warnings.
-- Compatibility varies by DAW, driver, audio interface, sample rate, buffer size, and Windows configuration.
-- Paid checkout is not currently enabled; the public evaluation download is available separately.
+- Compatibility varies by DAW, driver, audio interface, sample rate, buffer size and Windows configuration.
