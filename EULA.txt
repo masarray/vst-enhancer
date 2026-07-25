@@ -1,6 +1,6 @@
 ARSONKUPIK VST ONE-YEAR FREE EVALUATION END USER LICENCE AGREEMENT
 
-Effective date: 17 July 2026
+Effective date: 25 July 2026
 Copyright (C) 2026 Tutorial Mas Ari / MasArray. All rights reserved.
 
 PLEASE READ THIS AGREEMENT BEFORE INSTALLING OR USING ARSONKUPIK. BY INSTALLING,
@@ -42,26 +42,30 @@ Buying an activation is optional. A customer who does not purchase may continue
 to use the project-safe read-only behaviour described above, subject to this
 Agreement and technical compatibility.
 
-4. COMMERCIAL OFFLINE ACTIVATION
+4. COMMERCIAL ACTIVATION
 
 A paid or otherwise authorised activation may restore editing according to the
-purchase terms offered by the Licensor and an authorised checkout provider. For
-the v0.5 evaluation cohort, the published standard offer is a USD 25 perpetual
-editing activation with no subscription and no automatic renewal, before any tax
-required at checkout.
+current purchase terms and authorised checkout. For the ArSonKuPik v0.5 product
+generation, the published standard offer is an IDR 399,000 one-time perpetual
+editing activation with no subscription, automatic renewal, or automatic charge,
+before any tax or fee required to be shown at checkout.
 
-Publishing a price does not by itself make checkout available, create an order,
-or complete a sale. A purchase can occur only through an authorised checkout
-that displays the seller identity, final price and currency, tax, payment method,
-refund information, privacy notice, and applicable provider terms before payment.
-The complete current terms are supplied in PURCHASE_TERMS.txt and through the
-official product channel.
+One completed purchase authorises one active customer-owned or customer-controlled
+computer at a time. An activation is hardware-bound to a Computer Request ID.
+Reasonable recovery for reinstall, repair, or a replacement computer may require
+purchase verification, retirement of a previous activation, and an abuse review.
 
-Activation codes are generated for a specific Computer Request ID. They may not
-be shared, resold, published, forged, modified, or generated without
-authorisation. Reissue or transfer to another computer may require proof of
-purchase, deactivation of a previous computer, and an abuse review. The
-applicable purchase terms state the number of permitted active computers.
+Publishing a price does not by itself create an order. A purchase begins only
+when the user deliberately starts the authorised activation flow. The current
+supported flow is initiated from the ArSonKuPik activation card and uses hosted
+Midtrans QRIS checkout. The complete controlling commercial terms are supplied
+in PURCHASE_TERMS.txt and through the authorised checkout.
+
+After verified payment, the Software is designed to request and apply a signed
+ASKP-A1 activation automatically. Manual activation-code entry remains available
+as a fallback. Activation codes and related order or entitlement capabilities may
+not be shared, resold, published, forged, modified, or generated without
+authorisation.
 
 5. OWNERSHIP
 
@@ -85,9 +89,9 @@ Except where applicable law expressly overrides a restriction, you may not:
   notices; or
 - use the Software or activation system for unlawful activity.
 
-You may make reasonable backup copies solely for your own permitted use.
-Nothing in this Agreement limits any right that applicable law does not permit
-the Licensor to restrict.
+You may make reasonable backup copies solely for your own permitted use. Nothing
+in this Agreement limits any right that applicable law does not permit the
+Licensor to restrict.
 
 7. OFFICIAL DISTRIBUTION, INTEGRITY, AND UNSIGNED BUILDS
 
@@ -117,36 +121,38 @@ major version, operating system, DAW, feature, or compatibility update.
 
 9. PRIVACY AND NETWORK USE
 
-No account or permanent internet connection is required for normal processing
-or offline activation. The Software does not intentionally transmit audio,
-project data, parameter values, preset selections, licence codes, crash
-analytics, advertising identifiers, or usage analytics.
+No account or permanent internet connection is required for normal audio
+processing. The Software does not intentionally transmit audio, project data,
+parameter values, preset selections, licence codes, crash analytics, advertising
+identifiers, or usage analytics.
 
-A network request is made only when you manually request an update check. The
-hosting provider may process ordinary connection data such as an IP address,
-timestamp, user agent, and request path under its own privacy terms. Computer
-Request IDs are generated locally and are shared only when you choose to copy
-and send them to the Licensor or an authorised activation service. See
-PRIVACY.txt for further information.
+A small bounded public-release metadata request may occur after the application
+has been open for about 30 seconds and no more than once per 24 hours. The user
+may also request a manual update check. These requests do not include audio,
+project, preset, licence, or analytics data.
+
+Purchase, order verification, recovery, and activation network activity occurs
+only when the user deliberately starts or resumes the authorised activation flow
+or asks for related recovery. The hosted checkout and payment provider process
+transaction data under their own disclosed terms. See PRIVACY.txt for details.
 
 10. THIRD-PARTY COMPONENTS
 
-ArSonKuPik is built with JUCE 8.0.14 under an active JUCE product licence and
-includes components governed by separate terms, including the Steinberg VST3
-SDK and Plus Jakarta Sans. The complete notices supplied with the Software are
-part of this distribution. Nothing in this Agreement grants rights to use JUCE
-or any third-party SDK separately from the Software.
+ArSonKuPik is built with JUCE 8.0.14 under an applicable JUCE product licence and
+includes components governed by separate terms, including the Steinberg VST3 SDK
+and Plus Jakarta Sans. The complete notices supplied with the Software are part
+of this distribution. Nothing in this Agreement grants rights to use JUCE or any
+third-party SDK separately from the Software.
 
 The DSP lineage includes material from the author's separately published
 MIT-licensed ArSonKuPik project. The required MIT notice is retained in the
-third-party notices. The separately published MIT project remains available
-under its original terms; this does not make the proprietary VST product open
-source.
+third-party notices. The separately published MIT project remains available under
+its original terms; this does not make the proprietary VST product open source.
 
 11. USER RESPONSIBILITY AND AUDIO RESULTS
 
-Audio results depend on source material, settings, monitoring, gain staging,
-host behaviour, drivers, sample rate, buffer size, and other processing. You are
+Audio results depend on source material, settings, monitoring, gain staging, host
+behaviour, drivers, sample rate, buffer size, and other processing. You are
 responsible for listening, level-matching comparisons, keeping backups, and
 verifying final renders before release, delivery, broadcast, or other critical
 use. Product names such as "Smart Protect" or preset names do not replace final
@@ -167,17 +173,17 @@ TO THE MAXIMUM EXTENT PERMITTED BY LAW, THE LICENSOR SHALL NOT BE LIABLE FOR
 INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, LOST WORK,
 LOST DATA, LOST REVENUE, BUSINESS INTERRUPTION, OR LOSS OF OPPORTUNITY ARISING
 FROM USE OR INABILITY TO USE THE SOFTWARE. WHERE LIABILITY CANNOT LAWFULLY BE
-EXCLUDED, THE LICENSOR'S TOTAL LIABILITY SHALL NOT EXCEED THE AMOUNT YOU PAID
-FOR THE SOFTWARE. NOTHING IN THIS AGREEMENT EXCLUDES RIGHTS OR LIABILITY THAT
-CANNOT BE EXCLUDED UNDER APPLICABLE LAW.
+EXCLUDED, THE LICENSOR'S TOTAL LIABILITY SHALL NOT EXCEED THE AMOUNT YOU PAID FOR
+THE SOFTWARE. NOTHING IN THIS AGREEMENT EXCLUDES RIGHTS OR LIABILITY THAT CANNOT
+BE EXCLUDED UNDER APPLICABLE LAW.
 
 14. TERMINATION
 
 This licence terminates automatically if you materially breach this Agreement.
-On termination, you must stop using and delete distributed copies of the
-Software, except where applicable law provides otherwise. Sections concerning
-ownership, restrictions, integrity, warranty, liability, privacy, and
-third-party rights survive termination.
+On termination, you must stop using and delete distributed copies of the Software,
+except where applicable law provides otherwise. Sections concerning ownership,
+restrictions, integrity, warranty, liability, privacy, and third-party rights
+survive termination.
 
 15. GOVERNING LAW
 
@@ -187,12 +193,12 @@ that apply in your place of residence.
 
 16. COMPLETE AGREEMENT AND PRECEDENCE
 
-This Agreement, PURCHASE_TERMS.txt, the applicable checkout and receipt terms,
-and the supplied third-party notices form the complete agreement for your use of
-this version of the Software. For a completed purchase, the transaction-specific
-checkout and receipt terms control transaction details such as seller identity,
-final price, tax, payment, and refund procedure. If any provision is
-unenforceable, the remaining provisions remain in effect.
+This Agreement, PURCHASE_TERMS.txt, the applicable checkout and payment-provider
+terms, receipt, and supplied third-party notices form the complete agreement for
+your use of this version of the Software. For a completed purchase, the
+transaction-specific checkout and receipt terms control transaction details such
+as seller identity, final price, tax, payment, and refund procedure. If any
+provision is unenforceable, the remaining provisions remain in effect.
 
 17. SUPPORT AND SECURITY REPORTING
 
@@ -200,6 +206,6 @@ Product and non-confidential support information:
 https://github.com/masarray/vst-enhancer
 
 Security vulnerabilities must be reported privately according to SECURITY.md.
-Do not publish activation codes, Computer Request IDs, exploit details, private
-projects, customer audio, personal data, or suspected key exposure in a public
-issue.
+Do not publish activation codes, Computer Request IDs, order information, exploit
+details, private projects, customer audio, personal data, or suspected key
+exposure in a public issue.
