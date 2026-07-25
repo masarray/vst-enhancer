@@ -30,12 +30,20 @@ Do not place any of the following in a public issue:
 
 - activation code;
 - Computer Request ID;
-- order ID or receipt;
+- order ID, order capability, or receipt;
 - proof of purchase;
 - personal contact information; or
 - payment information.
 
-Paid checkout is separate from the public evaluation download. A price displayed on the website does not mean checkout is currently enabled.
+The 365-day evaluation remains separate from optional paid activation. The current
+v0.5 activation is IDR 399,000 for one active computer at a time. Purchase is
+initiated deliberately from the activation card inside ArSonKuPik through hosted
+Midtrans QRIS; this public repository does not expose a direct payment link.
+
+For a legitimate reinstall, repaired computer, or replacement-computer request,
+use a private support route and retain the verified purchase email, receipt or
+payment history, order information, and current Computer Request ID. Do not post
+those values publicly.
 
 ### Compatibility question
 
