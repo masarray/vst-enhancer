@@ -2,15 +2,22 @@
 
 This changelog covers the public product website, distribution metadata, legal notices, supported packages and public support surface. Proprietary DSP implementation details remain in the private development repository.
 
-## Unreleased — v0.5.18 release candidate
+## Unreleased — v0.5.18 P6.1 release candidate
+
+### Signature microdetail and low-energy parity
+
+- Adds the reviewed P6 Signature Microdetail & Ear-Tickle calibration for clearer centre-focused Presence, Air and vocal/instrument texture.
+- Keeps generated Side contribution held or slightly reduced, preserving the grounded centre and mono/stereo context safeguards.
+- Replaces tonal per-band Gain Match correction with one attenuation-only full-band loudness scalar so the active DSP character is not flattened during A/B listening.
+- Raises the normal active loudness identity allowance to +0.70 dB and permits at most 0.30 dB of bounded full-band relief when aligned low-transient analysis detects a deficit.
+- Keeps the expected active monitoring lead at or below approximately +1.00 dB while avoiding low-only gain, bass EQ, width changes or phase-altering correction.
+- Retunes the uncached Mas Ari Signature Gain Match startup seed to avoid a bass-light first handover.
 
 ### Stability and real-time safety
 
-- Adds the reviewed P5.3 stability and real-time-safety release candidate.
+- Retains the reviewed P5.3 preset-aware Gain Match cache, stale-target relearning and smooth first/re-enable engagement.
 - Keeps the audio callback free from dynamic allocation, blocking locks and background-network work.
-- Uses per-preset Gain Match state so rapid preset changes do not inherit an unrelated correction target.
-- Uses a slower, bounded Gain Match engagement after first readiness, manual enable and stale measurement recovery.
-- Reduces creative-coefficient retune scheduling while preserving the approved voicing.
+- Reduces creative-coefficient retune scheduling while preserving the approved 41-preset voicing, one-millisecond lookahead and -1 dBFS safety ceiling.
 - Keeps cold-start RAW-to-DSP handover, bypass, preset switching and output protection inside the validated click/crackle limits.
 
 ### Public distribution preparation
