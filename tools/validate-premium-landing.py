@@ -80,7 +80,7 @@ def main() -> int:
         "Fuller, clearer and more dimensional sound",
         "Mas Ari Signature brings the music closer.",
         "Shape the result, not the complexity.",
-        "40 curated starting points",
+        "13 professional starting points",
         "Premium sound. Focused workflow. Zero pressure.",
     ):
         require(phrase in landing, f"Missing English product story: {phrase}")
@@ -89,7 +89,7 @@ def main() -> int:
         "VST3 audio enhancer musikal untuk Windows",
         "Suara lebih berisi, jernih, dan berdimensi",
         "Mas Ari Signature membawa musik terasa lebih dekat.",
-        "40 titik awal terkurasi",
+        "13 titik awal profesional",
     ):
         require(phrase in localized, f"Missing Indonesian product story: {phrase}")
 
@@ -115,7 +115,7 @@ def main() -> int:
     require("document.createElement('link')" not in experience_js, "Experience script must not inject stylesheets")
     require("createElement('link')" not in site_js, "Release controller must not inject stylesheets")
     require("latest-release.js" not in landing + localized, "Second release resolver must not be loaded")
-    require("fetch(`${siteBase}/release.json`" in site_js, "V6 must use one localized-safe manifest request")
+    require("fetchJson(`${siteBase}/release.json`" in site_js, "V6 must use one localized-safe manifest request")
     require("officialReleaseUrl" in site_js and "releases/download/" in site_js, "Official release URL validation is missing")
     require("data-release-status" in landing and "data-release-status" in localized, "Release status contract is missing")
 

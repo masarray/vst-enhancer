@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate compact audience coverage and readable information architecture."""
+"""Validate static localized audience coverage and readable information architecture."""
 
 from __future__ import annotations
 
@@ -12,7 +12,6 @@ class LandingParser(HTMLParser):
     def __init__(self) -> None:
         super().__init__()
         self.ids: list[str] = []
-        self.translated = 0
         self.details = 0
         self.links: list[str] = []
 
@@ -20,9 +19,6 @@ class LandingParser(HTMLParser):
         data = {key: value or "" for key, value in attrs}
         if data.get("id"):
             self.ids.append(data["id"])
-        if "data-en" in data or "data-id" in data:
-            require(bool(data.get("data-en") and data.get("data-id")), f"Missing bilingual value on <{tag}>")
-            self.translated += 1
         if tag == "details":
             self.details += 1
         if tag == "a" and data.get("href"):
@@ -34,19 +30,24 @@ def require(condition: bool, message: str) -> None:
         raise AssertionError(message)
 
 
+def parse(text: str, label: str) -> LandingParser:
+    result = LandingParser()
+    result.feed(text)
+    duplicates = [value for value, count in Counter(result.ids).items() if count > 1]
+    require(not duplicates, f"{label} duplicate HTML ids: {duplicates}")
+    return result
+
+
 def main() -> int:
     root = Path(__file__).resolve().parents[1]
     html = (root / "site" / "index.html").read_text(encoding="utf-8")
+    localized = (root / "site" / "id" / "index.html").read_text(encoding="utf-8")
     css = (root / "site" / "trial.css").read_text(encoding="utf-8")
 
-    parser = LandingParser()
-    parser.feed(html)
-    duplicates = [value for value, count in Counter(parser.ids).items() if count > 1]
-    require(not duplicates, f"Duplicate HTML ids: {duplicates}")
-
-    required_sections = {
+    parser = parse(html, "English")
+    localized_parser = parse(localized, "Indonesian")
+    shared_sections = {
         "main",
-        "for-you",
         "workflow",
         "features",
         "presets",
@@ -57,34 +58,51 @@ def main() -> int:
         "faq",
         "legal",
     }
-    missing = sorted(required_sections.difference(parser.ids))
-    require(not missing, f"Missing reading paths: {missing}")
-    require(parser.translated >= 120, f"Only {parser.translated} bilingual elements found")
-    require(9 <= parser.details <= 11, f"Expected 9-11 disclosures, found {parser.details}")
-    require(html.count("<section") <= 10, "Landing should not exceed ten major sections")
+    require(not shared_sections.difference(parser.ids) and "for-you" in parser.ids,
+            "English reading paths are incomplete")
+    require(not shared_sections.difference(localized_parser.ids) and "sound" in localized_parser.ids,
+            "Indonesian reading paths are incomplete")
+    require(9 <= parser.details <= 11 and 9 <= localized_parser.details <= 11,
+            "Expected 9-11 disclosures on each localized page")
+    require(html.count("<section") <= 10 and localized.count("<section") <= 10,
+            "Localized landing should not exceed ten major sections")
 
     for phrase in (
         "First-time user",
-        "Musician & creator",
+        "Musician &amp; creator",
         "Producer",
         "Audio engineer",
-        "Pengguna awam",
-        "Musisi & kreator",
-        "Produser",
         "VST3 or Standalone?",
-        "Installation and verification — four steps",
+        "Installation and verification",
         "No account or card",
         "No automatic charge",
         "No obligation to buy",
         "Local processing",
         "Official download",
+        "13 professional starting points",
     ):
-        require(phrase in html, f"Missing public guidance: {phrase}")
+        require(phrase in html, f"Missing English public guidance: {phrase}")
 
-    require("USD 25" not in html, "Price must remain outside the trial landing")
-    require("activation/" in parser.links, "Landing must retain optional activation link")
-    require("SHA256SUMS.txt" in html, "Missing checksum guidance")
-    require('id="mobile-download-bar"' in html, "Missing mobile sticky download CTA")
+    for phrase in (
+        "Pengguna awam",
+        "Musisi &amp; kreator",
+        "Produser",
+        "VST3 atau Standalone?",
+        "Instalasi dan verifikasi",
+        "Tanpa akun atau kartu",
+        "Tanpa tagihan otomatis",
+        "Processing lokal",
+        "Unduhan Windows resmi",
+        "13 titik awal profesional",
+    ):
+        require(phrase in localized, f"Missing Indonesian public guidance: {phrase}")
+
+    require("USD 25" not in html + localized, "Price must remain outside the trial landing")
+    require("activation/" in parser.links, "English landing must retain optional activation link")
+    require("../activation/" in localized_parser.links, "Indonesian landing must retain optional activation link")
+    require("SHA256SUMS.txt" in html + localized, "Missing checksum guidance")
+    require('id="mobile-download-bar"' in html and 'id="mobile-download-bar"' in localized,
+            "Missing localized mobile sticky download CTA")
 
     for selector in (
         ".audience-compact",
@@ -99,14 +117,15 @@ def main() -> int:
         require(selector in css, f"Missing compact presentation style: {selector}")
 
     require(css.count("{") == css.count("}"), "Unbalanced CSS braces")
-    require("--micro: 10px" in css and "--small: 11px" in css and "--copy: 12px" in css, "Typography scale changed")
+    require("--micro: 10px" in css and "--small: 11px" in css and "--copy: 12px" in css,
+            "Typography scale changed")
     require("font-family: Inter" in css, "Inter must remain the primary font")
 
     print(
         "Audience/readability validation passed: "
-        f"{parser.translated} bilingual elements, "
-        f"{parser.details} compact FAQ/disclosures, "
-        "four audience paths, merged technical/download flow and mobile CTA."
+        f"static EN/ID routes, {parser.details}/{localized_parser.details} compact "
+        "FAQ/disclosures, four audience paths, merged technical/download flow "
+        "and mobile CTA."
     )
     return 0
 

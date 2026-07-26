@@ -87,7 +87,7 @@ def main() -> int:
         "Musical VST3 audio enhancer for Windows",
         "Fuller, clearer and more dimensional sound",
         "Mas Ari Signature",
-        "40 curated starting points",
+        "13 professional starting points",
         "Your own audio is the real demo",
         "Download free for Windows",
         "No account or card",
@@ -99,7 +99,7 @@ def main() -> int:
     for phrase in (
         "VST3 audio enhancer musikal untuk Windows",
         "Suara lebih berisi, jernih, dan berdimensi",
-        "40 titik awal terkurasi",
+        "13 titik awal profesional",
         "Tanpa tagihan otomatis",
     ):
         require(phrase in localized, f"Localized landing is missing: {phrase}")
@@ -115,7 +115,7 @@ def main() -> int:
         for stylesheet in ("landing-v2.css", "experience-v4.css", "typography-v5.css", "hardening-v6.css"):
             require(f"{prefix}{stylesheet}" in page.styles, f"Missing static stylesheet {stylesheet}")
 
-    require("fetch(`${siteBase}/release.json`" in site_js, "Single release manifest request is missing")
+    require("fetchJson(`${siteBase}/release.json`" in site_js, "Single release manifest request is missing")
     require("officialReleaseUrl" in site_js, "Release URL allowlist is missing")
     require("querySelectorAll('[data-installer-cta]')" in site_js, "Single release controller must manage all installer CTAs")
     require("latest-release.js" not in landing + localized, "Second release resolver must not load")

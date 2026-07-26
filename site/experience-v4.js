@@ -8,7 +8,7 @@
     ? {
         preview: 'Buka tampilan aplikasi ukuran besar',
         close: 'Tutup',
-        caption: 'Tampilan asli ArSonKuPik dengan preset flagship Mas Ari Signature.',
+        caption: 'Tampilan asli ArSonKuPik dengan Mas Ari Signature engine dan selector preset profesional.',
         presets: 'Filter preset',
         all: 'Semua',
         visible: (count) => `${count} preset ditampilkan`
@@ -16,7 +16,7 @@
     : {
         preview: 'Open a larger product interface preview',
         close: 'Close',
-        caption: 'Actual ArSonKuPik interface with the flagship Mas Ari Signature preset.',
+        caption: 'Actual ArSonKuPik interface with the Mas Ari Signature engine and professional preset selector.',
         presets: 'Filter presets',
         all: 'All',
         visible: (count) => `${count} presets shown`

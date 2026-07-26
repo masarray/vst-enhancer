@@ -12,7 +12,7 @@
 
 <p align="center">
   <a href="https://masarray.github.io/vst-enhancer/">
-    <img src="site/assets/arsonkupik-vst-ui-v050.webp" width="1080" alt="ArSonKuPik VST interface showing the Mas Ari Signature preset, musical enhancement controls, A/B comparison and level meters">
+    <img src="site/assets/arsonkupik-vst-ui-v050.webp" width="1080" alt="ArSonKuPik VST interface showing the Mas Ari Signature engine, professional preset selector, musical enhancement controls, A/B comparison and level meters">
   </a>
 </p>
 
@@ -31,17 +31,26 @@ The interface combines six focused controls:
 - Stereo
 - Smart Protect
 
-The flagship **Mas Ari Signature** preset is tuned to make familiar music feel more alive, reveal fine detail and create a more convincing live-music impression while retaining a grounded centre.
+The **Mas Ari Signature Engine** is the single sonic foundation of ArSonKuPik. It is tuned to make familiar music feel more alive, reveal fine detail and create a more convincing live-music impression while retaining a grounded centre.
 
-Preset flagship **Mas Ari Signature** dituning agar musik familiar terasa lebih hidup, menampilkan detail halus, dan menciptakan kesan live music yang lebih meyakinkan dengan centre yang tetap kokoh.
+**Mas Ari Signature Engine** adalah satu-satunya pondasi suara ArSonKuPik. Engine ini dituning agar musik familiar terasa lebih hidup, menampilkan detail halus, dan menciptakan kesan live music yang lebih meyakinkan dengan centre yang tetap kokoh.
 
-## 40 curated presets / 40 preset terkurasi
+## 13 professional starting points / 13 titik awal profesional
 
-- **Signature — 1:** Mas Ari Signature
-- **Master — 8:** Clean, Modern, Warm, Open 3D, Low-End Control, Vocal Focus, Streaming Safe, Dynamic
-- **Mix Bus — 6:** Glue, Punch, Depth, Air, Warmth, Clean-Up
-- **Track — 6:** Vocal Polish, Drum Punch, Bass Tight, Guitar / Synth Width, Acoustic Natural, Podcast
-- **Creative — 19:** Max Enhancer, SonKu Deep Chest, Movie Sub, Night Listening, Open Air, Dangdut Koplo, EDM Festival, Reggae Dub, Rock Arena, Pop Radio, Jazz Club, Hip-Hop Punch, R&B Silk, Metal Impact, Acoustic Live, Lo-Fi Warm, K-Pop Gloss, Campursari, Radio Mas Ari
+Every factory preset is a curated starting point over the same Mas Ari Signature
+engine. Preset selection never swaps DSP topology, and users can save, load,
+rename and delete their own `.askpreset` files.
+
+- **Signature — 1:** Signature Balanced
+- **Mastering — 3:** Transparent Polish, Open & Detailed, Warm Glue
+- **Problem Solving — 3:** Dense Mix Clarity, Dark Mix Lift, Bright Mix Safe
+- **Mix Bus — 1:** Punch & Separation
+- **Tracks — 5:** Vocal Forward & Silky, Guitar Definition & Body, Bass Authority, Drums Punch & Skin, Acoustic Natural Air
+
+Semua preset factory adalah titik awal terkurasi di atas Mas Ari Signature
+engine yang sama. Pemilihan preset tidak pernah mengganti topologi DSP, dan
+pengguna dapat menyimpan, membuka, mengganti nama, serta menghapus file
+`.askpreset` miliknya sendiri.
 
 ## Official links / Tautan resmi
 
@@ -59,9 +68,19 @@ Preset flagship **Mas Ari Signature** dituning agar musik familiar terasa lebih 
 
 ## Current public release
 
-The reviewed local release manifest currently records **v0.5.13**. The live website also resolves GitHub's latest published full release and routes installer CTAs to the official Windows setup asset when validation succeeds.
+The reviewed local release manifest records **v0.5.19**. The live website also resolves GitHub's latest published full release and routes installer CTAs to the official Windows setup asset when validation succeeds.
 
-Manifest rilis lokal yang telah direview saat ini mencatat **v0.5.13**. Website live juga mengambil rilis penuh terbaru yang dipublikasikan di GitHub dan mengarahkan CTA installer ke asset setup Windows resmi ketika validasi berhasil.
+Manifest rilis lokal yang telah direview mencatat **v0.5.19**. Website live juga mengambil rilis penuh terbaru yang dipublikasikan di GitHub dan mengarahkan CTA installer ke asset setup Windows resmi ketika validasi berhasil.
+
+Gain Match defaults to OFF. In normal listening mode, safe creative lift stays
+audible instead of being attenuated toward an internal loudness target. Gain
+Match ON is the explicit level-equal comparison mode; independent `-1 dBFS`
+peak safety remains active in both modes.
+
+Gain Match secara default berada pada posisi OFF. Dalam mode dengar normal,
+creative lift yang aman tetap terdengar dan tidak ditahan menuju target
+loudness internal. Gain Match ON adalah mode perbandingan level yang setara;
+proteksi peak independen `-1 dBFS` tetap aktif pada kedua mode.
 
 The release resolver:
 
@@ -77,10 +96,10 @@ The bilingual landing page now leads with:
 
 - the VST3 audio-enhancer category;
 - fuller, clearer and more dimensional sound;
-- the Mas Ari Signature flagship preset;
+- the single Mas Ari Signature engine;
 - six focused musical controls;
-- the complete 40-preset library;
-- an honest matched-loudness three-minute comparison;
+- 13 professional factory starting points plus user preset save/load;
+- a normal-impact-first comparison with optional matched-loudness verification;
 - Windows compatibility, privacy and official download verification.
 
 The free evaluation and optional activation remain transparent, but they no longer replace the product itself as the main story.
@@ -89,10 +108,10 @@ Landing bilingual sekarang mengutamakan:
 
 - kategori VST3 audio enhancer;
 - suara yang lebih berisi, jernih, dan berdimensi;
-- preset flagship Mas Ari Signature;
+- satu Mas Ari Signature engine;
 - enam kontrol musikal yang fokus;
-- library lengkap 40 preset;
-- perbandingan tiga menit dengan loudness seimbang;
+- 13 titik awal factory profesional serta save/load preset pengguna;
+- perbandingan impact normal dengan verifikasi matched-loudness opsional;
 - kompatibilitas Windows, privasi, dan verifikasi unduhan resmi.
 
 Evaluasi gratis dan aktivasi opsional tetap dijelaskan secara transparan, tetapi tidak lagi menggantikan produk sebagai cerita utama.
@@ -143,10 +162,17 @@ Current public packages may be distributed without a commercial Windows code-sig
 
 ArSonKuPik processes audio locally and does not intentionally transmit audio, DAW projects, presets, parameter values, licence codes, crash analytics, advertising identifiers or usage analytics during normal operation.
 
-- Update checking occurs only when the user requests it.
+- The application may make one quiet latest-release metadata check after at
+  least 30 seconds, no more than once per 24 hours per computer; a manual check
+  may bypass that cooldown.
 - The website stores only the selected EN/ID language value in browser local storage.
-- Offline activation uses a locally generated Computer Request ID shared only when the user chooses to request activation.
-- The evaluation download has no checkout and does not collect payment-card data.
+- Activation uses a locally generated Computer Request ID shared only when the
+  user creates or checks an order, requests recovery, or explicitly requests
+  manual activation.
+- Optional in-app activation checkout sends only the bounded order and licence
+  fields described in the EULA and Purchase Terms. Payment entry is hosted by
+  the authorised provider; the application and website do not embed or store
+  payment-card credentials.
 - Public GitHub Issues must not contain activation codes, Computer Request IDs, customer audio, private projects, order documents or personal data.
 
 See [PRIVACY.txt](PRIVACY.txt).

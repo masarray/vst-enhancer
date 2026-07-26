@@ -1,6 +1,6 @@
 ARSONKUPIK PRIVACY NOTICE
 
-Effective date: 17 July 2026
+Effective date: 26 July 2026
 
 Tutorial Mas Ari / MasArray is responsible for personal information that it
 receives directly for ArSonKuPik activation, fulfilment, or support. GitHub and
@@ -14,22 +14,32 @@ not intentionally collect or transmit audio, DAW projects, parameter values,
 preset selections, licence codes, crash analytics, advertising identifiers, or
 usage analytics during normal operation.
 
-2. OFFLINE ACTIVATION
+2. ACTIVATION AND OPTIONAL CHECKOUT
 
 The Computer Request ID is generated locally. It is not transmitted
-automatically. It is shared with Tutorial Mas Ari / MasArray or an authorised
-activation service only when the user chooses to copy and send it to request an
-activation code. Activation codes are validated locally and no permanent
-background licence service is required.
+automatically. It is shared with the authorised MasArray licence service only
+when the user creates a checkout, checks a saved order, requests recovery, or
+chooses to copy and send it for manual activation.
 
-3. MANUAL UPDATE CHECK
+Optional hosted checkout may send the customer name, receipt email, product ID,
+Computer Request ID, order ID, and an order-scoped capability token. Payment
+entry and QRIS processing take place through the payment provider. A pending
+order may be stored locally until activation succeeds or the provider confirms
+a terminal unpaid state. Activation codes are validated locally and no
+permanent background licence connection is required for normal audio
+processing.
 
-ArSonKuPik makes a network request only when the user manually presses the update
-check control. The request reads a small public release manifest hosted through
-the project's public website or GitHub infrastructure. The hosting provider may
-receive ordinary connection information such as an IP address, timestamp, user
-agent, and request path under its own privacy terms. ArSonKuPik does not append
-audio, project, licence, preset, or analytics data to that request.
+3. UPDATE CHECKING
+
+After the first plug-in or Standalone editor is opened, ArSonKuPik may make one
+delayed low-priority request for public latest-release metadata. The automatic
+check waits at least 30 seconds and occurs no more than once per 24 hours on a
+computer. A manual check may bypass that cooldown.
+
+The hosting provider may receive ordinary connection information such as an IP
+address, timestamp, user agent, and request path under its own privacy terms.
+ArSonKuPik does not append audio, project, licence, preset, or analytics data to
+the request.
 
 4. WEBSITE LANGUAGE PREFERENCE
 
@@ -60,17 +70,16 @@ No payment card is required for the 365-day evaluation, and ArSonKuPik cannot
 charge a user automatically when the evaluation ends. Availability of the public
 evaluation download is separate from availability of paid checkout.
 
-Paid checkout is not enabled until an authorised provider can display the seller
-identity, final amount and currency, tax, payment methods, refund information,
-privacy notice, and provider terms before payment.
+When a user voluntarily opens the in-app checkout, the authorised provider
+displays the seller identity, final amount and currency, applicable tax or fee,
+payment methods, refund information, privacy notice, and provider terms before
+payment.
 
-When a user voluntarily completes an authorised purchase, the Merchant of Record
-will process payment details, tax, fraud checks, refunds, receipts, and related
-data under its own terms and privacy notice. Tutorial Mas Ari / MasArray should
-receive only information reasonably needed for fulfilment and support, such as
-order ID, customer contact information, product, payment status, refund status,
-and licence entitlement. ArSonKuPik and its public repository do not store
-payment-card data.
+The payment provider processes payment details, fraud checks, refunds, receipts,
+and related data under its own terms and privacy notice. Tutorial Mas Ari /
+MasArray receives only information reasonably needed for fulfilment, recovery,
+support, and one-active-computer enforcement. ArSonKuPik, this website, and this
+public repository do not embed or store payment-card credentials.
 
 7. SUPPORT AND ACTIVATION RECORDS
 
@@ -94,10 +103,11 @@ method has been agreed.
 
 8. INTERNATIONAL SERVICE PROVIDERS
 
-GitHub and any future checkout, email, storage, or support provider may process
+GitHub and authorised checkout, licence-service, email, storage, or support
+providers may process
 connection or transaction information in countries other than the user's own,
-according to their infrastructure and privacy terms. Any future checkout must
-identify the provider and applicable privacy information before payment.
+according to their infrastructure and privacy terms. Checkout must identify the
+provider and applicable privacy information before payment.
 
 9. NO AUTOMATED AUDIO PROFILING
 

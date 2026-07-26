@@ -75,7 +75,7 @@
     releaseStatus.className = 'download-release-status';
     releaseStatus.innerHTML = `
       <span data-en="Latest published release" data-id="Rilis publik terbaru">Latest published release</span>
-      <strong id="download-release-version">v0.5.13</strong>
+      <strong id="download-release-version">v0.5.19</strong>
       <span aria-hidden="true">·</span>
       <span data-en="Direct Windows installer" data-id="Installer Windows langsung">Direct Windows installer</span>
       <span aria-hidden="true">·</span>

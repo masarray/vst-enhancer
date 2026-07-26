@@ -20,6 +20,19 @@
   let currentLanguage = 'en';
   let releaseState = null;
 
+  const formatPrice = (amount, currency) => {
+    if (!Number.isFinite(amount)) return currency || '—';
+    try {
+      return new Intl.NumberFormat(currency === 'IDR' ? 'id-ID' : 'en-US', {
+        style: 'currency',
+        currency: currency || 'USD',
+        maximumFractionDigits: currency === 'IDR' ? 0 : 2
+      }).format(amount);
+    } catch (_) {
+      return `${currency || 'USD'} ${amount}`;
+    }
+  };
+
   const officialReleaseUrl = (value, asset = false) => {
     if (typeof value !== 'string' || value.length > 500) return null;
 
@@ -71,9 +84,7 @@
     const amount = Number.isFinite(release.activationPriceAmount)
       ? release.activationPriceAmount
       : release.activationPriceUsd;
-    const price = Number.isFinite(amount)
-      ? `${release.priceCurrency || 'USD'} ${amount}`
-      : release.priceCurrency || '—';
+    const price = formatPrice(amount, release.priceCurrency || 'USD');
 
     return currentLanguage === 'id'
       ? {
@@ -137,10 +148,17 @@
     const release = releaseState;
     if (!release || release.purchaseCheckoutAvailable !== true) {
       setMetadataForCheckout(false);
-      if (title) title.textContent = currentLanguage === 'id' ? 'Checkout belum dibuka' : 'Checkout is not open yet';
-      if (status) status.textContent = currentLanguage === 'id'
-        ? 'Evaluasi gratis 365 hari tetap tersedia. Tidak ada pembayaran yang dapat dilakukan melalui halaman ini.'
-        : 'The free 365-day evaluation remains available. No payment can be made through this page.';
+      const inAppAvailable = release?.purchaseStatus === 'available-in-app';
+      if (title) title.textContent = inAppAvailable
+        ? (currentLanguage === 'id' ? 'Checkout tersedia di dalam ArSonKuPik' : 'Checkout is available inside ArSonKuPik')
+        : (currentLanguage === 'id' ? 'Checkout belum dibuka' : 'Checkout is not open yet');
+      if (status) status.textContent = inAppAvailable
+        ? (currentLanguage === 'id'
+            ? 'Buka kartu Unlock di VST3 atau Standalone untuk checkout hosted dan recovery order. Halaman website ini tidak menerima data pembayaran.'
+            : 'Open the Unlock card in the VST3 or Standalone app for hosted checkout and order recovery. This website does not collect payment data.')
+        : (currentLanguage === 'id'
+            ? 'Evaluasi gratis 365 hari tetap tersedia. Tidak ada pembayaran yang dapat dilakukan melalui halaman ini.'
+            : 'The free 365-day evaluation remains available. No payment can be made through this page.');
       return;
     }
 
@@ -235,7 +253,7 @@
       const currency = typeof release.priceCurrency === 'string' ? release.priceCurrency : 'USD';
 
       if (Number.isFinite(amount)) {
-        document.getElementById('activation-price')?.replaceChildren(`${currency} ${amount}`);
+        document.getElementById('activation-price')?.replaceChildren(formatPrice(amount, currency));
       }
 
       const freeDownload = document.getElementById('free-download-link');

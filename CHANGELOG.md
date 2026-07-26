@@ -1,5 +1,32 @@
 # Public Distribution Changelog
 
+## v0.5.19 - 26 July 2026
+
+### Signature engine and workflow
+
+- Promoted Mas Ari Signature from a preset into the one immutable DSP engine.
+- Added 13 professional factory starting points over that engine and user
+  preset Save, Save As, Load and Delete.
+- Restored the compact novice-friendly preset picker and fixed rounded tooltip
+  corners plus About/Unlock overlay flicker.
+
+### Sound and reliability
+
+- Gain Match OFF now preserves safe creative lift instead of attenuating output
+  toward a hidden loudness target. Gain Match ON remains the explicit strict
+  level-equal comparison mode.
+- Added a `+0.90 dB` minimum Active floor, independent `-1 dBFS` peak safety,
+  stronger low-level vitality and bass-retention gates across all profiles.
+- Passed local DSP, preset, multirate, snapshot and anti-crackle validation,
+  including zero CPU deadline misses at 48/96 kHz and 32/64/128 samples.
+
+### Distribution
+
+- Published Windows x64 installer, VST3 ZIP, Standalone ZIP and
+  `SHA256SUMS.txt` through the local binary-only release workflow.
+- Aligned public product, activation and privacy text with the shipped
+  v0.5.19 implementation.
+
 ## v0.5.13 â€” 18 July 2026
 
 ### Performance and UX
