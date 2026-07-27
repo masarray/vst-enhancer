@@ -1,0 +1,249 @@
+name: Build macOS and publish cross-platform release
+run-name: macOS release ${{ inputs.release_tag || 'auto-detect draft' }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Optional draft tag, for example v0.5.20. Leave empty to detect one valid draft.
+        required: false
+        type: string
+      confirm_publish:
+        description: Publish after every Windows and macOS gate passes
+        required: true
+        default: true
+        type: boolean
+
+permissions:
+  contents: write
+  pages: write
+
+concurrency:
+  group: arsonkupik-public-macos-release
+  cancel-in-progress: false
+
+jobs:
+  build-macos-and-publish:
+    name: Universal macOS build and final publication
+    if: github.repository == 'masarray/vst-enhancer' && github.actor == 'masarray' && inputs.confirm_publish == true
+    environment: mac-release
+    runs-on: macos-15
+    timeout-minutes: 90
+    env:
+      PUBLIC_REPO: masarray/vst-enhancer
+      PRIVATE_REPO: masarray/askp-vst
+    steps:
+      - name: Resolve and verify draft release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          INPUT_TAG: ${{ inputs.release_tag }}
+        run: |
+          set -euo pipefail
+          tag="$INPUT_TAG"
+          if [[ -z "$tag" ]]; then
+            candidates=""
+            count=0
+            while IFS= read -r draft_tag; do
+              [[ "$draft_tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] || continue
+              assets="$(gh release view "$draft_tag" --repo "$PUBLIC_REPO" --json assets --jq '.assets[].name' 2>/dev/null || true)"
+              complete=true
+              for required in \
+                "ArSonKuPik-$draft_tag-Windows-x64-Setup.exe" \
+                "ArSonKuPik-$draft_tag-Windows-x64-VST3.zip" \
+                "ArSonKuPik-$draft_tag-Windows-x64-Standalone.zip" \
+                "SHA256SUMS-Windows.txt" \
+                "BUILDINFO-Windows.json"
+              do
+                if ! grep -Fxq "$required" <<<"$assets"; then
+                  complete=false
+                  break
+                fi
+              done
+              if [[ "$complete" == true ]]; then
+                count=$((count + 1))
+                candidates="$draft_tag"
+              fi
+            done < <(gh api "repos/$PUBLIC_REPO/releases?per_page=100" --jq '.[] | select(.draft == true and .prerelease == false) | .tag_name')
+            if [[ "$count" -ne 1 ]]; then
+              echo "Expected exactly one complete Windows draft release, found $count." >&2
+              echo "Provide release_tag manually when more than one draft exists." >&2
+              exit 1
+            fi
+            tag="$candidates"
+          fi
+          [[ "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "Invalid release tag: $tag" >&2; exit 1; }
+          is_draft="$(gh release view "$tag" --repo "$PUBLIC_REPO" --json isDraft --jq '.isDraft')"
+          [[ "$is_draft" == true ]] || { echo "$tag is not a draft release." >&2; exit 1; }
+          assets="$(gh release view "$tag" --repo "$PUBLIC_REPO" --json assets --jq '.assets[].name')"
+          for required in \
+            "ArSonKuPik-$tag-Windows-x64-Setup.exe" \
+            "ArSonKuPik-$tag-Windows-x64-VST3.zip" \
+            "ArSonKuPik-$tag-Windows-x64-Standalone.zip" \
+            "SHA256SUMS-Windows.txt" \
+            "BUILDINFO-Windows.json"
+          do
+            grep -Fxq "$required" <<<"$assets" || { echo "Required Windows draft asset missing: $required" >&2; exit 1; }
+          done
+          echo "RELEASE_TAG=$tag" >> "$GITHUB_ENV"
+          echo "RELEASE_NUMBER=${tag#v}" >> "$GITHUB_ENV"
+          echo "MAC_DIST=$RUNNER_TEMP/askp-mac-dist" >> "$GITHUB_ENV"
+
+      - name: Checkout exact proprietary source tag
+        env:
+          GH_TOKEN: ${{ secrets.ASKP_PRIVATE_SOURCE_TOKEN }}
+        run: |
+          set -euo pipefail
+          private="$(gh api "repos/$PRIVATE_REPO" --jq '.private')"
+          [[ "$private" == true ]] || { echo "The proprietary source repository is not private." >&2; exit 1; }
+          rm -rf source
+          gh repo clone "$PRIVATE_REPO" source -- --branch "$RELEASE_TAG" --depth 1
+          source_commit="$(git -C source rev-parse HEAD)"
+          exact_tag="$(git -C source describe --tags --exact-match)"
+          [[ "$exact_tag" == "$RELEASE_TAG" ]] || { echo "Private checkout does not match $RELEASE_TAG." >&2; exit 1; }
+          echo "SOURCE_COMMIT=$source_commit" >> "$GITHUB_ENV"
+
+      - name: Verify approved hybrid release request
+        run: |
+          set -euo pipefail
+          python3 - "$RELEASE_NUMBER" <<'PY'
+          import json, pathlib, sys
+          number = sys.argv[1]
+          request = json.loads(pathlib.Path('source/.github/release-request.json').read_text(encoding='utf-8'))
+          expected = {
+              'requestedVersion': number,
+              'approved': True,
+              'mode': 'local-two-stage-public-binary-release',
+              'macBuildProvider': 'public-github-actions',
+              'publicMacWorkflow': 'build-macos-and-publish.yml',
+              'sourceVisibility': 'private',
+              'publicRepository': 'masarray/vst-enhancer',
+              'juceDistributionConfirmed': True,
+              'requireWindowsAssets': True,
+              'requireMacAssetsBeforePublish': True,
+          }
+          for key, value in expected.items():
+              if request.get(key) != value:
+                  raise SystemExit(f'Release request mismatch: {key}={request.get(key)!r}, expected {value!r}')
+          mac = request.get('macPackage', {})
+          if mac.get('architectures') != ['arm64', 'x86_64']:
+              raise SystemExit('macOS architectures must be arm64 + x86_64.')
+          if mac.get('developerIdSigned') is not False or mac.get('notarized') is not False or mac.get('adHocSigned') is not True:
+              raise SystemExit('Unsigned/ad-hoc macOS disclosure is inconsistent.')
+          PY
+
+      - name: Build, audit and package macOS Universal binaries
+        run: |
+          set -euo pipefail
+          bash source/scripts/build-macos-ci.sh "$RELEASE_NUMBER" "$MAC_DIST"
+
+      - name: Create combined checksums and final release notes
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh release download "$RELEASE_TAG" --repo "$PUBLIC_REPO" --pattern SHA256SUMS-Windows.txt --dir "$MAC_DIST" --clobber
+          cat "$MAC_DIST/SHA256SUMS-Windows.txt" "$MAC_DIST/SHA256SUMS-macOS.txt" | LC_ALL=C sort >"$MAC_DIST/SHA256SUMS.txt"
+          cat >"$MAC_DIST/release-notes-final.md" <<EOF_NOTES
+          # ArSonKuPik VST $RELEASE_TAG — Windows and macOS
+
+          ## What is new
+          - Adaptive Warm Vocal Body Companion restores perceptual body on bright/high female vocals only when Presence/Tickle dominates the 430–900 Hz body bridge.
+          - The approved Signature character is retained; Presence/Tickle, compressor, global output gain, limiter and the -1 dBFS safety ceiling were not retuned.
+          - Complete anti-crackle, multirate/block-size, transition, stereo-safety, headroom and existing engine regression gates passed before publication.
+          - No FFT, oversampling, extra look-ahead, audio-thread allocation, lock or hidden mandatory +4 dB final output stage was added.
+
+          ## Windows
+          - Windows 10/11 x64 installer
+          - Manual VST3 ZIP
+          - Standalone ZIP
+          - Windows packages are currently not commercially code-signed and may trigger SmartScreen.
+
+          ## macOS
+          - Universal Apple Silicon arm64 + Intel x86_64 VST3 ZIP
+          - Universal Standalone ZIP
+          - Universal DMG package
+          - Ad-hoc signed only; not Developer ID signed and not notarized
+          - Gatekeeper may require Control-click > Open or Open Anyway
+
+          ## Evaluation and activation
+          - 365-day full-editing evaluation
+          - No account, card, subscription, automatic renewal or automatic charge
+          - Optional Rp399.000 perpetual activation for one active computer
+
+          ## Integrity and provenance
+          - Proprietary source commit: $SOURCE_COMMIT
+          - Public packages are binary-only
+          - Verify every download against SHA256SUMS.txt from this release
+          EOF_NOTES
+
+      - name: Upload macOS assets to the draft release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh release upload "$RELEASE_TAG" \
+            "$MAC_DIST/ArSonKuPik-$RELEASE_TAG-macOS-Universal.dmg" \
+            "$MAC_DIST/ArSonKuPik-$RELEASE_TAG-macOS-Universal-VST3.zip" \
+            "$MAC_DIST/ArSonKuPik-$RELEASE_TAG-macOS-Universal-Standalone.zip" \
+            "$MAC_DIST/SHA256SUMS-macOS.txt" \
+            "$MAC_DIST/SHA256SUMS.txt" \
+            "$MAC_DIST/BUILDINFO-macOS.json" \
+            --repo "$PUBLIC_REPO" --clobber
+
+      - name: Update public metadata and landing source
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh auth setup-git
+          rm -rf public
+          git clone "https://github.com/$PUBLIC_REPO.git" public
+          if ! python3 source/scripts/update-public-crossplatform-release.py --repo public --version "$RELEASE_TAG" --source-commit "$SOURCE_COMMIT" >"$RUNNER_TEMP/public-metadata.log" 2>&1; then
+            echo "Public metadata update failed. Detailed output was withheld from the public log." >&2
+            exit 1
+          fi
+          git -C public config user.name "Mas Ari Release Automation"
+          git -C public config user.email "258017373+masarray@users.noreply.github.com"
+          git -C public add README.md CHANGELOG.md site
+          if ! git -C public diff --cached --quiet; then
+            git -C public commit -m "Publish ArSonKuPik VST $RELEASE_TAG cross-platform metadata"
+            git -C public push origin HEAD:main
+          fi
+
+      - name: Deploy landing from the gh-pages branch
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          page_branch="$(gh api "repos/$PUBLIC_REPO/pages" --jq '.source.branch')"
+          page_path="$(gh api "repos/$PUBLIC_REPO/pages" --jq '.source.path')"
+          build_type="$(gh api "repos/$PUBLIC_REPO/pages" --jq '.build_type')"
+          [[ "$page_branch" == gh-pages && "$page_path" == / && "$build_type" == legacy ]] || {
+            echo "GitHub Pages must be configured for gh-pages:/ legacy branch deployment." >&2
+            echo "Run SETUP-HYBRID-RELEASE.cmd locally once." >&2
+            exit 1
+          }
+          site_copy="$RUNNER_TEMP/askp-site-copy"
+          rm -rf "$site_copy"
+          cp -R public/site "$site_copy"
+          git -C public checkout --orphan release-gh-pages
+          git -C public rm -rf . >/dev/null 2>&1 || true
+          find public -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
+          cp -R "$site_copy"/. public/
+          touch public/.nojekyll
+          git -C public add -A
+          git -C public commit -m "Deploy ArSonKuPik $RELEASE_TAG landing"
+          git -C public push --force origin HEAD:gh-pages
+
+      - name: Publish the completed Windows and macOS release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh release edit "$RELEASE_TAG" --repo "$PUBLIC_REPO" \
+            --title "ArSonKuPik VST $RELEASE_TAG - Windows and macOS" \
+            --notes-file "$MAC_DIST/release-notes-final.md" \
+            --draft=false --latest
+          final_draft="$(gh release view "$RELEASE_TAG" --repo "$PUBLIC_REPO" --json isDraft --jq '.isDraft')"
+          [[ "$final_draft" == false ]] || { echo "Release remained in draft state unexpectedly." >&2; exit 1; }
+          echo "Published: https://github.com/$PUBLIC_REPO/releases/tag/$RELEASE_TAG"
