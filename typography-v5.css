@@ -1,0 +1,282 @@
+/* ArSonKuPik V5 — readable editorial typography without oversized marketing type. */
+:root {
+  --landing-copy: 16px;
+  --landing-small: 14px;
+  --landing-micro: 11.5px;
+  --type-lead: clamp(16.5px, 1.12vw, 17.5px);
+  --type-card: 14.5px;
+  --type-support: 13.5px;
+  --copy-measure: 68ch;
+}
+
+html[data-visual-polish] body {
+  font-family: "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+  font-size: var(--landing-copy);
+  font-weight: 400;
+  line-height: 1.72;
+  letter-spacing: .002em;
+  font-kerning: normal;
+  font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+}
+
+html[data-visual-polish] p,
+html[data-visual-polish] li,
+html[data-visual-polish] figcaption {
+  text-wrap: pretty;
+}
+
+html[data-visual-polish] h1,
+html[data-visual-polish] h2,
+html[data-visual-polish] h3 {
+  text-wrap: balance;
+}
+
+html[data-visual-polish] .landing-nav nav a {
+  font-size: 12.5px;
+}
+
+html[data-visual-polish] .brand-lockup small {
+  font-size: 10px;
+  line-height: 1.25;
+}
+
+html[data-visual-polish] .language-switch button {
+  font-size: 11.5px;
+}
+
+html[data-visual-polish] .eyebrow {
+  font-size: 11.5px;
+  line-height: 1.45;
+}
+
+html[data-visual-polish] .landing-hero .lead {
+  max-width: 62ch;
+  font-size: var(--type-lead);
+  line-height: 1.76;
+  color: #cbc4cf;
+}
+
+html[data-visual-polish] .landing-hero .hero-trust {
+  max-width: 68ch;
+  font-size: var(--type-support);
+  line-height: 1.7;
+  color: #b6aeba;
+}
+
+html[data-visual-polish] .hero-values span,
+html[data-visual-polish] .release-line span {
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+html[data-visual-polish] .product-stage figcaption {
+  font-size: var(--type-support);
+  line-height: 1.68;
+  color: #b4acb8;
+}
+
+html[data-visual-polish] .trust-grid strong {
+  font-size: 13.5px;
+  line-height: 1.35;
+}
+
+html[data-visual-polish] .trust-grid span {
+  max-width: 30ch;
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: #b5adb9;
+}
+
+html[data-visual-polish] .section-lead,
+html[data-visual-polish] .preset-intro > p,
+html[data-visual-polish] .signature-copy > p,
+html[data-visual-polish] .freedom-copy > p {
+  max-width: var(--copy-measure);
+  font-size: var(--type-lead);
+  line-height: 1.78;
+  color: #c1b9c5;
+}
+
+html[data-visual-polish] .section-heading.centered .section-lead {
+  margin-inline: auto;
+}
+
+html[data-visual-polish] .signature-title small {
+  font-size: 14.5px;
+  line-height: 1.62;
+  color: #bbb2bf;
+}
+
+html[data-visual-polish] .signature-pillars h3,
+html[data-visual-polish] .outcome-grid h3,
+html[data-visual-polish] .test-flow h3,
+html[data-visual-polish] .listening-controls h3,
+html[data-visual-polish] .preset-group h3,
+html[data-visual-polish] .download-option h3 {
+  font-size: 15.5px;
+  line-height: 1.38;
+}
+
+html[data-visual-polish] .signature-pillars p,
+html[data-visual-polish] .outcome-grid p,
+html[data-visual-polish] .test-flow p,
+html[data-visual-polish] .listening-controls p,
+html[data-visual-polish] .preset-group p,
+html[data-visual-polish] .download-option p {
+  font-size: var(--type-card);
+  line-height: 1.72;
+  color: #bbb3bf;
+}
+
+html[data-visual-polish] .listening-controls small {
+  font-size: var(--type-support);
+  line-height: 1.65;
+  color: #d9cce8;
+}
+
+html[data-visual-polish] .preset-intro > p {
+  font-size: 15.5px;
+}
+
+html[data-visual-polish] .preset-group header strong,
+html[data-visual-polish] .download-tag,
+html[data-visual-polish] .outcome-mark,
+html[data-visual-polish] .signature-title > span {
+  font-size: 10.5px;
+}
+
+html[data-visual-polish] .preset-chip,
+html[data-visual-polish] .preset-filter {
+  font-size: 12.5px;
+}
+
+html[data-visual-polish] .preset-result-count,
+html[data-visual-polish] .download-release-status {
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+html[data-visual-polish] .format-inline strong {
+  font-size: 12.5px;
+}
+
+html[data-visual-polish] .format-inline small {
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: #b5adb9;
+}
+
+html[data-visual-polish] .install-disclosure > summary,
+html[data-visual-polish] .legal-compact > summary {
+  font-size: 14.5px;
+  line-height: 1.5;
+}
+
+html[data-visual-polish] .install-compact {
+  font-size: 14px;
+  line-height: 1.72;
+  color: #b9b1bd;
+}
+
+html[data-visual-polish] .verification-command code {
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+html[data-visual-polish] .freedom-facts strong {
+  font-size: 14px;
+  line-height: 1.42;
+}
+
+html[data-visual-polish] .freedom-facts span,
+html[data-visual-polish] .freedom-section .privacy-compact {
+  font-size: 14px;
+  line-height: 1.7;
+  color: #bbb3bf;
+}
+
+html[data-visual-polish] .freedom-section .privacy-compact strong {
+  font-size: 12.5px;
+}
+
+html[data-visual-polish] .faq-grid summary {
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+html[data-visual-polish] .faq-grid p {
+  max-width: 76ch;
+  font-size: 15px;
+  line-height: 1.78;
+  color: #bbb3bf;
+}
+
+html[data-visual-polish] .legal-links {
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+html[data-visual-polish] .cta-card p {
+  max-width: 66ch;
+  font-size: 15.5px;
+  line-height: 1.75;
+  color: #c1b9c5;
+}
+
+html[data-visual-polish] .support-inner,
+html[data-visual-polish] .footer-grid p,
+html[data-visual-polish] .footer-links a,
+html[data-visual-polish] .footer-bottom {
+  font-size: 13.5px;
+  line-height: 1.65;
+}
+
+html[data-visual-polish] .product-preview-footer {
+  font-size: 13.5px;
+  line-height: 1.6;
+}
+
+@media (max-width: 740px) {
+  :root {
+    --landing-copy: 16px;
+    --landing-small: 14px;
+    --landing-micro: 11.5px;
+    --type-lead: 16.5px;
+    --type-card: 15px;
+    --type-support: 13.5px;
+  }
+
+  html[data-visual-polish] body {
+    font-size: 16px;
+    line-height: 1.72;
+  }
+
+  html[data-visual-polish] .landing-hero .lead,
+  html[data-visual-polish] .section-lead,
+  html[data-visual-polish] .preset-intro > p,
+  html[data-visual-polish] .signature-copy > p,
+  html[data-visual-polish] .freedom-copy > p {
+    font-size: 16.5px;
+    line-height: 1.75;
+  }
+
+  html[data-visual-polish] .trust-grid span,
+  html[data-visual-polish] .signature-pillars p,
+  html[data-visual-polish] .outcome-grid p,
+  html[data-visual-polish] .test-flow p,
+  html[data-visual-polish] .listening-controls p,
+  html[data-visual-polish] .preset-group p,
+  html[data-visual-polish] .download-option p,
+  html[data-visual-polish] .freedom-facts span,
+  html[data-visual-polish] .freedom-section .privacy-compact,
+  html[data-visual-polish] .faq-grid p {
+    font-size: 15px;
+  }
+
+  html[data-visual-polish] .support-inner,
+  html[data-visual-polish] .footer-grid p,
+  html[data-visual-polish] .footer-links a,
+  html[data-visual-polish] .footer-bottom {
+    font-size: 13.5px;
+  }
+}

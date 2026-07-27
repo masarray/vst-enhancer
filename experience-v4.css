@@ -1,0 +1,512 @@
+/* ArSonKuPik V4 — stable preset browser and restrained audio-product motion. */
+:root {
+  --motion-ease: cubic-bezier(.22, 1, .36, 1);
+  --motion-fast: 160ms;
+  --motion-medium: 320ms;
+}
+
+/* P0: keep the intro in column one and the complete interactive browser in column two. */
+.preset-universe.preset-explorer-ready {
+  grid-template-columns: minmax(280px, .68fr) minmax(0, 1.32fr);
+}
+
+.preset-browser {
+  min-width: 0;
+  display: grid;
+  gap: 12px;
+}
+
+.preset-browser .preset-groups,
+.preset-browser .preset-group {
+  min-width: 0;
+  width: 100%;
+}
+
+.preset-toolbar {
+  position: sticky;
+  top: 82px;
+  z-index: 8;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin: 0 0 3px;
+  padding: 10px 12px;
+  border: 1px solid rgba(214, 185, 255, .12);
+  border-radius: 13px;
+  background: rgba(13, 11, 17, .88);
+  box-shadow: 0 14px 38px rgba(0, 0, 0, .22), inset 0 1px 0 rgba(255, 255, 255, .035);
+  backdrop-filter: blur(16px) saturate(120%);
+}
+
+.preset-filter-list {
+  display: flex;
+  min-width: 0;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.preset-filter {
+  position: relative;
+  min-height: 32px;
+  padding: 6px 11px;
+  border: 1px solid rgba(255, 255, 255, .09);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .012);
+  color: #aaa2b0;
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+  transition: color var(--motion-fast) ease, border-color var(--motion-fast) ease, background var(--motion-fast) ease, transform var(--motion-fast) var(--motion-ease), box-shadow var(--motion-fast) ease;
+}
+
+.preset-filter:hover,
+.preset-filter:focus-visible {
+  border-color: rgba(205, 170, 255, .38);
+  color: #f1e9f7;
+  transform: translateY(-1px);
+}
+
+.preset-filter:active {
+  transform: translateY(0) scale(.97);
+}
+
+.preset-filter[aria-pressed="true"] {
+  border-color: rgba(205, 170, 255, .5);
+  background: linear-gradient(135deg, rgba(128, 70, 224, .2), rgba(175, 112, 255, .12));
+  color: #f0e6ff;
+  box-shadow: 0 8px 22px rgba(91, 39, 174, .14), inset 0 1px 0 rgba(255, 255, 255, .08);
+}
+
+.preset-result-count {
+  flex: 0 0 auto;
+  color: #938b9a;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.preset-group[hidden] {
+  display: none !important;
+}
+
+.preset-group .preset-chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin: 12px 0 0;
+}
+
+.preset-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 29px;
+  padding: 5px 9px;
+  border: 1px solid rgba(255, 255, 255, .075);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, .018);
+  color: #b9b0c0;
+  font-size: 12px;
+  line-height: 1.35;
+  transition: color var(--motion-fast) ease, border-color var(--motion-fast) ease, background var(--motion-fast) ease, transform var(--motion-fast) var(--motion-ease);
+}
+
+.preset-chip:hover {
+  border-color: rgba(194, 151, 255, .22);
+  background: rgba(157, 96, 255, .055);
+  color: #e2d7eb;
+  transform: translateY(-1px);
+}
+
+/* Navigation reacts to the current section without becoming visually noisy. */
+.landing-nav {
+  transition: background var(--motion-medium) ease, box-shadow var(--motion-medium) ease, border-color var(--motion-medium) ease;
+}
+
+.landing-nav.is-scrolled {
+  border-bottom-color: rgba(209, 178, 255, .12);
+  background: rgba(9, 8, 12, .94);
+  box-shadow: 0 14px 42px rgba(0, 0, 0, .3);
+  backdrop-filter: blur(18px) saturate(125%);
+}
+
+.landing-nav nav a {
+  position: relative;
+  transition: color var(--motion-fast) ease;
+}
+
+.landing-nav nav a::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  right: 50%;
+  bottom: -9px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #b987ff, transparent);
+  opacity: 0;
+  transition: left var(--motion-medium) var(--motion-ease), right var(--motion-medium) var(--motion-ease), opacity var(--motion-fast) ease;
+}
+
+.landing-nav nav a.is-active,
+.landing-nav nav a[aria-current="location"] {
+  color: #f1e8fa;
+}
+
+.landing-nav nav a.is-active::after,
+.landing-nav nav a[aria-current="location"]::after {
+  left: 8%;
+  right: 8%;
+  opacity: 1;
+}
+
+/* Buttons feel responsive, but do not bounce or pulse continuously. */
+.button,
+.nav-download {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  transition: transform var(--motion-fast) var(--motion-ease), border-color var(--motion-fast) ease, background var(--motion-fast) ease, box-shadow var(--motion-medium) var(--motion-ease), color var(--motion-fast) ease;
+}
+
+.button::after,
+.nav-download::after {
+  content: "";
+  position: absolute;
+  inset: -2px auto -2px -45%;
+  z-index: -1;
+  width: 34%;
+  transform: skewX(-18deg) translateX(-160%);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .2), transparent);
+  transition: transform 560ms var(--motion-ease);
+}
+
+.button:hover,
+.nav-download:hover {
+  transform: translateY(-2px);
+}
+
+.button:hover::after,
+.nav-download:hover::after {
+  transform: skewX(-18deg) translateX(520%);
+}
+
+.button:active,
+.nav-download:active {
+  transform: translateY(0) scale(.985);
+}
+
+/* Product image depth follows the pointer by less than two degrees. */
+.product-stage {
+  --tilt-x: 0deg;
+  --tilt-y: 0deg;
+  --spot-x: 50%;
+  --spot-y: 40%;
+}
+
+.product-stage img {
+  position: relative;
+  z-index: 1;
+  transform: perspective(1300px) rotateX(var(--tilt-x)) rotateY(var(--tilt-y)) translateZ(0);
+  transform-origin: center;
+  transition: transform 420ms var(--motion-ease), border-color var(--motion-medium) ease, box-shadow var(--motion-medium) ease;
+}
+
+.product-stage[data-depth-active="true"] img {
+  transition: transform 80ms linear, border-color var(--motion-medium) ease, box-shadow var(--motion-medium) ease;
+  border-color: rgba(226, 204, 255, .31);
+  box-shadow: 0 34px 100px rgba(0, 0, 0, .54), 0 0 0 1px rgba(170, 119, 255, .1), 0 0 105px rgba(132, 76, 230, .15);
+}
+
+.product-stage::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: 20px;
+  pointer-events: none;
+  background: radial-gradient(circle at var(--spot-x) var(--spot-y), rgba(255, 255, 255, .09), transparent 24%);
+  opacity: 0;
+  transition: opacity var(--motion-medium) ease;
+}
+
+.product-stage[data-depth-active="true"]::after {
+  opacity: .68;
+}
+
+.product-stage img[role="button"] {
+  cursor: zoom-in;
+}
+
+.product-stage img[role="button"]:focus-visible {
+  outline: 2px solid rgba(211, 174, 255, .92);
+  outline-offset: 5px;
+}
+
+/* A restrained signal accent reinforces the audio identity without claiming live analysis. */
+.signature-status-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.signature-status-row > span:first-child {
+  color: #cfafff;
+  font-size: 10px;
+  font-weight: 780;
+  letter-spacing: .14em;
+}
+
+.signal-accent {
+  display: inline-flex;
+  height: 19px;
+  align-items: flex-end;
+  gap: 3px;
+  padding: 4px 7px;
+  border: 1px solid rgba(201, 164, 255, .14);
+  border-radius: 999px;
+  background: rgba(142, 84, 226, .055);
+}
+
+.signal-accent i {
+  width: 2px;
+  height: 10px;
+  border-radius: 2px;
+  background: linear-gradient(to top, #8d55e8, #d7b8ff);
+  transform-origin: bottom;
+  animation: signalAccent 1.8s ease-in-out infinite;
+  animation-delay: calc(var(--bar-index) * -120ms);
+  opacity: .78;
+}
+
+@keyframes signalAccent {
+  0%, 100% { transform: scaleY(.28); opacity: .42; }
+  44% { transform: scaleY(1); opacity: .95; }
+  72% { transform: scaleY(.52); opacity: .68; }
+}
+
+.signature-panel,
+.download-option.recommended,
+.cta-card {
+  --spot-x: 50%;
+  --spot-y: 20%;
+}
+
+.signature-panel::after,
+.download-option.recommended::after,
+.cta-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background: radial-gradient(circle at var(--spot-x) var(--spot-y), rgba(193, 151, 255, .11), transparent 28%);
+  opacity: .38;
+  transition: opacity var(--motion-medium) ease;
+}
+
+.download-option.recommended,
+.cta-card {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Scroll reveal is enabled only after JavaScript marks the page motion-ready. */
+.motion-ready [data-reveal] {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 560ms var(--motion-ease) var(--reveal-delay, 0ms), transform 560ms var(--motion-ease) var(--reveal-delay, 0ms);
+}
+
+.motion-ready [data-reveal].is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Surfaces respond subtly to intent. */
+.listening-controls article,
+.preset-group,
+.download-option,
+.faq-grid details {
+  transition: transform var(--motion-medium) var(--motion-ease), border-color var(--motion-fast) ease, background var(--motion-medium) ease, box-shadow var(--motion-medium) var(--motion-ease);
+}
+
+.listening-controls article:hover,
+.preset-group:hover,
+.download-option:hover {
+  transform: translateY(-3px);
+  border-color: rgba(195, 151, 255, .2);
+  box-shadow: 0 18px 42px rgba(0, 0, 0, .16);
+}
+
+.outcome-grid article,
+.freedom-facts article {
+  transition: background var(--motion-medium) ease, color var(--motion-fast) ease;
+}
+
+.outcome-grid article:hover,
+.freedom-facts article:hover {
+  background: linear-gradient(160deg, rgba(31, 24, 41, .96), rgba(14, 12, 18, .98));
+}
+
+.faq-grid details:hover,
+.faq-grid details[open] {
+  border-color: rgba(193, 151, 255, .18);
+  background: rgba(159, 98, 255, .03);
+}
+
+.faq-grid details[open] {
+  box-shadow: 0 14px 34px rgba(0, 0, 0, .12);
+}
+
+/* Full-size product preview. */
+.product-preview-dialog {
+  width: min(1180px, calc(100vw - 28px));
+  max-width: none;
+  padding: 0;
+  border: 1px solid rgba(221, 199, 255, .24);
+  border-radius: 18px;
+  background: #09070d;
+  box-shadow: 0 36px 110px rgba(0, 0, 0, .78);
+  color: #f6f1fa;
+}
+
+.product-preview-dialog[open] {
+  animation: previewIn 240ms var(--motion-ease) both;
+}
+
+.product-preview-dialog::backdrop {
+  background: rgba(3, 2, 5, .84);
+  backdrop-filter: blur(10px);
+}
+
+@keyframes previewIn {
+  from { opacity: 0; transform: translateY(12px) scale(.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.product-preview-shell {
+  position: relative;
+  display: grid;
+  gap: 0;
+}
+
+.product-preview-shell img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 17px 17px 0 0;
+}
+
+.product-preview-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 13px 15px;
+  color: #aaa2b0;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.product-preview-close {
+  flex: 0 0 auto;
+  min-height: 34px;
+  padding: 6px 12px;
+  border: 1px solid rgba(255, 255, 255, .14);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .035);
+  color: #f3edf7;
+  font: inherit;
+  cursor: pointer;
+  transition: transform var(--motion-fast) var(--motion-ease), border-color var(--motion-fast) ease, background var(--motion-fast) ease;
+}
+
+.product-preview-close:hover,
+.product-preview-close:focus-visible {
+  border-color: rgba(205, 168, 255, .56);
+  background: rgba(155, 104, 255, .1);
+  transform: translateY(-1px);
+}
+
+@media (max-width: 1080px) {
+  .preset-universe.preset-explorer-ready {
+    grid-template-columns: 1fr;
+  }
+
+  .preset-browser {
+    grid-column: 1;
+  }
+
+  .preset-toolbar {
+    position: static;
+  }
+}
+
+@media (max-width: 740px) {
+  .product-preview-dialog {
+    width: calc(100vw - 16px);
+    border-radius: 13px;
+  }
+
+  .product-preview-shell img {
+    border-radius: 12px 12px 0 0;
+  }
+
+  .product-preview-footer {
+    align-items: flex-start;
+    font-size: 12px;
+  }
+
+  .preset-toolbar {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 10px;
+    padding: 9px;
+  }
+
+  .preset-filter-list {
+    width: 100%;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    scrollbar-width: none;
+  }
+
+  .preset-filter-list::-webkit-scrollbar {
+    display: none;
+  }
+
+  .preset-filter {
+    flex: 0 0 auto;
+  }
+
+  .preset-result-count {
+    white-space: normal;
+  }
+
+  .listening-controls article:hover,
+  .preset-group:hover,
+  .download-option:hover,
+  .button:hover,
+  .nav-download:hover {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+  }
+
+  .motion-ready [data-reveal] {
+    opacity: 1;
+    transform: none;
+  }
+
+  .product-stage img {
+    transform: none !important;
+  }
+}
