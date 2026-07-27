@@ -130,9 +130,12 @@
       releaseUrl,
       installerUrl: installer.url,
       installerName: installer.name,
-      vst3Url: chooseAsset(assets, (name) => name.endsWith('.zip') && name.includes('vst3'))?.url || null,
-      standaloneUrl: chooseAsset(assets, (name) => name.endsWith('.zip') && name.includes('standalone'))?.url || null,
-      checksumsUrl: chooseAsset(assets, (name) => name === 'sha256sums.txt' || name.includes('sha256'))?.url || null,
+      vst3Url: chooseAsset(assets, (name) => name.endsWith('.zip') && name.includes('windows') && name.includes('vst3'))?.url || null,
+      standaloneUrl: chooseAsset(assets, (name) => name.endsWith('.zip') && name.includes('windows') && name.includes('standalone'))?.url || null,
+      macDmgUrl: chooseAsset(assets, (name) => name.endsWith('.dmg') && name.includes('macos'))?.url || null,
+      macVst3Url: chooseAsset(assets, (name) => name.endsWith('.zip') && name.includes('macos') && name.includes('vst3'))?.url || null,
+      macStandaloneUrl: chooseAsset(assets, (name) => name.endsWith('.zip') && name.includes('macos') && name.includes('standalone'))?.url || null,
+      checksumsUrl: chooseAsset(assets, (name) => name === 'sha256sums.txt')?.url || null,
       highlights: extractHighlights(payload.body)
     };
   };
@@ -156,6 +159,9 @@
           installerName: decodeURIComponent(new URL(installerUrl).pathname.split('/').pop()),
           vst3Url: officialReleaseUrl(release.vst3Url, true),
           standaloneUrl: officialReleaseUrl(release.standaloneUrl, true),
+          macDmgUrl: officialReleaseUrl(release.macDmgUrl, true),
+          macVst3Url: officialReleaseUrl(release.macVst3Url, true),
+          macStandaloneUrl: officialReleaseUrl(release.macStandaloneUrl, true),
           checksumsUrl: officialReleaseUrl(release.checksumsUrl, true),
           highlights
         }
@@ -279,6 +285,48 @@
     command.textContent = `Get-FileHash .\\${filename} -Algorithm SHA256`;
   };
 
+  const ensureMacDownloadOption = (release) => {
+    if (!release?.macDmgUrl) return;
+    const grid = document.querySelector('#download .download-grid');
+    if (!grid) return;
+
+    let option = document.getElementById('mac-download-option');
+    if (!option) {
+      option = document.createElement('article');
+      option.id = 'mac-download-option';
+      option.className = 'download-option';
+      const isId = language === 'id';
+      option.innerHTML = `
+        <span class="download-tag">macOS Universal</span>
+        <h3>${isId ? 'Paket Mac' : 'Mac package'}</h3>
+        <p>${isId
+          ? 'Universal untuk Apple Silicon dan Intel. Ad-hoc signed, tanpa Developer ID dan tanpa notarization.'
+          : 'Universal for Apple Silicon and Intel. Ad-hoc signed, without Developer ID signing or notarization.'}</p>
+        <div class="mac-download-actions">
+          <a class="button secondary" id="mac-dmg-link" href="${RELEASE_FALLBACK}">${isId ? 'Unduh DMG Mac' : 'Download Mac DMG'}</a>
+          <a class="text-link" id="mac-vst3-link" href="${RELEASE_FALLBACK}">VST3 ZIP</a>
+          <a class="text-link" id="mac-standalone-link" href="${RELEASE_FALLBACK}">Standalone ZIP</a>
+        </div>`;
+      grid.appendChild(option);
+
+      if (!document.getElementById('mac-download-option-style')) {
+        const style = document.createElement('style');
+        style.id = 'mac-download-option-style';
+        style.textContent = '.mac-download-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.mac-download-actions .text-link{font-size:.82rem}';
+        document.head.appendChild(style);
+      }
+    }
+
+    setLink(document.getElementById('mac-dmg-link'), release.macDmgUrl, true);
+    setLink(document.getElementById('mac-vst3-link'), release.macVst3Url || release.releaseUrl, Boolean(release.macVst3Url));
+    setLink(document.getElementById('mac-standalone-link'), release.macStandaloneUrl || release.releaseUrl, Boolean(release.macStandaloneUrl));
+
+    const eyebrow = document.querySelector('#download .section-heading .eyebrow');
+    if (eyebrow) eyebrow.textContent = language === 'id'
+      ? 'Unduhan resmi Windows dan macOS'
+      : 'Official Windows and macOS downloads';
+  };
+
   const renderRelease = (release) => {
     const state = release || { type: 'error', source: 'fallback', releaseUrl: RELEASE_FALLBACK, highlights: [] };
     const installerUrl = state.installerUrl || state.releaseUrl || RELEASE_FALLBACK;
@@ -294,6 +342,7 @@
     setLink(document.getElementById('vst3-link'), state.vst3Url || state.releaseUrl, Boolean(state.vst3Url));
     setLink(document.getElementById('standalone-link'), state.standaloneUrl || state.releaseUrl, Boolean(state.standaloneUrl));
     setLink(document.getElementById('checksums-link'), state.checksumsUrl || state.releaseUrl, Boolean(state.checksumsUrl));
+    ensureMacDownloadOption(state);
     setLink(document.getElementById('release-link'), state.releaseUrl || RELEASE_FALLBACK, true);
     setLink(document.getElementById('distribution-link'), state.releaseUrl || RELEASE_FALLBACK, true);
 

@@ -68,9 +68,9 @@ pengguna dapat menyimpan, membuka, mengganti nama, serta menghapus file
 
 ## Current public release
 
-The reviewed local release manifest records **v0.5.19**. The live website also resolves GitHub's latest published full release and routes installer CTAs to the official Windows setup asset when validation succeeds.
+The reviewed local release manifest records **v0.5.20**. The live website also resolves GitHub's latest published full release and routes installer CTAs to the official Windows setup asset when validation succeeds.
 
-Manifest rilis lokal yang telah direview mencatat **v0.5.19**. Website live juga mengambil rilis penuh terbaru yang dipublikasikan di GitHub dan mengarahkan CTA installer ke asset setup Windows resmi ketika validasi berhasil.
+Manifest rilis lokal yang telah direview mencatat **v0.5.20**. Website live juga mengambil rilis penuh terbaru yang dipublikasikan di GitHub dan mengarahkan CTA installer ke asset setup Windows resmi ketika validasi berhasil.
 
 Gain Match defaults to OFF. In normal listening mode, safe creative lift stays
 audible instead of being attenuated toward an internal loudness target. Gain
@@ -133,9 +133,11 @@ Tidak ada kewajiban membeli. Pembelian aktivasi memberikan hak lisensi yang nyat
 ## Compatibility
 
 - Windows 10/11, 64-bit
+- macOS 11 or later, Universal arm64 + Intel x86_64
+- macOS packages are ad-hoc signed only, not Developer ID signed or notarized
 - VST3 plug-in for use inside a compatible DAW
 - Standalone application for supported audio-device workflows
-- macOS, Linux, VST2, AAX and Audio Unit are not currently distributed
+- Linux, VST2, AAX and Audio Unit are not currently distributed
 - Compatibility varies by DAW, driver, audio interface, sample rate, buffer, device and security policy
 - Evaluate in your own workflow before critical delivery or broadcast
 

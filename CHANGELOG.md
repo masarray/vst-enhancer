@@ -1,5 +1,18 @@
 # Public Distribution Changelog
 
+## v0.5.20 - 27 July 2026
+
+### Vocal balance and listening comfort
+- Added content-aware warm vocal-body support for bright/high female vocals while preserving the approved Presence/Tickle character.
+- Preserved stable long-term level behaviour, optional strict Gain Match comparison and independent -1 dBFS peak safety.
+
+### Local cross-platform release
+- Built and validated Windows x64 and macOS Universal binaries entirely on local computers; GitHub Actions was not used.
+- Added unsigned Windows installer/VST3/Standalone packages.
+- Added macOS Universal VST3, Standalone and DMG packages for arm64 and Intel x86_64.
+- macOS packages are ad-hoc signed only and are not Developer ID signed or notarized.
+- Published binary-only assets with platform checksums, combined SHA-256 checksums and build provenance.
+
 ## v0.5.19 - 26 July 2026
 
 ### Signature engine and workflow
