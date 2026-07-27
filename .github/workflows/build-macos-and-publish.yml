@@ -149,6 +149,37 @@ jobs:
       - name: Build, audit and package macOS Universal binaries
         run: |
           set -euo pipefail
+
+          # The private helper intentionally withholds compiler logs. Patch only the
+          # runner-local copy so a failed CMake configure emits a short sanitized
+          # diagnosis without publishing source code or preserving private logs.
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('source/scripts/build-macos-ci.sh')
+          text = path.read_text(encoding='utf-8')
+          old = """  else
+              printf '[FAILED] %s\\n' \"$label\" >&2
+              printf 'Detailed compiler/audit output was intentionally withheld from the public workflow log to protect proprietary source.\\n' >&2
+              exit 1
+            fi
+          """
+          new = """  else
+              printf '[FAILED] %s\\n' \"$label\" >&2
+              if [[ \"$label\" == \"Configure Universal macOS build\" ]]; then
+                printf '%s\\n' '[SAFE CONFIGURE DIAGNOSTIC]'
+                grep -E '(^CMake Error|^CMake Warning|^-- |Could NOT find|not found|No CMAKE_|generator|Xcode|fatal:|Failed)' \"$log_file\" \\
+                  | sed -E \"s#${GITHUB_WORKSPACE:-}/source#<private-source>#g; s#${RUNNER_TEMP:-}#<runner-temp>#g\" \\
+                  | tail -n 80 || true
+              fi
+              printf 'Detailed compiler/audit output was intentionally withheld from the public workflow log to protect proprietary source.\\n' >&2
+              exit 1
+            fi
+          """
+          if old not in text:
+              raise SystemExit('Safe configure-diagnostic patch anchor was not found.')
+          path.write_text(text.replace(old, new, 1), encoding='utf-8')
+          PY
+
           bash source/scripts/build-macos-ci.sh "$RELEASE_NUMBER" "$MAC_DIST"
 
       - name: Create combined checksums and final release notes
