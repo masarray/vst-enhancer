@@ -189,9 +189,8 @@ jobs:
           else:
               raise SystemExit('Xcode DSP option patch anchor was not found or was ambiguous.')
 
-          # The private helper intentionally withholds compiler logs. Patch only the
-          # runner-local copy so a failed CMake configure emits a short sanitized
-          # diagnosis without publishing source code or preserving private logs.
+          # Patch only the runner-local helper. Public logs receive gate names and
+          # sanitized configure/compiler diagnostics, never source snippets or full logs.
           helper_path = Path('source/scripts/build-macos-ci.sh')
           helper = helper_path.read_text(encoding='utf-8')
           old = """  else
@@ -207,6 +206,11 @@ jobs:
                 grep -E '(^CMake Error|^CMake Warning|^-- |Could NOT find|not found|No CMAKE_|generator|Xcode|fatal:|Failed)' \"$log_file\" \\
                   | sed -E \"s#${GITHUB_WORKSPACE:-}/source#<private-source>#g; s#${RUNNER_TEMP:-}#<runner-temp>#g\" \\
                   | tail -n 80 || true
+              elif [[ \"$label\" == \"Compile Universal binaries and audit tools\" ]]; then
+                printf '%s\\n' '[SAFE COMPILE DIAGNOSTIC]'
+                grep -E '(^|[[:space:]])(error:|fatal error:|Undefined symbols|duplicate symbol|ld: |clang: error:|linker command failed|Command CompileC failed|Command Ld failed|BUILD FAILED)' \"$log_file\" \\
+                  | sed -E \"s#${GITHUB_WORKSPACE:-}/source#<private-source>#g; s#${RUNNER_TEMP:-}#<runner-temp>#g; s#/Users/runner/work/[^ ]+#<runner-path>#g\" \\
+                  | tail -n 120 || true
               fi
               printf 'Detailed compiler/audit output was intentionally withheld from the public workflow log to protect proprietary source.\\n' >&2
               exit 1
@@ -214,8 +218,8 @@ jobs:
           """
           if old in helper:
               helper_path.write_text(helper.replace(old, new, 1), encoding='utf-8')
-          elif '[SAFE CONFIGURE DIAGNOSTIC]' not in helper:
-              raise SystemExit('Safe configure-diagnostic patch anchor was not found.')
+          elif '[SAFE COMPILE DIAGNOSTIC]' not in helper:
+              raise SystemExit('Safe compile-diagnostic patch anchor was not found.')
           PY
 
           bash source/scripts/build-macos-ci.sh "$RELEASE_NUMBER" "$MAC_DIST"
