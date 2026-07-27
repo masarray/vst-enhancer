@@ -150,13 +150,50 @@ jobs:
         run: |
           set -euo pipefail
 
+          # Patch only the runner-local clone. The private v0.5.20 tag and Windows
+          # provenance remain immutable. Xcode supports per-source options, but not
+          # configuration-dependent per-source options. This job builds Release only,
+          # so the non-MSVC DSP options are equivalent when applied unconditionally.
+          python3 - <<'PY'
+          from pathlib import Path
+
+          cmake_path = Path('source/CMakeLists.txt')
+          cmake = cmake_path.read_text(encoding='utf-8')
+          legacy = '''set_property(SOURCE engine/arsonkupik_dsp.cpp APPEND PROPERTY COMPILE_OPTIONS
+              "$<$<AND:$<CONFIG:Release>,$<CXX_COMPILER_ID:MSVC>>:/fp:fast>"
+              "$<$<AND:$<CONFIG:Release>,$<NOT:$<CXX_COMPILER_ID:MSVC>>>:-fno-math-errno>"
+              "$<$<AND:$<CONFIG:Release>,$<NOT:$<CXX_COMPILER_ID:MSVC>>>:-fno-trapping-math>"
+              "$<$<AND:$<CONFIG:Release>,$<NOT:$<CXX_COMPILER_ID:MSVC>>>:-ffp-contract=fast>"
+          )'''
+          compatible = '''if(CMAKE_GENERATOR STREQUAL "Xcode")
+              set_property(SOURCE engine/arsonkupik_dsp.cpp APPEND PROPERTY COMPILE_OPTIONS
+                  "-fno-math-errno"
+                  "-fno-trapping-math"
+                  "-ffp-contract=fast"
+              )
+          else()
+              set_property(SOURCE engine/arsonkupik_dsp.cpp APPEND PROPERTY COMPILE_OPTIONS
+                  "$<$<AND:$<CONFIG:Release>,$<CXX_COMPILER_ID:MSVC>>:/fp:fast>"
+                  "$<$<AND:$<CONFIG:Release>,$<NOT:$<CXX_COMPILER_ID:MSVC>>>:-fno-math-errno>"
+                  "$<$<AND:$<CONFIG:Release>,$<NOT:$<CXX_COMPILER_ID:MSVC>>>:-fno-trapping-math>"
+                  "$<$<AND:$<CONFIG:Release>,$<NOT:$<CXX_COMPILER_ID:MSVC>>>:-ffp-contract=fast>"
+              )
+          endif()'''
+          marker = 'if(CMAKE_GENERATOR STREQUAL "Xcode")\n    set_property(SOURCE engine/arsonkupik_dsp.cpp'
+          if legacy in cmake:
+              cmake = cmake.replace(legacy, compatible, 1)
+              cmake_path.write_text(cmake, encoding='utf-8')
+              print('[UPDATED] Xcode-compatible DSP source options applied to runner-local source.')
+          elif marker in cmake:
+              print('[PASS] Xcode-compatible DSP source options already present.')
+          else:
+              raise SystemExit('Xcode DSP option patch anchor was not found or was ambiguous.')
+
           # The private helper intentionally withholds compiler logs. Patch only the
           # runner-local copy so a failed CMake configure emits a short sanitized
           # diagnosis without publishing source code or preserving private logs.
-          python3 - <<'PY'
-          from pathlib import Path
-          path = Path('source/scripts/build-macos-ci.sh')
-          text = path.read_text(encoding='utf-8')
+          helper_path = Path('source/scripts/build-macos-ci.sh')
+          helper = helper_path.read_text(encoding='utf-8')
           old = """  else
               printf '[FAILED] %s\\n' \"$label\" >&2
               printf 'Detailed compiler/audit output was intentionally withheld from the public workflow log to protect proprietary source.\\n' >&2
@@ -175,9 +212,10 @@ jobs:
               exit 1
             fi
           """
-          if old not in text:
+          if old in helper:
+              helper_path.write_text(helper.replace(old, new, 1), encoding='utf-8')
+          elif '[SAFE CONFIGURE DIAGNOSTIC]' not in helper:
               raise SystemExit('Safe configure-diagnostic patch anchor was not found.')
-          path.write_text(text.replace(old, new, 1), encoding='utf-8')
           PY
 
           bash source/scripts/build-macos-ci.sh "$RELEASE_NUMBER" "$MAC_DIST"
