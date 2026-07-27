@@ -16,7 +16,6 @@ on:
 
 permissions:
   contents: write
-  pages: write
 
 concurrency:
   group: arsonkupik-public-macos-release
@@ -32,6 +31,7 @@ jobs:
     env:
       PUBLIC_REPO: masarray/vst-enhancer
       PRIVATE_REPO: masarray/askp-vst
+      APPROVED_WORKFLOW: .github/workflows/build-macos-and-publish.yml
     steps:
       - name: Resolve and verify draft release
         env:
@@ -39,6 +39,14 @@ jobs:
           INPUT_TAG: ${{ inputs.release_tag }}
         run: |
           set -euo pipefail
+
+          workflow_files="$(gh api "repos/$PUBLIC_REPO/git/trees/main?recursive=1" --jq '.tree[] | select(.type == "blob" and (.path | startswith(".github/workflows/"))) | .path')"
+          workflow_count="$(printf '%s\n' "$workflow_files" | sed '/^$/d' | wc -l | tr -d ' ')"
+          [[ "$workflow_count" == 1 && "$workflow_files" == "$APPROVED_WORKFLOW" ]] || {
+            echo "The public repository must contain exactly one approved manual workflow." >&2
+            exit 1
+          }
+
           tag="$INPUT_TAG"
           if [[ -z "$tag" ]]; then
             candidates=""
@@ -71,6 +79,7 @@ jobs:
             fi
             tag="$candidates"
           fi
+
           [[ "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "Invalid release tag: $tag" >&2; exit 1; }
           is_draft="$(gh release view "$tag" --repo "$PUBLIC_REPO" --json isDraft --jq '.isDraft')"
           [[ "$is_draft" == true ]] || { echo "$tag is not a draft release." >&2; exit 1; }
@@ -84,6 +93,7 @@ jobs:
           do
             grep -Fxq "$required" <<<"$assets" || { echo "Required Windows draft asset missing: $required" >&2; exit 1; }
           done
+
           echo "RELEASE_TAG=$tag" >> "$GITHUB_ENV"
           echo "RELEASE_NUMBER=${tag#v}" >> "$GITHUB_ENV"
           echo "MAC_DIST=$RUNNER_TEMP/askp-mac-dist" >> "$GITHUB_ENV"
@@ -120,6 +130,10 @@ jobs:
               'juceDistributionConfirmed': True,
               'requireWindowsAssets': True,
               'requireMacAssetsBeforePublish': True,
+              'privateRepositoryActionsEnabled': False,
+              'publicWorkflowTrigger': 'workflow_dispatch-only',
+              'publicWorkflowActor': 'masarray',
+              'publicWorkflowLogsMayContainSource': False,
           }
           for key, value in expected.items():
               if request.get(key) != value:
@@ -149,7 +163,7 @@ jobs:
           ## What is new
           - Adaptive Warm Vocal Body Companion restores perceptual body on bright/high female vocals only when Presence/Tickle dominates the 430–900 Hz body bridge.
           - The approved Signature character is retained; Presence/Tickle, compressor, global output gain, limiter and the -1 dBFS safety ceiling were not retuned.
-          - Complete anti-crackle, multirate/block-size, transition, stereo-safety, headroom and existing engine regression gates passed before publication.
+          - Complete anti-crackle, multirate/block-size, transition, stereo-safety, headroom, binary-load and existing engine regression gates passed before publication.
           - No FFT, oversampling, extra look-ahead, audio-thread allocation, lock or hidden mandatory +4 dB final output stage was added.
 
           ## Windows
@@ -210,7 +224,7 @@ jobs:
             git -C public push origin HEAD:main
           fi
 
-      - name: Deploy landing from the gh-pages branch
+      - name: Deploy and verify landing from the gh-pages branch
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -223,6 +237,7 @@ jobs:
             echo "Run SETUP-HYBRID-RELEASE.cmd locally once." >&2
             exit 1
           }
+
           site_copy="$RUNNER_TEMP/askp-site-copy"
           rm -rf "$site_copy"
           cp -R public/site "$site_copy"
@@ -233,7 +248,32 @@ jobs:
           touch public/.nojekyll
           git -C public add -A
           git -C public commit -m "Deploy ArSonKuPik $RELEASE_TAG landing"
+          pages_commit="$(git -C public rev-parse HEAD)"
           git -C public push --force origin HEAD:gh-pages
+
+          gh api --method POST "repos/$PUBLIC_REPO/pages/builds" >/dev/null 2>&1 || true
+          deadline=$((SECONDS + 300))
+          while (( SECONDS < deadline )); do
+            latest="$(gh api "repos/$PUBLIC_REPO/pages/builds/latest" 2>/dev/null || true)"
+            status="$(printf '%s' "$latest" | jq -r '.status // empty' 2>/dev/null || true)"
+            commit="$(printf '%s' "$latest" | jq -r '.commit // empty' 2>/dev/null || true)"
+            if [[ "$commit" == "$pages_commit" && "$status" == built ]]; then
+              echo "GitHub Pages deployment verified for $pages_commit."
+              break
+            fi
+            if [[ "$commit" == "$pages_commit" && "$status" == errored ]]; then
+              echo "GitHub Pages build failed for $pages_commit." >&2
+              exit 1
+            fi
+            sleep 5
+          done
+
+          latest_status="$(gh api "repos/$PUBLIC_REPO/pages/builds/latest" --jq '.status')"
+          latest_commit="$(gh api "repos/$PUBLIC_REPO/pages/builds/latest" --jq '.commit')"
+          [[ "$latest_commit" == "$pages_commit" && "$latest_status" == built ]] || {
+            echo "GitHub Pages was not verified before the publication deadline." >&2
+            exit 1
+          }
 
       - name: Publish the completed Windows and macOS release
         env:
