@@ -189,6 +189,23 @@ jobs:
           else:
               raise SystemExit('Xcode DSP option patch anchor was not found or was ambiguous.')
 
+          processor_path = Path('source/src/PluginProcessor.cpp')
+          processor = processor_path.read_text(encoding='utf-8')
+          legacy_file_reset = '    activeUserPresetFile_ = {};'
+          clang_safe_file_reset = '    activeUserPresetFile_ = juce::File();'
+          legacy_count = processor.count(legacy_file_reset)
+          safe_count = processor.count(clang_safe_file_reset)
+          if legacy_count == 1 and safe_count == 0:
+              processor_path.write_text(
+                  processor.replace(legacy_file_reset, clang_safe_file_reset, 1),
+                  encoding='utf-8')
+              print('[UPDATED] Clang-safe JUCE File reset applied to runner-local source.')
+          elif legacy_count == 0 and safe_count == 1:
+              print('[PASS] Clang-safe JUCE File reset already present.')
+          else:
+              raise SystemExit(
+                  f'JUCE File reset anchor is missing or ambiguous: legacy={legacy_count} safe={safe_count}')
+
           # Patch only the runner-local helper. Public logs receive gate names and
           # sanitized configure/compiler diagnostics, never source snippets or full logs.
           helper_path = Path('source/scripts/build-macos-ci.sh')
