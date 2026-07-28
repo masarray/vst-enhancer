@@ -185,6 +185,7 @@ html[data-global-shell="v6"] {
   position: relative;
   overflow: hidden;
   isolation: isolate;
+  align-items: center;
   border-color: rgba(120, 221, 176, .48);
   background: linear-gradient(135deg, #16785f 0%, #269d79 52%, #54cfa4 100%);
   color: #fff;
@@ -208,11 +209,13 @@ html[data-global-shell="v6"] {
 }
 
 .button.secondary.hero-mac-download svg {
+  display: block;
   width: 1.16em;
   height: 1.16em;
   flex: 0 0 1.16em;
   fill: currentColor;
-  transform: translateY(-0.01em);
+  transform-origin: center;
+  transform: translateY(-0.10em) scale(1.30);
 }
 
 .button.secondary.hero-mac-download:hover,
