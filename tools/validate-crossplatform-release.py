@@ -38,6 +38,7 @@ def main() -> int:
     release = json.loads(read("site/release.json"))
     site_en = read("site/index.html")
     site_id = read("site/id/index.html")
+    experience = read("site/experience-v4.js")
 
     require(readme, "Windows and macOS", "README")
     require(readme, "macOS 11 or later", "README")
@@ -79,6 +80,18 @@ def main() -> int:
         require(html, 'id="mac-download-option"', label)
         require(html, 'id="mac-dmg-link"', label)
         reject(html, "GitHub Actions was not used", label)
+
+    for marker in (
+        "setupCrossPlatformCopy",
+        "Musical VST3 Audio Enhancer for Windows and macOS",
+        "VST3 audio enhancer musikal untuk Windows dan macOS",
+        "Official Windows and macOS downloads",
+        "Unduhan resmi Windows dan macOS",
+        "Mac package",
+        "Download Mac DMG",
+        "data-crossplatform-copy",
+    ):
+        require(experience, marker, "live cross-platform landing normalization")
 
     require(provenance, "2170310044c75dc5525ccb3901a7fecca1a5a64d", "release provenance")
     require(provenance, "runner-local compatibility preparation", "release provenance")
