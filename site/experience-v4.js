@@ -22,10 +22,89 @@
         visible: (count) => `${count} presets shown`
       };
 
+  const setMeta = (selector, value) => {
+    const element = document.querySelector(selector);
+    if (element) element.setAttribute('content', value);
+  };
+
+  const setText = (selector, value) => {
+    const element = document.querySelector(selector);
+    if (element) element.textContent = value;
+  };
+
+  const setupCrossPlatformCopy = () => {
+    const isId = language === 'id';
+    document.title = isId
+      ? 'ArSonKuPik — VST3 Audio Enhancer Musikal untuk Windows dan macOS'
+      : 'ArSonKuPik — Musical VST3 Audio Enhancer for Windows and macOS';
+
+    const description = isId
+      ? 'Hasilkan suara lebih berisi, jernih, dan berdimensi tanpa rangkaian plug-in rumit. ArSonKuPik tersedia sebagai VST3 dan Standalone untuk Windows dan macOS.'
+      : 'Achieve fuller, clearer and more dimensional sound without a complex plug-in chain. ArSonKuPik is available as VST3 and Standalone for Windows and macOS.';
+    setMeta('meta[name="description"]', description);
+    setMeta('meta[property="og:description"]', description);
+    setMeta('meta[name="twitter:description"]', description);
+
+    setText('.landing-hero .hero-copy > .eyebrow', isId
+      ? 'VST3 audio enhancer musikal untuk Windows dan macOS'
+      : 'Musical VST3 audio enhancer for Windows and macOS');
+
+    const trustFormat = document.querySelector('.trust-grid > div:first-child span');
+    if (trustFormat) {
+      trustFormat.textContent = isId
+        ? 'Di dalam DAW kompatibel atau sebagai aplikasi terpisah di Windows maupun macOS.'
+        : 'Inside a compatible DAW or as a separate application on Windows or macOS.';
+    }
+
+    setText('#download .section-heading .eyebrow', isId
+      ? 'Unduhan resmi Windows dan macOS'
+      : 'Official Windows and macOS downloads');
+
+    const downloadLead = document.querySelector('#download .section-heading .section-lead');
+    if (downloadLead) {
+      downloadLead.textContent = isId
+        ? 'Gunakan installer Windows untuk pemasangan paling mudah, atau pilih paket VST3, Standalone, dan DMG resmi sesuai sistem operasi Anda.'
+        : 'Use the Windows installer for the simplest setup, or choose the official VST3, Standalone and DMG package for your operating system.';
+    }
+
+    const standaloneHint = document.querySelector('#technical span:nth-child(2) small');
+    if (standaloneHint) {
+      standaloneHint.textContent = isId
+        ? 'Aplikasi terpisah untuk workflow audio device yang didukung di Windows atau macOS'
+        : 'A separate application for supported audio-device workflows on Windows or macOS';
+    }
+
+    const macCard = document.getElementById('mac-download-option');
+    if (macCard) {
+      const heading = macCard.querySelector('h3');
+      const paragraph = macCard.querySelector('p');
+      const dmg = macCard.querySelector('#mac-dmg-link');
+      if (heading) heading.textContent = isId ? 'Paket Mac' : 'Mac package';
+      if (paragraph) paragraph.textContent = isId
+        ? 'Universal untuk Apple Silicon dan Intel. Ad-hoc signed, tanpa Developer ID dan tanpa notarization.'
+        : 'Universal for Apple Silicon and Intel. Ad-hoc signed, without Developer ID signing or notarization.';
+      if (dmg) dmg.textContent = isId ? 'Unduh DMG Mac' : 'Download Mac DMG';
+    }
+
+    const faqStandalone = [...document.querySelectorAll('.faq-grid details')]
+      .find((item) => /VST3 (or|atau) Standalone\?/i.test(item.querySelector('summary')?.textContent || ''));
+    const faqParagraph = faqStandalone?.querySelector('p');
+    if (faqParagraph) {
+      faqParagraph.textContent = isId
+        ? 'VST3 berjalan di dalam DAW kompatibel. Standalone berjalan sebagai aplikasi terpisah di Windows atau macOS untuk workflow audio device yang didukung.'
+        : 'VST3 runs inside a compatible DAW. Standalone runs as a separate Windows or macOS application for supported audio-device workflows.';
+    }
+
+    setText('#mobile-download-bar strong', isId
+      ? 'ArSonKuPik untuk Windows dan macOS'
+      : 'ArSonKuPik for Windows and macOS');
+
+    document.documentElement.setAttribute('data-crossplatform-copy', 'windows-macos-v0520');
+  };
+
   const setupProductPreview = () => {
     const source = document.querySelector('.product-stage img');
     if (!source || typeof HTMLDialogElement === 'undefined') return;
-
     source.setAttribute('role', 'button');
     source.setAttribute('tabindex', '0');
     source.setAttribute('aria-label', text.preview);
@@ -34,7 +113,6 @@
     const dialog = document.createElement('dialog');
     dialog.className = 'product-preview-dialog';
     dialog.setAttribute('aria-label', text.preview);
-
     const shell = document.createElement('div');
     shell.className = 'product-preview-shell';
     const preview = document.createElement('img');
@@ -42,7 +120,6 @@
     preview.alt = source.alt;
     preview.width = source.width || 1080;
     preview.height = source.height || 612;
-
     const footer = document.createElement('div');
     footer.className = 'product-preview-footer';
     const caption = document.createElement('span');
@@ -52,7 +129,6 @@
     closeButton.className = 'product-preview-close';
     closeButton.textContent = text.close;
     closeButton.addEventListener('click', () => dialog.close());
-
     footer.append(caption, closeButton);
     shell.append(preview, footer);
     dialog.append(shell);
@@ -83,7 +159,6 @@
 
     universe.dataset.explorerReady = 'true';
     universe.classList.add('preset-explorer-ready');
-
     const categories = groups.map((group, index) => {
       const heading = group.querySelector('header strong')?.textContent?.trim() || `Group ${index + 1}`;
       const key = heading.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
@@ -146,8 +221,7 @@
       }
     };
 
-    const choices = [{ key: 'all', heading: text.all }, ...categories];
-    choices.forEach((choice, index) => {
+    [{ key: 'all', heading: text.all }, ...categories].forEach((choice, index) => {
       const button = document.createElement('button');
       button.type = 'button';
       button.className = 'preset-filter';
@@ -206,12 +280,10 @@
       ...document.querySelectorAll('.faq-grid > details'),
       document.querySelector('.cta-card')
     ].filter(Boolean);
-
     if (reducedMotion || !('IntersectionObserver' in window)) {
       targets.forEach((target) => target.classList.add('is-visible'));
       return;
     }
-
     targets.forEach((target, index) => {
       target.dataset.reveal = '';
       target.style.setProperty('--reveal-delay', `${(index % 4) * 55}ms`);
@@ -298,6 +370,7 @@
     });
   };
 
+  setupCrossPlatformCopy();
   setupPresetExplorer();
   setupProductPreview();
   setupSignalAccent();
