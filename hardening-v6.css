@@ -179,6 +179,15 @@ html[data-global-shell="v6"] {
   width: 100%;
 }
 
+/* Use one measured icon-to-label rhythm for the hero platform CTAs and the
+   lower macOS DMG CTA. The Apple glyph receives an optical margin because its
+   1.30× visual scale extends beyond the SVG/pseudo-element layout box. */
+.landing-hero .actions [data-installer-cta],
+.button.secondary.hero-mac-download,
+.download-option #mac-dmg-link {
+  gap: .62em;
+}
+
 /* Match and exceed .button.secondary specificity so the gradient is visible
    in the default state, not only when :hover increases selector strength. */
 .button.secondary.hero-mac-download {
@@ -213,6 +222,7 @@ html[data-global-shell="v6"] {
   width: 1.16em;
   height: 1.16em;
   flex: 0 0 1.16em;
+  margin-right: .18em;
   fill: currentColor;
   transform-origin: center;
   transform: translateY(-0.10em) scale(1.30);
@@ -234,6 +244,55 @@ html[data-global-shell="v6"] {
 }
 
 .button.secondary.hero-mac-download[aria-disabled="true"] {
+  opacity: .68;
+  filter: saturate(.65);
+  box-shadow: none;
+}
+
+/* The lower DMG action uses the same emerald platform language, optical Apple
+   sizing, spacing, and interaction states as the hero Mac CTA. */
+.download-option #mac-dmg-link.button.secondary {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  align-items: center;
+  border-color: rgba(120, 221, 176, .48);
+  background:
+    linear-gradient(115deg, rgba(255, 255, 255, .14), transparent 38%, transparent 68%, rgba(255, 255, 255, .06)),
+    linear-gradient(135deg, #16785f 0%, #269d79 52%, #54cfa4 100%);
+  color: #fff;
+  box-shadow: 0 15px 38px rgba(31, 147, 111, .27), inset 0 1px 0 rgba(255, 255, 255, .2);
+  text-shadow: 0 1px 1px rgba(0, 52, 39, .25);
+  transition: transform 160ms ease, border-color 160ms ease, background 160ms ease, box-shadow 160ms ease, filter 160ms ease;
+}
+
+.download-option #mac-dmg-link.button.secondary::before {
+  width: 1.16em;
+  height: 1.16em;
+  flex: 0 0 1.16em;
+  margin-right: .18em;
+  transform-origin: center;
+  transform: translateY(-0.10em) scale(1.30);
+}
+
+.download-option #mac-dmg-link.button.secondary:hover,
+.download-option #mac-dmg-link.button.secondary:focus-visible {
+  border-color: rgba(173, 244, 211, .76);
+  background:
+    linear-gradient(115deg, rgba(255, 255, 255, .17), transparent 38%, transparent 68%, rgba(255, 255, 255, .075)),
+    linear-gradient(135deg, #1a876b 0%, #2daf86 52%, #67ddb4 100%);
+  color: #fff;
+  box-shadow: 0 18px 44px rgba(35, 164, 123, .38), inset 0 1px 0 rgba(255, 255, 255, .24);
+  filter: saturate(1.04) brightness(1.025);
+  transform: translateY(-1px);
+}
+
+.download-option #mac-dmg-link.button.secondary:active {
+  transform: translateY(0);
+  box-shadow: 0 10px 27px rgba(31, 147, 111, .28), inset 0 1px 0 rgba(255, 255, 255, .18);
+}
+
+.download-option #mac-dmg-link.button.secondary[aria-disabled="true"] {
   opacity: .68;
   filter: saturate(.65);
   box-shadow: none;
@@ -282,8 +341,7 @@ html[data-global-shell="v6"] {
 
   [data-installer-cta]::before,
   #vst3-link::before,
-  #standalone-link::before,
-  #mac-dmg-link::before {
+  #standalone-link::before {
     width: .94em;
     height: .94em;
     flex-basis: .94em;
@@ -297,7 +355,8 @@ html[data-global-shell="v6"] {
 
   .language-switch a,
   .mobile-nav summary::after,
-  .button.secondary.hero-mac-download {
+  .button.secondary.hero-mac-download,
+  .download-option #mac-dmg-link.button.secondary {
     transition: none;
   }
 }
