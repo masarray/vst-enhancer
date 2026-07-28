@@ -1,0 +1,12 @@
+# Public product surface ownership
+* @masarray
+
+# Release, legal and security-sensitive files
+/site/release.json @masarray
+/site/id/release.json @masarray
+/RELEASE-PROVENANCE.md @masarray
+/EULA.txt @masarray
+/PURCHASE_TERMS.txt @masarray
+/PRIVACY.txt @masarray
+/SECURITY.md @masarray
+/.github/workflows/ @masarray

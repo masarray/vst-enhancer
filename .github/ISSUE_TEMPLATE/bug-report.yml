@@ -1,4 +1,4 @@
-name: Public beta bug report
+name: Public release bug report
 description: Report a reproducible ArSonKuPik VST3 or Standalone problem without confidential data.
 title: "[Bug] "
 labels:
@@ -7,25 +7,47 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thank you for evaluating ArSonKuPik. Please use the current official release and include enough detail to reproduce the problem.
+        Thank you for evaluating ArSonKuPik. Test the current official release and include enough detail to reproduce the problem.
 
-        Never post activation codes, Computer Request IDs, receipts, customer audio, private projects, personal data, or security exploit details. Follow SECURITY.md for vulnerabilities.
+        Never post activation codes, Computer Request IDs, receipts, customer audio, private projects, personal data or security exploit details. Follow SECURITY.md for vulnerabilities.
   - type: input
     id: version
     attributes:
       label: ArSonKuPik version
-      description: Copy the exact version from the plug-in, Standalone About view, or official release.
-      placeholder: Example: v0.5.12
+      description: Copy the exact version from the plug-in, Standalone About view or official release.
+      placeholder: Example: v0.5.20
+    validations:
+      required: true
+  - type: dropdown
+    id: operating_system
+    attributes:
+      label: Operating system
+      options:
+        - Windows 11 x64
+        - Windows 10 x64
+        - macOS 11 or later — Apple Silicon arm64
+        - macOS 11 or later — Intel x86_64
+        - Other or unsupported
+    validations:
+      required: true
+  - type: input
+    id: os_version
+    attributes:
+      label: Exact operating-system version
+      placeholder: Windows 11 24H2 build 26100.x or macOS 15.x
     validations:
       required: true
   - type: dropdown
     id: package
     attributes:
-      label: Package used
+      label: Official package used
       options:
-        - Windows installer
-        - VST3 ZIP
-        - Standalone ZIP
+        - Windows x64 installer
+        - Windows x64 VST3 ZIP
+        - Windows x64 Standalone ZIP
+        - macOS Universal DMG
+        - macOS Universal VST3 ZIP
+        - macOS Universal Standalone ZIP
         - Other official package
     validations:
       required: true
@@ -51,26 +73,25 @@ body:
     id: daw
     attributes:
       label: DAW or host and version
-      placeholder: REAPER 7.x, Cubase 14, Ableton Live 12, FL Studio 2025, or Standalone
-    validations:
-      required: true
-  - type: input
-    id: windows
-    attributes:
-      label: Windows version
-      placeholder: Windows 11 24H2 x64
+      placeholder: REAPER 7.x, Cubase 14, Ableton Live 12, FL Studio 2025 or Standalone
     validations:
       required: true
   - type: input
     id: audio
     attributes:
-      label: Audio interface, driver, sample rate, and buffer
-      placeholder: Interface model, ASIO driver, 48 kHz, 256 samples
+      label: Audio interface, driver or device layer, sample rate and buffer
+      placeholder: Interface model, ASIO/CoreAudio driver, 48 kHz, 256 samples
+  - type: input
+    id: installation_security
+    attributes:
+      label: Installation or security message
+      description: Include sanitized SmartScreen, endpoint-security or Gatekeeper wording when relevant.
+      placeholder: No warning, SmartScreen warning, Gatekeeper blocked, Open Anyway used, etc.
   - type: input
     id: preset
     attributes:
       label: Preset and relevant controls
-      placeholder: Mas Ari Signature, defaults; Enhance 50%; Smart Protect on
+      placeholder: Signature Balanced; Enhance 50%; Smart Protect on
   - type: dropdown
     id: clean_project
     attributes:
@@ -108,7 +129,7 @@ body:
     id: notes
     attributes:
       label: Additional non-confidential information
-      description: CPU use, bypass result, VST3 versus Standalone comparison, sanitized screenshot, or crash-log location.
+      description: CPU use, bypass result, VST3 versus Standalone comparison, sanitized screenshot or crash-log location.
   - type: checkboxes
     id: confirmation
     attributes:
@@ -118,7 +139,7 @@ body:
           required: true
         - label: I verified the package SHA-256 against the same official release.
           required: true
-        - label: I removed confidential, personal, activation, order, and customer information.
+        - label: I removed confidential, personal, activation, order and customer information.
           required: true
         - label: This report does not disclose a security vulnerability that should be reported privately.
           required: true
