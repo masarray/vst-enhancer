@@ -31,3 +31,4 @@ Invoke-PythonValidator -ScriptPath "$PSScriptRoot\validate-public-release.py" -S
 Invoke-PythonValidator -ScriptPath "$PSScriptRoot\validate-trial-first-pages.py"
 Invoke-PythonValidator -ScriptPath "$PSScriptRoot\validate-premium-landing.py"
 Invoke-PythonValidator -ScriptPath "$PSScriptRoot\validate-public-audience.py"
+Invoke-PythonValidator -ScriptPath "$PSScriptRoot\validate-crossplatform-release.py"
