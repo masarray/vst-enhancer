@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate ArSonKuPik release integrity and the V6 static public shell."""
+"""Validate ArSonKuPik cross-platform release integrity and the V6 static public shell."""
 from __future__ import annotations
 
 import argparse
@@ -104,6 +104,18 @@ def page(text: str) -> Page:
     return result
 
 
+def validate_asset_url(value: object, ending: str, key: str) -> None:
+    text = str(value)
+    parsed = urlparse(text)
+    require(
+        text.startswith(ASSET_ROOT)
+        and parsed.scheme == "https"
+        and parsed.hostname == "github.com"
+        and text.endswith("/" + ending),
+        f"{key} invalid",
+    )
+
+
 def validate_release(root: Path) -> dict:
     release = json.loads(read(root / "site/release.json"))
     localized = json.loads(read(root / "site/id/release.json"))
@@ -111,25 +123,39 @@ def validate_release(root: Path) -> dict:
     required = {
         "schemaVersion", "version", "distributionEnabled", "evaluationDays",
         "purchaseCheckoutAvailable", "releaseUrl", "installerUrl", "vst3Url",
-        "standaloneUrl", "checksumsUrl", "unsigned", "signatureStatus"
+        "standaloneUrl", "macDmgUrl", "macVst3Url", "macStandaloneUrl",
+        "checksumsUrl", "windowsChecksumsUrl", "macChecksumsUrl", "unsigned",
+        "windowsUnsigned", "macDeveloperIdSigned", "macNotarized", "macAdHocSigned",
+        "macArchitectures", "macDeploymentTarget", "platforms", "sourceCommit",
+        "signatureStatus",
     }
     require(not required.difference(release), f"release.json missing {sorted(required.difference(release))}")
     require(VERSION_RE.fullmatch(str(release["version"])) is not None, "Invalid version")
-    require(release["schemaVersion"] >= 2 and release["distributionEnabled"] is True, "Release schema/status invalid")
+    require(release["schemaVersion"] >= 3 and release["distributionEnabled"] is True, "Release schema/status invalid")
     require(release["automaticCharge"] is False and release["subscription"] is False and release["purchaseObligation"] is False, "No-pressure licence flags changed")
     require(release["purchaseCheckoutAvailable"] is False and "purchaseUrl" not in release, "Checkout published before configuration")
+    require(release["platforms"] == ["windows-x64", "macos-universal"], "Cross-platform manifest changed")
+    require(release["unsigned"] is True and release["windowsUnsigned"] is True, "Windows unsigned disclosure changed")
+    require(release["macDeveloperIdSigned"] is False and release["macNotarized"] is False and release["macAdHocSigned"] is True, "macOS signing disclosure changed")
+    require(release["macArchitectures"] == ["arm64", "x86_64"], "macOS architectures changed")
+    require(release["macDeploymentTarget"] == "11.0", "macOS deployment target changed")
+    require(re.fullmatch(r"[0-9a-f]{40}", str(release["sourceCommit"])) is not None, "Source commit is not a full SHA")
+
     version = str(release["version"])
     require(str(release["releaseUrl"]).startswith(RELEASE_ROOT) and str(release["releaseUrl"]).endswith("/tag/" + version), "Release URL mismatch")
     endings = {
         "installerUrl": f"ArSonKuPik-{version}-Windows-x64-Setup.exe",
         "vst3Url": f"ArSonKuPik-{version}-Windows-x64-VST3.zip",
         "standaloneUrl": f"ArSonKuPik-{version}-Windows-x64-Standalone.zip",
+        "macDmgUrl": f"ArSonKuPik-{version}-macOS-Universal.dmg",
+        "macVst3Url": f"ArSonKuPik-{version}-macOS-Universal-VST3.zip",
+        "macStandaloneUrl": f"ArSonKuPik-{version}-macOS-Universal-Standalone.zip",
         "checksumsUrl": "SHA256SUMS.txt",
+        "windowsChecksumsUrl": "SHA256SUMS-Windows.txt",
+        "macChecksumsUrl": "SHA256SUMS-macOS.txt",
     }
     for key, ending in endings.items():
-        value = str(release[key])
-        parsed = urlparse(value)
-        require(value.startswith(ASSET_ROOT) and parsed.scheme == "https" and parsed.hostname == "github.com" and value.endswith("/" + ending), f"{key} invalid")
+        validate_asset_url(release[key], ending, key)
     return release
 
 
@@ -139,14 +165,18 @@ def validate_page(text: str, language: str, canonical: str, version: str, prefix
     require(parsed.canonical == canonical, f"{canonical} canonical mismatch")
     require(parsed.hreflang == {"en": ROOT_URL, "id": ID_URL, "x-default": ROOT_URL}, f"{canonical} hreflang mismatch")
     require("ArSonKuPik" in parsed.title and "VST3" in parsed.title and "365" not in parsed.title, f"{canonical} title is not product-first")
-    require(80 <= len(parsed.description) <= 180 and "365" not in parsed.description, f"{canonical} description is not product-first")
+    require("Windows" in parsed.title and "macOS" in parsed.title, f"{canonical} title is not cross-platform")
+    require(80 <= len(parsed.description) <= 220 and "365" not in parsed.description, f"{canonical} description is not product-first")
+    require("Windows" in parsed.description and "macOS" in parsed.description, f"{canonical} description is not cross-platform")
     require(("Suara lebih berisi" in parsed.h1) if language == "id" else ("Fuller, clearer" in parsed.h1), f"{canonical} H1 not localized")
     require(parsed.structured, f"{canonical} missing JSON-LD")
     graph = json.loads(parsed.structured)["@graph"]
     software = next(item for item in graph if item.get("@type") == "SoftwareApplication")
     require(software.get("softwareVersion") == version.lstrip("v"), f"{canonical} structured version mismatch")
     require(software.get("url") == canonical and software.get("inLanguage") == language, f"{canonical} structured locale mismatch")
-    for item in ("main", "workflow", "features", "presets", "download", "faq"):
+    operating_system = str(software.get("operatingSystem", ""))
+    require("Windows" in operating_system and "macOS" in operating_system, f"{canonical} structured platforms incomplete")
+    for item in ("main", "workflow", "features", "presets", "download", "faq", "mac-download-option", "mac-dmg-link"):
         require(item in parsed.ids, f"{canonical} missing #{item}")
     require("for-you" in parsed.ids or "sound" in parsed.ids, f"{canonical} missing flagship sound section")
     expected_styles = {f"{prefix}landing-v2.css", f"{prefix}experience-v4.css", f"{prefix}typography-v5.css", f"{prefix}hardening-v6.css"}
@@ -171,12 +201,12 @@ def validate_runtime(root: Path) -> None:
     typography = read(root / "site/typography-v5.css")
     hardening = read(root / "site/hardening-v6.css")
 
-    for token in ("siteBase", "officialReleaseUrl", "data-installer-cta", "data-release-status", "IntersectionObserver", "release.json"):
+    for token in ("siteBase", "officialReleaseUrl", "data-installer-cta", "data-release-status", "IntersectionObserver", "release.json", "macDmgUrl", "macVst3Url", "macStandaloneUrl"):
         require(token in site_js, f"V6 release runtime missing {token}")
     require("latest-release.js" not in site_js, "Second resolver must not return")
     require("createElement('link')" not in site_js, "Release runtime must not inject CSS")
 
-    for token in ("setupProductPreview", "setupPresetExplorer", "preset-explorer-ready", "preset-browser", "setupScrollReveals", "setupNavigationState", "setupPointerDepth", "prefers-reduced-motion"):
+    for token in ("setupCrossPlatformCopy", "setupProductPreview", "setupPresetExplorer", "preset-explorer-ready", "preset-browser", "setupScrollReveals", "setupNavigationState", "setupPointerDepth", "prefers-reduced-motion"):
         require(token in experience, f"Audio runtime missing {token}")
     require("document.createElement('link')" not in experience, "Audio runtime must not inject CSS")
     for selector in (".product-preview-dialog", ".preset-universe.preset-explorer-ready", ".preset-browser", ".preset-toolbar", ".motion-ready [data-reveal]", ".landing-nav.is-scrolled"):
@@ -215,11 +245,15 @@ def main() -> int:
         validate_sitemap(root)
         validate_runtime(root)
         if args.check_remote:
-            remote_check([str(release[key]) for key in ("releaseUrl", "installerUrl", "vst3Url", "standaloneUrl", "checksumsUrl")])
+            remote_check([str(release[key]) for key in (
+                "releaseUrl", "installerUrl", "vst3Url", "standaloneUrl",
+                "macDmgUrl", "macVst3Url", "macStandaloneUrl",
+                "checksumsUrl", "windowsChecksumsUrl", "macChecksumsUrl",
+            )])
     except (AssertionError, json.JSONDecodeError, ElementTree.ParseError, StopIteration, ValueError) as exc:
         print(f"VALIDATION FAILED: {exc}", file=sys.stderr)
         return 1
-    print(f"Validation passed: V6 static EN/ID shell, single release runtime, audio UX, readable typography and release {release['version']}.")
+    print(f"Validation passed: V6 static EN/ID shell, Windows and macOS release assets, single release runtime, audio UX, readable typography and release {release['version']}.")
     return 0
 
 
