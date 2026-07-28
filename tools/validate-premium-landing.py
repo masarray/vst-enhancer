@@ -76,20 +76,24 @@ def main() -> int:
         require(all(item.get("defer") == "" for item in page.scripts), "Public scripts must use defer")
 
     for phrase in (
-        "Musical VST3 audio enhancer for Windows",
+        "Musical VST3 audio enhancer for Windows and macOS",
         "Fuller, clearer and more dimensional sound",
         "Mas Ari Signature brings the music closer.",
         "Shape the result, not the complexity.",
         "13 professional starting points",
+        "Official Windows and macOS downloads",
+        "Mac package",
         "Premium sound. Focused workflow. Zero pressure.",
     ):
         require(phrase in landing, f"Missing English product story: {phrase}")
 
     for phrase in (
-        "VST3 audio enhancer musikal untuk Windows",
+        "VST3 audio enhancer musikal untuk Windows dan macOS",
         "Suara lebih berisi, jernih, dan berdimensi",
         "Mas Ari Signature membawa musik terasa lebih dekat.",
         "13 titik awal profesional",
+        "Unduhan resmi Windows dan macOS",
+        "Paket Mac",
     ):
         require(phrase in localized, f"Missing Indonesian product story: {phrase}")
 
@@ -99,6 +103,7 @@ def main() -> int:
     require('aria-current="page"' in landing and 'aria-current="page"' in localized, "Current language state is missing")
 
     for token in (
+        "setupCrossPlatformCopy",
         "setupProductPreview",
         "setupPresetExplorer",
         "preset-explorer-ready",
@@ -146,8 +151,8 @@ def main() -> int:
         require(token not in public_text, f"Prohibited token: {token}")
 
     print(
-        "V6 premium validation passed: static EN/ID SEO, hyperlink language navigation, one release controller, "
-        "native mobile menu, readable typography, stable preset browser and restrained audio motion."
+        "V6 premium validation passed: static cross-platform EN/ID SEO, hyperlink language navigation, "
+        "one release controller, native mobile menu, readable typography, stable preset browser and restrained audio motion."
     )
     return 0
 
