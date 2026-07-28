@@ -37,6 +37,7 @@
   "checksumsUrl": "https://github.com/masarray/vst-enhancer/releases/download/v0.5.20/SHA256SUMS.txt",
   "windowsChecksumsUrl": "https://github.com/masarray/vst-enhancer/releases/download/v0.5.20/SHA256SUMS-Windows.txt",
   "macChecksumsUrl": "https://github.com/masarray/vst-enhancer/releases/download/v0.5.20/SHA256SUMS-macOS.txt",
+  "unsigned": true,
   "windowsUnsigned": true,
   "macDeveloperIdSigned": false,
   "macNotarized": false,
