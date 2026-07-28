@@ -25,8 +25,12 @@ concurrency:
 jobs:
   build-macos-and-publish:
     name: Universal macOS build and final publication
-    if: github.repository == 'masarray/vst-enhancer' && github.actor == 'masarray' && inputs.confirm_publish == true
-    environment: mac-release
+    if: >-
+      github.event_name == 'workflow_dispatch' &&
+      github.repository == 'masarray/vst-enhancer' &&
+      github.ref == 'refs/heads/main' &&
+      github.actor == 'masarray' &&
+      inputs.confirm_publish == true
     runs-on: macos-15
     timeout-minutes: 90
     env:
@@ -104,6 +108,7 @@ jobs:
           GH_TOKEN: ${{ secrets.ASKP_PRIVATE_SOURCE_TOKEN }}
         run: |
           set -euo pipefail
+          [[ -n "${GH_TOKEN:-}" ]] || { echo "Repository secret ASKP_PRIVATE_SOURCE_TOKEN is missing." >&2; exit 1; }
           private="$(gh api "repos/$PRIVATE_REPO" --jq '.private')"
           [[ "$private" == true ]] || { echo "The proprietary source repository is not private." >&2; exit 1; }
           rm -rf source
