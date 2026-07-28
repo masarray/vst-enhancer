@@ -208,10 +208,11 @@ html[data-global-shell="v6"] {
 }
 
 .button.secondary.hero-mac-download svg {
-  width: 1em;
-  height: 1em;
-  flex: 0 0 1em;
+  width: 1.16em;
+  height: 1.16em;
+  flex: 0 0 1.16em;
   fill: currentColor;
+  transform: translateY(-0.01em);
 }
 
 .button.secondary.hero-mac-download:hover,
