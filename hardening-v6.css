@@ -179,11 +179,12 @@ html[data-global-shell="v6"] {
   width: 100%;
 }
 
-/* The hero macOS CTA shares the same dimensional treatment as the violet
-   Windows CTA while using the landing's emerald accent as its platform identity. */
-.hero-mac-download {
+/* Match and exceed .button.secondary specificity so the gradient is visible
+   in the default state, not only when :hover increases selector strength. */
+.button.secondary.hero-mac-download {
   position: relative;
   overflow: hidden;
+  isolation: isolate;
   border-color: rgba(120, 221, 176, .48);
   background: linear-gradient(135deg, #16785f 0%, #269d79 52%, #54cfa4 100%);
   color: #fff;
@@ -192,28 +193,29 @@ html[data-global-shell="v6"] {
   transition: transform 160ms ease, border-color 160ms ease, background 160ms ease, box-shadow 160ms ease, filter 160ms ease;
 }
 
-.hero-mac-download::after {
+.button.secondary.hero-mac-download::after {
   content: "";
   position: absolute;
   inset: 0;
+  z-index: 0;
   pointer-events: none;
   background: linear-gradient(115deg, rgba(255, 255, 255, .14), transparent 38%, transparent 68%, rgba(255, 255, 255, .06));
 }
 
-.hero-mac-download > * {
+.button.secondary.hero-mac-download > * {
   position: relative;
   z-index: 1;
 }
 
-.hero-mac-download svg {
+.button.secondary.hero-mac-download svg {
   width: 1em;
   height: 1em;
   flex: 0 0 1em;
   fill: currentColor;
 }
 
-.hero-mac-download:hover,
-.hero-mac-download:focus-visible {
+.button.secondary.hero-mac-download:hover,
+.button.secondary.hero-mac-download:focus-visible {
   border-color: rgba(173, 244, 211, .76);
   background: linear-gradient(135deg, #1a876b 0%, #2daf86 52%, #67ddb4 100%);
   color: #fff;
@@ -222,12 +224,12 @@ html[data-global-shell="v6"] {
   transform: translateY(-1px);
 }
 
-.hero-mac-download:active {
+.button.secondary.hero-mac-download:active {
   transform: translateY(0);
   box-shadow: 0 10px 27px rgba(31, 147, 111, .28), inset 0 1px 0 rgba(255, 255, 255, .18);
 }
 
-.hero-mac-download[aria-disabled="true"] {
+.button.secondary.hero-mac-download[aria-disabled="true"] {
   opacity: .68;
   filter: saturate(.65);
   box-shadow: none;
@@ -291,7 +293,7 @@ html[data-global-shell="v6"] {
 
   .language-switch a,
   .mobile-nav summary::after,
-  .hero-mac-download {
+  .button.secondary.hero-mac-download {
     transition: none;
   }
 }
