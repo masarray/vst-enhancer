@@ -1,22 +1,26 @@
 name: Build macOS and publish cross-platform release
-run-name: macOS release ${{ inputs.release_tag || 'auto-detect draft' }}
+run-name: macOS release ${{ inputs.release_tag }}
 
 on:
   workflow_dispatch:
     inputs:
       release_tag:
-        description: Optional draft tag, for example v0.5.20. Leave empty to detect one valid draft.
-        required: false
+        description: Exact release tag, for example v0.5.21
+        required: true
         type: string
       confirm_publish:
         description: Publish after every Windows and macOS gate passes
         required: true
-        default: true
+        default: false
+        type: boolean
+      repair_published_release:
+        description: Explicitly add missing Mac assets to an already-published release
+        required: true
+        default: false
         type: boolean
 
 permissions:
   contents: write
-  pages: write
 
 concurrency:
   group: arsonkupik-public-macos-release
@@ -31,21 +35,25 @@ jobs:
       github.ref == 'refs/heads/main' &&
       github.actor == 'masarray' &&
       inputs.confirm_publish == true
+    environment: mac-release
     runs-on: macos-15
     timeout-minutes: 90
     env:
       PUBLIC_REPO: masarray/vst-enhancer
       PRIVATE_REPO: masarray/askp-vst
       APPROVED_WORKFLOW: .github/workflows/build-macos-and-publish.yml
+
     steps:
-      - name: Resolve and verify draft release
+      - name: Resolve and verify release boundary
         env:
           GH_TOKEN: ${{ github.token }}
           INPUT_TAG: ${{ inputs.release_tag }}
+          INPUT_REPAIR: ${{ inputs.repair_published_release }}
         run: |
           set -euo pipefail
 
-          workflow_files="$(gh api "repos/$PUBLIC_REPO/git/trees/main?recursive=1" --jq '.tree[] | select(.type == "blob" and (.path | startswith(".github/workflows/"))) | .path')"
+          workflow_files="$(gh api "repos/$PUBLIC_REPO/git/trees/main?recursive=1" \
+            --jq '.tree[] | select(.type == "blob" and (.path | startswith(".github/workflows/"))) | .path')"
           workflow_count="$(printf '%s\n' "$workflow_files" | sed '/^$/d' | wc -l | tr -d ' ')"
           [[ "$workflow_count" == 1 && "$workflow_files" == "$APPROVED_WORKFLOW" ]] || {
             echo "The public repository must contain exactly one approved manual workflow." >&2
@@ -53,42 +61,30 @@ jobs:
           }
 
           tag="$INPUT_TAG"
-          if [[ -z "$tag" ]]; then
-            candidates=""
-            count=0
-            while IFS= read -r draft_tag; do
-              [[ "$draft_tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] || continue
-              assets="$(gh release view "$draft_tag" --repo "$PUBLIC_REPO" --json assets --jq '.assets[].name' 2>/dev/null || true)"
-              complete=true
-              for required in \
-                "ArSonKuPik-$draft_tag-Windows-x64-Setup.exe" \
-                "ArSonKuPik-$draft_tag-Windows-x64-VST3.zip" \
-                "ArSonKuPik-$draft_tag-Windows-x64-Standalone.zip" \
-                "SHA256SUMS-Windows.txt" \
-                "BUILDINFO-Windows.json"
-              do
-                if ! grep -Fxq "$required" <<<"$assets"; then
-                  complete=false
-                  break
-                fi
-              done
-              if [[ "$complete" == true ]]; then
-                count=$((count + 1))
-                candidates="$draft_tag"
-              fi
-            done < <(gh api "repos/$PUBLIC_REPO/releases?per_page=100" --jq '.[] | select(.draft == true and .prerelease == false) | .tag_name')
-            if [[ "$count" -ne 1 ]]; then
-              echo "Expected exactly one complete Windows draft release, found $count." >&2
-              echo "Provide release_tag manually when more than one draft exists." >&2
+          [[ "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] || {
+            echo "Invalid release tag: $tag" >&2
+            exit 1
+          }
+
+          release_json="$(gh release view "$tag" --repo "$PUBLIC_REPO" \
+            --json isDraft,isPrerelease,assets)"
+          is_draft="$(jq -r '.isDraft' <<<"$release_json")"
+          is_prerelease="$(jq -r '.isPrerelease' <<<"$release_json")"
+          [[ "$is_prerelease" == false ]] || {
+            echo "$tag is a prerelease; production repair is forbidden." >&2
+            exit 1
+          }
+
+          repair=false
+          if [[ "$is_draft" != true ]]; then
+            [[ "$INPUT_REPAIR" == true ]] || {
+              echo "$tag is already published; repair_published_release must be explicitly true." >&2
               exit 1
-            fi
-            tag="$candidates"
+            }
+            repair=true
           fi
 
-          [[ "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "Invalid release tag: $tag" >&2; exit 1; }
-          is_draft="$(gh release view "$tag" --repo "$PUBLIC_REPO" --json isDraft --jq '.isDraft')"
-          [[ "$is_draft" == true ]] || { echo "$tag is not a draft release." >&2; exit 1; }
-          assets="$(gh release view "$tag" --repo "$PUBLIC_REPO" --json assets --jq '.assets[].name')"
+          assets="$(jq -r '.assets[].name' <<<"$release_json")"
           for required in \
             "ArSonKuPik-$tag-Windows-x64-Setup.exe" \
             "ArSonKuPik-$tag-Windows-x64-VST3.zip" \
@@ -96,71 +92,108 @@ jobs:
             "SHA256SUMS-Windows.txt" \
             "BUILDINFO-Windows.json"
           do
-            grep -Fxq "$required" <<<"$assets" || { echo "Required Windows draft asset missing: $required" >&2; exit 1; }
+            grep -Fxq "$required" <<<"$assets" || {
+              echo "Required audited Windows asset is missing: $required" >&2
+              exit 1
+            }
           done
 
-          echo "RELEASE_TAG=$tag" >> "$GITHUB_ENV"
-          echo "RELEASE_NUMBER=${tag#v}" >> "$GITHUB_ENV"
-          echo "MAC_DIST=$RUNNER_TEMP/askp-mac-dist" >> "$GITHUB_ENV"
+          echo "RELEASE_TAG=$tag" >>"$GITHUB_ENV"
+          echo "RELEASE_NUMBER=${tag#v}" >>"$GITHUB_ENV"
+          echo "RELEASE_REPAIR=$repair" >>"$GITHUB_ENV"
+          echo "MAC_DIST=$RUNNER_TEMP/askp-mac-dist" >>"$GITHUB_ENV"
 
-      - name: Checkout exact proprietary source tag
+      - name: Checkout reviewed helper and exact proprietary source tag
         env:
           GH_TOKEN: ${{ secrets.ASKP_PRIVATE_SOURCE_TOKEN }}
         run: |
           set -euo pipefail
-          [[ -n "${GH_TOKEN:-}" ]] || { echo "Repository secret ASKP_PRIVATE_SOURCE_TOKEN is missing." >&2; exit 1; }
+          [[ -n "${GH_TOKEN:-}" ]] || {
+            echo "Repository secret ASKP_PRIVATE_SOURCE_TOKEN is missing." >&2
+            exit 1
+          }
           private="$(gh api "repos/$PRIVATE_REPO" --jq '.private')"
-          [[ "$private" == true ]] || { echo "The proprietary source repository is not private." >&2; exit 1; }
-          rm -rf source
+          [[ "$private" == true ]] || {
+            echo "The proprietary source repository is not private." >&2
+            exit 1
+          }
+
+          rm -rf helper source
+          gh repo clone "$PRIVATE_REPO" helper -- --branch master --depth 1
+          helper_commit="$(git -C helper rev-parse HEAD)"
+
           gh repo clone "$PRIVATE_REPO" source -- --branch "$RELEASE_TAG" --depth 1
           source_commit="$(git -C source rev-parse HEAD)"
           exact_tag="$(git -C source describe --tags --exact-match)"
-          [[ "$exact_tag" == "$RELEASE_TAG" ]] || { echo "Private checkout does not match $RELEASE_TAG." >&2; exit 1; }
-          echo "SOURCE_COMMIT=$source_commit" >> "$GITHUB_ENV"
+          [[ "$exact_tag" == "$RELEASE_TAG" ]] || {
+            echo "Private checkout does not match $RELEASE_TAG." >&2
+            exit 1
+          }
 
-      - name: Verify approved hybrid release request
+          echo "HELPER_COMMIT=$helper_commit" >>"$GITHUB_ENV"
+          echo "SOURCE_COMMIT=$source_commit" >>"$GITHUB_ENV"
+
+      - name: Verify approved release request and pinned source
         run: |
           set -euo pipefail
-          python3 - "$RELEASE_NUMBER" <<'PY'
-          import json, pathlib, sys
-          number = sys.argv[1]
-          request = json.loads(pathlib.Path('source/.github/release-request.json').read_text(encoding='utf-8'))
+          python3 - "$RELEASE_NUMBER" "$SOURCE_COMMIT" "$RELEASE_REPAIR" <<'PY'
+          import json
+          import pathlib
+          import sys
+
+          number, source_commit, repair = sys.argv[1:]
+          request = json.loads(
+              pathlib.Path("helper/.github/release-request.json").read_text(encoding="utf-8")
+          )
           expected = {
-              'requestedVersion': number,
-              'approved': True,
-              'mode': 'local-two-stage-public-binary-release',
-              'macBuildProvider': 'public-github-actions',
-              'publicMacWorkflow': 'build-macos-and-publish.yml',
-              'sourceVisibility': 'private',
-              'publicRepository': 'masarray/vst-enhancer',
-              'juceDistributionConfirmed': True,
-              'requireWindowsAssets': True,
-              'requireMacAssetsBeforePublish': True,
-              'privateRepositoryActionsEnabled': False,
-              'publicWorkflowTrigger': 'workflow_dispatch-only',
-              'publicWorkflowActor': 'masarray',
-              'publicWorkflowLogsMayContainSource': False,
+              "schemaVersion": 4,
+              "requestedVersion": number,
+              "sourceCommit": source_commit,
+              "approved": True,
+              "mode": "local-two-stage-public-binary-release",
+              "macBuildProvider": "public-github-actions",
+              "publicMacWorkflow": "build-macos-and-publish.yml",
+              "sourceVisibility": "private",
+              "publicRepository": "masarray/vst-enhancer",
+              "juceDistributionConfirmed": True,
+              "requireWindowsAssets": True,
+              "requireMacAssetsBeforePublish": True,
+              "privateRepositoryActionsEnabled": False,
+              "publicWorkflowTrigger": "workflow_dispatch-only",
+              "publicWorkflowActor": "masarray",
+              "publicWorkflowLogsMayContainSource": False,
           }
           for key, value in expected.items():
               if request.get(key) != value:
-                  raise SystemExit(f'Release request mismatch: {key}={request.get(key)!r}, expected {value!r}')
-          mac = request.get('macPackage', {})
-          if mac.get('architectures') != ['arm64', 'x86_64']:
-              raise SystemExit('macOS architectures must be arm64 + x86_64.')
-          if mac.get('developerIdSigned') is not False or mac.get('notarized') is not False or mac.get('adHocSigned') is not True:
-              raise SystemExit('Unsigned/ad-hoc macOS disclosure is inconsistent.')
+                  raise SystemExit(
+                      f"Release request mismatch: {key}={request.get(key)!r}, expected {value!r}"
+                  )
+          if repair == "true" and request.get("allowPublishedReleaseRepair") is not True:
+              raise SystemExit("Published-release repair is not approved by the private request.")
+          if not isinstance(request.get("allowRunnerPortabilityPatches"), bool):
+              raise SystemExit("Runner portability-patch policy must be explicit.")
+          package = request.get("macPackage", {})
+          if package.get("architectures") != ["arm64", "x86_64"]:
+              raise SystemExit("macOS architectures must be arm64 + x86_64.")
+          if package.get("deploymentTarget") != "11.0":
+              raise SystemExit("macOS deployment target must remain 11.0.")
+          if (
+              package.get("developerIdSigned") is not False
+              or package.get("notarized") is not False
+              or package.get("adHocSigned") is not True
+          ):
+              raise SystemExit("macOS signing disclosure is inconsistent.")
+          print("[PASS] Release request pins the exact source tag and commit.")
           PY
+          allow_patches="$(jq -r '.allowRunnerPortabilityPatches' \
+            helper/.github/release-request.json)"
+          echo "ALLOW_RUNNER_PORTABILITY_PATCHES=$allow_patches" >>"$GITHUB_ENV"
 
-      - name: Build, audit and package macOS Universal binaries
+      - name: Stage canonical legal bundle
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-
-          # The public distribution repository is the canonical source for the
-          # end-user legal bundle. Read the files from this exact workflow commit,
-          # validate their contents, and stage them into the runner-local private
-          # checkout without changing the immutable private tag or Windows provenance.
           python3 - "$PUBLIC_REPO" "$GITHUB_SHA" <<'PY'
           import base64
           import json
@@ -170,186 +203,146 @@ jobs:
 
           repository, commit = sys.argv[1:3]
           required = {
-              'EULA.txt': ('END USER LICENCE AGREEMENT',),
-              'PURCHASE_TERMS.txt': ('PURCHASE', 'ArSonKuPik'),
-              'THIRD_PARTY_NOTICES.txt': (
-                  'ARSONKUPIK THIRD-PARTY NOTICES',
-                  'ArSonKuPik-MIT.txt',
-                  'Steinberg-VST3-SDK-MIT.txt',
-                  'Plus-Jakarta-Sans-OFL-1.1.txt',
+              "EULA.txt": ("END USER LICENCE AGREEMENT",),
+              "PURCHASE_TERMS.txt": ("PURCHASE", "ArSonKuPik"),
+              "THIRD_PARTY_NOTICES.txt": (
+                  "ARSONKUPIK THIRD-PARTY NOTICES",
+                  "ArSonKuPik-MIT.txt",
+                  "Steinberg-VST3-SDK-MIT.txt",
+                  "Plus-Jakarta-Sans-OFL-1.1.txt",
               ),
-              'ArSonKuPik-MIT.txt': ('MIT License', 'Copyright (c) 2026 Tutorial Mas Ari'),
-              'Steinberg-VST3-SDK-MIT.txt': ('MIT License', 'Steinberg Media Technologies GmbH'),
-              'Plus-Jakarta-Sans-OFL-1.1.txt': (
-                  'SIL OPEN FONT LICENSE Version 1.1',
-                  'Copyright 2020 The Plus Jakarta Sans Project Authors',
+              "ArSonKuPik-MIT.txt": ("MIT License", "Copyright (c) 2026 Tutorial Mas Ari"),
+              "Steinberg-VST3-SDK-MIT.txt": (
+                  "MIT License",
+                  "Steinberg Media Technologies GmbH",
+              ),
+              "Plus-Jakarta-Sans-OFL-1.1.txt": (
+                  "SIL OPEN FONT LICENSE Version 1.1",
+                  "Copyright 2020 The Plus Jakarta Sans Project Authors",
               ),
           }
 
           for name, markers in required.items():
-              endpoint = f'repos/{repository}/contents/{name}?ref={commit}'
-              payload = json.loads(subprocess.check_output(
-                  ['gh', 'api', endpoint], text=True, encoding='utf-8'))
-              if payload.get('type') != 'file' or payload.get('encoding') != 'base64':
-                  raise SystemExit(f'Canonical legal payload is not a regular base64 file: {name}')
-              raw = base64.b64decode(payload['content'], validate=False)
-              if len(raw) < 100:
-                  raise SystemExit(f'Canonical legal payload is unexpectedly small: {name}')
-              text = raw.decode('utf-8')
+              endpoint = f"repos/{repository}/contents/{name}?ref={commit}"
+              payload = json.loads(
+                  subprocess.check_output(
+                      ["gh", "api", endpoint], text=True, encoding="utf-8"
+                  )
+              )
+              if payload.get("type") != "file" or payload.get("encoding") != "base64":
+                  raise SystemExit(f"Canonical legal payload is invalid: {name}")
+              raw = base64.b64decode(payload["content"], validate=False)
+              text = raw.decode("utf-8")
               missing = [marker for marker in markers if marker not in text]
-              if missing:
-                  raise SystemExit(f'Canonical legal payload failed marker validation: {name}: {missing}')
-              Path('source', name).write_bytes(raw)
+              if len(raw) < 100 or missing:
+                  raise SystemExit(f"Canonical legal payload failed validation: {name}")
+              Path("source", name).write_bytes(raw)
 
-          print('[PASS] Canonical public legal bundle staged from the exact workflow commit.')
+          print("[PASS] Canonical public legal bundle staged from the workflow commit.")
           PY
 
-          # Patch only the runner-local clone. The private v0.5.20 tag and Windows
-          # provenance remain immutable. Xcode supports per-source options, but not
-          # configuration-dependent per-source options. This job builds Release only,
-          # so the non-MSVC DSP options are equivalent when applied unconditionally.
-          python3 - <<'PY'
-          from pathlib import Path
+      - name: Build, audit and package macOS Universal binaries
+        run: |
+          set -euo pipefail
+          ASKP_RELEASE_REQUEST_PATH="$GITHUB_WORKSPACE/helper/.github/release-request.json" \
+          ASKP_RELEASE_HELPER_COMMIT="$HELPER_COMMIT" \
+            bash helper/scripts/build-macos-ci.sh "$RELEASE_NUMBER" "$MAC_DIST" source
 
-          cmake_path = Path('source/CMakeLists.txt')
-          cmake = cmake_path.read_text(encoding='utf-8')
-          legacy = '''set_property(SOURCE engine/arsonkupik_dsp.cpp APPEND PROPERTY COMPILE_OPTIONS
-              "$<$<AND:$<CONFIG:Release>,$<CXX_COMPILER_ID:MSVC>>:/fp:fast>"
-              "$<$<AND:$<CONFIG:Release>,$<NOT:$<CXX_COMPILER_ID:MSVC>>>:-fno-math-errno>"
-              "$<$<AND:$<CONFIG:Release>,$<NOT:$<CXX_COMPILER_ID:MSVC>>>:-fno-trapping-math>"
-              "$<$<AND:$<CONFIG:Release>,$<NOT:$<CXX_COMPILER_ID:MSVC>>>:-ffp-contract=fast>"
-          )'''
-          compatible = '''if(CMAKE_GENERATOR STREQUAL "Xcode")
-              set_property(SOURCE engine/arsonkupik_dsp.cpp APPEND PROPERTY COMPILE_OPTIONS
-                  "-fno-math-errno"
-                  "-fno-trapping-math"
-                  "-ffp-contract=fast"
-              )
-          else()
-              set_property(SOURCE engine/arsonkupik_dsp.cpp APPEND PROPERTY COMPILE_OPTIONS
-                  "$<$<AND:$<CONFIG:Release>,$<CXX_COMPILER_ID:MSVC>>:/fp:fast>"
-                  "$<$<AND:$<CONFIG:Release>,$<NOT:$<CXX_COMPILER_ID:MSVC>>>:-fno-math-errno>"
-                  "$<$<AND:$<CONFIG:Release>,$<NOT:$<CXX_COMPILER_ID:MSVC>>>:-fno-trapping-math>"
-                  "$<$<AND:$<CONFIG:Release>,$<NOT:$<CXX_COMPILER_ID:MSVC>>>:-ffp-contract=fast>"
-              )
-          endif()'''
-          marker = 'if(CMAKE_GENERATOR STREQUAL "Xcode")\n    set_property(SOURCE engine/arsonkupik_dsp.cpp'
-          if legacy in cmake:
-              cmake = cmake.replace(legacy, compatible, 1)
-              cmake_path.write_text(cmake, encoding='utf-8')
-              print('[UPDATED] Xcode-compatible DSP source options applied to runner-local source.')
-          elif marker in cmake:
-              print('[PASS] Xcode-compatible DSP source options already present.')
-          else:
-              raise SystemExit('Xcode DSP option patch anchor was not found or was ambiguous.')
+      - name: Verify macOS provenance and platform checksums
+        run: |
+          set -euo pipefail
+          (
+            cd "$MAC_DIST"
+            shasum -a 256 -c SHA256SUMS-macOS.txt
+          )
+          python3 - \
+            "$MAC_DIST/BUILDINFO-macOS.json" \
+            "$RELEASE_TAG" \
+            "$SOURCE_COMMIT" \
+            "$HELPER_COMMIT" \
+            "$GITHUB_SHA" \
+            "$ALLOW_RUNNER_PORTABILITY_PATCHES" <<'PY'
+          import json
+          import pathlib
+          import re
+          import sys
 
-          processor_path = Path('source/src/PluginProcessor.cpp')
-          processor = processor_path.read_text(encoding='utf-8')
-          legacy_file_reset = '    activeUserPresetFile_ = {};'
-          clang_safe_file_reset = '    activeUserPresetFile_ = juce::File();'
-          legacy_count = processor.count(legacy_file_reset)
-          safe_count = processor.count(clang_safe_file_reset)
-          if legacy_count == 1 and safe_count == 0:
-              processor_path.write_text(
-                  processor.replace(legacy_file_reset, clang_safe_file_reset, 1),
-                  encoding='utf-8')
-              print('[UPDATED] Clang-safe JUCE File reset applied to runner-local source.')
-          elif legacy_count == 0 and safe_count == 1:
-              print('[PASS] Clang-safe JUCE File reset already present.')
-          else:
-              raise SystemExit(
-                  f'JUCE File reset anchor is missing or ambiguous: legacy={legacy_count} safe={safe_count}')
-
-          crackle_path = Path('source/tools/crackle_test_main.cpp')
-          crackle = crackle_path.read_text(encoding='utf-8')
-          windows_only_timing = '''    const bool performancePass = runRealtimeDeadlineMatrix("idle");
-              BackgroundCpuLoad cpuLoad;
-              std::printf("background CPU workers: %d\\n", cpuLoad.workerCount());
-              const bool loadedPerformancePass = runRealtimeDeadlineMatrix("cpu+match", true);'''
-          portable_timing = '''   #if JUCE_WINDOWS
-              const bool performancePass = runRealtimeDeadlineMatrix("idle");
-              BackgroundCpuLoad cpuLoad;
-              std::printf("background CPU workers: %d\\n", cpuLoad.workerCount());
-              const bool loadedPerformancePass = runRealtimeDeadlineMatrix("cpu+match", true);
-             #else
-              // QueryThreadCycleTime/MMCSS is Windows-specific. On other platforms
-              // currentThreadCpuTicks falls back to wall time, which cannot be used
-              // as a hard plugin-CPU deadline gate on a shared hosted runner.
-              const bool performancePass = true;
-              const bool loadedPerformancePass = true;
-              std::printf("realtime deadline matrix: SKIPPED (Windows MMCSS/cycle-accounting gate)\\n");
-             #endif'''
-          timing_marker = 'realtime deadline matrix: SKIPPED (Windows MMCSS/cycle-accounting gate)'
-          if crackle.count(windows_only_timing) == 1 and timing_marker not in crackle:
-              crackle_path.write_text(
-                  crackle.replace(windows_only_timing, portable_timing, 1),
-                  encoding='utf-8')
-              print('[UPDATED] Windows-only realtime deadline matrix isolated from macOS crackle gate.')
-          elif crackle.count(windows_only_timing) == 0 and crackle.count(timing_marker) == 1:
-              print('[PASS] macOS crackle gate already excludes the Windows-only timing matrix.')
-          else:
-              raise SystemExit('Crackle timing-gate anchor is missing or ambiguous.')
-
-          # Patch only the runner-local helper. Public logs receive gate names and
-          # sanitized diagnostics, never source snippets or full compiler logs.
-          helper_path = Path('source/scripts/build-macos-ci.sh')
-          helper = helper_path.read_text(encoding='utf-8')
-          old = """  else
-              printf '[FAILED] %s\\n' \"$label\" >&2
-              printf 'Detailed compiler/audit output was intentionally withheld from the public workflow log to protect proprietary source.\\n' >&2
-              exit 1
-            fi
-          """
-          new = """  else
-              printf '[FAILED] %s\\n' \"$label\" >&2
-              if [[ \"$label\" == \"Configure Universal macOS build\" ]]; then
-                printf '%s\\n' '[SAFE CONFIGURE DIAGNOSTIC]'
-                grep -E '(^CMake Error|^CMake Warning|^-- |Could NOT find|not found|No CMAKE_|generator|Xcode|fatal:|Failed)' \"$log_file\" \\
-                  | sed -E \"s#${GITHUB_WORKSPACE:-}/source#<private-source>#g; s#${RUNNER_TEMP:-}#<runner-temp>#g\" \\
-                  | tail -n 80 || true
-              elif [[ \"$label\" == \"Compile Universal binaries and audit tools\" ]]; then
-                printf '%s\\n' '[SAFE COMPILE DIAGNOSTIC]'
-                grep -E '(^|[[:space:]])(error:|fatal error:|Undefined symbols|duplicate symbol|ld: |clang: error:|linker command failed|Command CompileC failed|Command Ld failed|BUILD FAILED)' \"$log_file\" \\
-                  | sed -E \"s#${GITHUB_WORKSPACE:-}/source#<private-source>#g; s#${RUNNER_TEMP:-}#<runner-temp>#g; s#/Users/runner/work/[^ ]+#<runner-path>#g\" \\
-                  | tail -n 120 || true
-              elif [[ \"$label\" == Audit\\ * ]]; then
-                printf '%s\\n' '[SAFE AUDIT DIAGNOSTIC]'
-                sed -E \"s#${GITHUB_WORKSPACE:-}/source#<private-source>#g; s#${RUNNER_TEMP:-}#<runner-temp>#g; s#/Users/runner/work/[^ ]+#<runner-path>#g\" \"$log_file\" \\
-                  | tail -n 160 || true
-              fi
-              printf 'Detailed compiler/audit output was intentionally withheld from the public workflow log to protect proprietary source.\\n' >&2
-              exit 1
-            fi
-          """
-          if old in helper:
-              helper_path.write_text(helper.replace(old, new, 1), encoding='utf-8')
-          elif '[SAFE AUDIT DIAGNOSTIC]' not in helper:
-              raise SystemExit('Safe audit-diagnostic patch anchor was not found.')
+          (
+              path,
+              tag,
+              source_commit,
+              helper_commit,
+              workflow_commit,
+              allow_patches,
+          ) = sys.argv[1:]
+          expected_patch_summary = (
+              [
+                  "CMakeLists.txt",
+                  "src/PluginProcessor.cpp",
+                  "tools/crackle_test_main.cpp",
+              ]
+              if allow_patches == "true"
+              else []
+          )
+          payload = json.loads(pathlib.Path(path).read_text(encoding="utf-8"))
+          expected = {
+              "schemaVersion": 4,
+              "version": tag,
+              "sourceTag": tag,
+              "sourceCommit": source_commit,
+              "releaseHelperCommit": helper_commit,
+              "publicWorkflowCommit": workflow_commit,
+              "runnerPatchedSource": allow_patches == "true",
+              "runnerPatchSummary": expected_patch_summary,
+              "architectures": ["arm64", "x86_64"],
+              "deploymentTarget": "11.0",
+              "developerIdSigned": False,
+              "notarized": False,
+              "adHocSigned": True,
+              "generatedBy": "GitHub-hosted public macOS runner",
+              "proprietarySourceIncluded": False,
+          }
+          for key, value in expected.items():
+              if payload.get(key) != value:
+                  raise SystemExit(
+                      f"macOS provenance mismatch: {key}={payload.get(key)!r}, expected {value!r}"
+                  )
+          if not re.fullmatch(r"[0-9a-f]{64}", payload.get("compiledSourceTreeHash", "")):
+              raise SystemExit("Compiled-source tree hash is missing or invalid.")
+          print("[PASS] macOS build provenance matches the approved source and workflow.")
           PY
-
-          bash source/scripts/build-macos-ci.sh "$RELEASE_NUMBER" "$MAC_DIST"
 
       - name: Create combined checksums and final release notes
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          gh release download "$RELEASE_TAG" --repo "$PUBLIC_REPO" --pattern SHA256SUMS-Windows.txt --dir "$MAC_DIST" --clobber
-          cat "$MAC_DIST/SHA256SUMS-Windows.txt" "$MAC_DIST/SHA256SUMS-macOS.txt" | LC_ALL=C sort >"$MAC_DIST/SHA256SUMS.txt"
+          gh release download "$RELEASE_TAG" \
+            --repo "$PUBLIC_REPO" \
+            --pattern SHA256SUMS-Windows.txt \
+            --dir "$MAC_DIST" \
+            --clobber
+          cat "$MAC_DIST/SHA256SUMS-Windows.txt" "$MAC_DIST/SHA256SUMS-macOS.txt" \
+            | LC_ALL=C sort >"$MAC_DIST/SHA256SUMS.txt"
+          [[ "$(wc -l <"$MAC_DIST/SHA256SUMS.txt" | tr -d ' ')" == 8 ]] || {
+            echo "Combined checksum inventory must contain exactly 8 entries." >&2
+            exit 1
+          }
+
           cat >"$MAC_DIST/release-notes-final.md" <<EOF_NOTES
           # ArSonKuPik VST $RELEASE_TAG — Windows and macOS
 
-          ## What is new
-          - Adaptive Warm Vocal Body Companion restores perceptual body on bright/high female vocals only when Presence/Tickle dominates the 430–900 Hz body bridge.
-          - The approved Signature character is retained; Presence/Tickle, compressor, global output gain, limiter and the -1 dBFS safety ceiling were not retuned.
-          - Complete anti-crackle, multirate/block-size, transition, stereo-safety, headroom, binary-load and existing engine regression gates passed before publication.
-          - No FFT, oversampling, extra look-ahead, audio-thread allocation, lock or hidden mandatory +4 dB final output stage was added.
+          ## v0.5.21 highlights
+          - Contrast-first kick path with stronger onset definition and localised 185 Hz chest energy.
+          - Reduced sustained low-frequency masking while preserving guitar-bass tone and vocal body.
+          - Held headroom reserve across kick intervals for stronger moderate and hot transient crest.
+          - Dedicated P8/P9 release gates verify kick attack-to-tail contrast, chest localisation, peak safety and bass/vocal neutrality.
 
           ## Windows
           - Windows 10/11 x64 installer
           - Manual VST3 ZIP
           - Standalone ZIP
-          - Windows packages are currently not commercially code-signed and may trigger SmartScreen.
+          - Windows packages are not commercially code-signed and may trigger SmartScreen.
 
           ## macOS
           - Universal Apple Silicon arm64 + Intel x86_64 VST3 ZIP
@@ -364,12 +357,16 @@ jobs:
           - Optional Rp399.000 perpetual activation for one active computer
 
           ## Integrity and provenance
+          - Proprietary source tag: $RELEASE_TAG
           - Proprietary source commit: $SOURCE_COMMIT
+          - Reviewed release helper commit: $HELPER_COMMIT
+          - v0.5.21 uses only the reviewed three-file Xcode/Clang portability patch; no DSP tuning is patched
+          - Public workflow run: https://github.com/$PUBLIC_REPO/actions/runs/$GITHUB_RUN_ID
           - Public packages are binary-only
           - Verify every download against SHA256SUMS.txt from this release
           EOF_NOTES
 
-      - name: Upload macOS assets to the draft release
+      - name: Upload approved macOS assets
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -381,9 +378,10 @@ jobs:
             "$MAC_DIST/SHA256SUMS-macOS.txt" \
             "$MAC_DIST/SHA256SUMS.txt" \
             "$MAC_DIST/BUILDINFO-macOS.json" \
-            --repo "$PUBLIC_REPO" --clobber
+            --repo "$PUBLIC_REPO" \
+            --clobber
 
-      - name: Update public metadata and landing source
+      - name: Update public metadata
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -391,8 +389,13 @@ jobs:
           gh auth setup-git
           rm -rf public
           git clone "https://github.com/$PUBLIC_REPO.git" public
-          if ! python3 source/scripts/update-public-crossplatform-release.py --repo public --version "$RELEASE_TAG" --source-commit "$SOURCE_COMMIT" >"$RUNNER_TEMP/public-metadata.log" 2>&1; then
-            echo "Public metadata update failed. Detailed output was withheld from the public log." >&2
+          if ! python3 helper/scripts/update-public-crossplatform-release.py \
+            --repo public \
+            --version "$RELEASE_TAG" \
+            --source-commit "$SOURCE_COMMIT" \
+            >"$RUNNER_TEMP/public-metadata.log" 2>&1
+          then
+            echo "Public metadata update failed. Detailed private output was withheld." >&2
             exit 1
           fi
           git -C public config user.name "Mas Ari Release Automation"
@@ -402,67 +405,102 @@ jobs:
             git -C public commit -m "Publish ArSonKuPik VST $RELEASE_TAG cross-platform metadata"
             git -C public push origin HEAD:main
           fi
+          echo "PUBLIC_METADATA_COMMIT=$(git -C public rev-parse HEAD)" >>"$GITHUB_ENV"
 
-      - name: Deploy and verify landing from the gh-pages branch
+      - name: Deploy and verify exact gh-pages source
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           page_branch="$(gh api "repos/$PUBLIC_REPO/pages" --jq '.source.branch')"
           page_path="$(gh api "repos/$PUBLIC_REPO/pages" --jq '.source.path')"
-          build_type="$(gh api "repos/$PUBLIC_REPO/pages" --jq '.build_type')"
-          [[ "$page_branch" == gh-pages && "$page_path" == / && "$build_type" == legacy ]] || {
-            echo "GitHub Pages must be configured for gh-pages:/ legacy branch deployment." >&2
-            echo "Run SETUP-HYBRID-RELEASE.cmd locally once." >&2
+          [[ "$page_branch" == gh-pages && "$page_path" == / ]] || {
+            echo "GitHub Pages must be configured for gh-pages:/." >&2
             exit 1
           }
 
           site_copy="$RUNNER_TEMP/askp-site-copy"
-          rm -rf "$site_copy"
+          pages_dir="$RUNNER_TEMP/askp-public-pages"
+          rm -rf "$site_copy" "$pages_dir"
           cp -R public/site "$site_copy"
-          git -C public checkout --orphan release-gh-pages
-          git -C public rm -rf . >/dev/null 2>&1 || true
-          find public -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
-          cp -R "$site_copy"/. public/
-          touch public/.nojekyll
-          git -C public add -A
-          git -C public commit -m "Deploy ArSonKuPik $RELEASE_TAG landing"
-          pages_commit="$(git -C public rev-parse HEAD)"
-          git -C public push --force origin HEAD:gh-pages
+          git -C public fetch origin gh-pages
+          git -C public worktree add -B release-gh-pages "$pages_dir" origin/gh-pages
+          find "$pages_dir" -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
+          cp -R "$site_copy"/. "$pages_dir"/
+          touch "$pages_dir/.nojekyll"
+          git -C "$pages_dir" config user.name "Mas Ari Release Automation"
+          git -C "$pages_dir" config user.email "258017373+masarray@users.noreply.github.com"
+          git -C "$pages_dir" add -A
+          if ! git -C "$pages_dir" diff --cached --quiet; then
+            git -C "$pages_dir" commit -m "Deploy ArSonKuPik $RELEASE_TAG landing"
+            git -C "$pages_dir" push origin HEAD:gh-pages
+          fi
 
-          gh api --method POST "repos/$PUBLIC_REPO/pages/builds" >/dev/null 2>&1 || true
-          deadline=$((SECONDS + 300))
-          while (( SECONDS < deadline )); do
-            latest="$(gh api "repos/$PUBLIC_REPO/pages/builds/latest" 2>/dev/null || true)"
-            status="$(printf '%s' "$latest" | jq -r '.status // empty' 2>/dev/null || true)"
-            commit="$(printf '%s' "$latest" | jq -r '.commit // empty' 2>/dev/null || true)"
-            if [[ "$commit" == "$pages_commit" && "$status" == built ]]; then
-              echo "GitHub Pages deployment verified for $pages_commit."
-              break
-            fi
-            if [[ "$commit" == "$pages_commit" && "$status" == errored ]]; then
-              echo "GitHub Pages build failed for $pages_commit." >&2
-              exit 1
-            fi
-            sleep 5
-          done
-
-          latest_status="$(gh api "repos/$PUBLIC_REPO/pages/builds/latest" --jq '.status')"
-          latest_commit="$(gh api "repos/$PUBLIC_REPO/pages/builds/latest" --jq '.commit')"
-          [[ "$latest_commit" == "$pages_commit" && "$latest_status" == built ]] || {
-            echo "GitHub Pages was not verified before the publication deadline." >&2
+          pages_commit="$(git -C "$pages_dir" rev-parse HEAD)"
+          remote_commit="$(gh api "repos/$PUBLIC_REPO/git/ref/heads/gh-pages" --jq '.object.sha')"
+          [[ "$remote_commit" == "$pages_commit" ]] || {
+            echo "Remote gh-pages ref does not match the exact staged site commit." >&2
             exit 1
           }
+          python3 - "$pages_dir/release.json" "$RELEASE_TAG" <<'PY'
+          import json
+          import pathlib
+          import sys
 
-      - name: Publish the completed Windows and macOS release
+          payload = json.loads(pathlib.Path(sys.argv[1]).read_text(encoding="utf-8"))
+          if payload.get("version") != sys.argv[2]:
+              raise SystemExit("gh-pages release manifest does not match the release tag.")
+          if payload.get("platforms") != ["windows-x64", "macos-universal"]:
+              raise SystemExit("gh-pages release manifest is not cross-platform.")
+          print("[PASS] Exact gh-pages ref and cross-platform manifest verified.")
+          PY
+
+      - name: Publish and verify the complete release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          gh release edit "$RELEASE_TAG" --repo "$PUBLIC_REPO" \
+          gh release edit "$RELEASE_TAG" \
+            --repo "$PUBLIC_REPO" \
             --title "ArSonKuPik VST $RELEASE_TAG - Windows and macOS" \
             --notes-file "$MAC_DIST/release-notes-final.md" \
-            --draft=false --latest
-          final_draft="$(gh release view "$RELEASE_TAG" --repo "$PUBLIC_REPO" --json isDraft --jq '.isDraft')"
-          [[ "$final_draft" == false ]] || { echo "Release remained in draft state unexpectedly." >&2; exit 1; }
+            --draft=false \
+            --prerelease=false \
+            --latest
+
+          final_state="$(gh release view "$RELEASE_TAG" --repo "$PUBLIC_REPO" \
+            --json isDraft,isPrerelease --jq '[.isDraft,.isPrerelease] | @tsv')"
+          [[ "$final_state" == $'false\tfalse' ]] || {
+            echo "Release did not finish as a published production release." >&2
+            exit 1
+          }
+
+          expected="$RUNNER_TEMP/expected-assets.txt"
+          actual="$RUNNER_TEMP/actual-assets.txt"
+          cat >"$expected" <<EOF_ASSETS
+          ArSonKuPik-$RELEASE_TAG-Windows-x64-Setup.exe
+          ArSonKuPik-$RELEASE_TAG-Windows-x64-Standalone.zip
+          ArSonKuPik-$RELEASE_TAG-Windows-x64-VST3.zip
+          ArSonKuPik-$RELEASE_TAG-macOS-Universal-Standalone.zip
+          ArSonKuPik-$RELEASE_TAG-macOS-Universal-VST3.zip
+          ArSonKuPik-$RELEASE_TAG-macOS-Universal.dmg
+          BUILDINFO-Windows.json
+          BUILDINFO-macOS.json
+          SHA256SUMS-Windows.txt
+          SHA256SUMS-macOS.txt
+          SHA256SUMS.txt
+          EOF_ASSETS
+          LC_ALL=C sort -o "$expected" "$expected"
+          gh release view "$RELEASE_TAG" --repo "$PUBLIC_REPO" \
+            --json assets --jq '.assets[].name' | LC_ALL=C sort >"$actual"
+          diff -u "$expected" "$actual"
+
+          invalid_digests="$(gh release view "$RELEASE_TAG" --repo "$PUBLIC_REPO" \
+            --json assets --jq '.assets[] | select((.digest // "") | startswith("sha256:") | not) | .name')"
+          [[ -z "$invalid_digests" ]] || {
+            echo "One or more release assets lack a GitHub SHA-256 digest." >&2
+            printf '%s\n' "$invalid_digests" >&2
+            exit 1
+          }
+
           echo "Published: https://github.com/$PUBLIC_REPO/releases/tag/$RELEASE_TAG"
