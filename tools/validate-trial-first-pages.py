@@ -81,15 +81,19 @@ def main() -> int:
     description = next((item.get("content", "") for item in landing_parser.meta if item.get("name") == "description"), "")
     require("VST3 Audio Enhancer" in title, "Social title must identify the product category")
     require("fuller, clearer and more dimensional" in description.lower(), "Search description must lead with sonic value")
+    require("windows and macos" in description.lower(), "Search description must identify both supported platforms")
     require("365 days" not in description.lower(), "Evaluation duration must not dominate search copy")
 
     for phrase in (
-        "Musical VST3 audio enhancer for Windows",
+        "Musical VST3 audio enhancer for Windows and macOS",
         "Fuller, clearer and more dimensional sound",
         "Mas Ari Signature",
         "13 professional starting points",
         "Your own audio is the real demo",
+        "Official Windows and macOS downloads",
         "Download free for Windows",
+        "Mac package",
+        "Download Mac DMG",
         "No account or card",
         "No automatic charge",
         "No obligation to buy",
@@ -97,9 +101,12 @@ def main() -> int:
         require(phrase in landing, f"Landing is missing product-first phrase: {phrase}")
 
     for phrase in (
-        "VST3 audio enhancer musikal untuk Windows",
+        "VST3 audio enhancer musikal untuk Windows dan macOS",
         "Suara lebih berisi, jernih, dan berdimensi",
         "13 titik awal profesional",
+        "Unduhan resmi Windows dan macOS",
+        "Paket Mac",
+        "Unduh DMG Mac",
         "Tanpa tagihan otomatis",
     ):
         require(phrase in localized, f"Localized landing is missing: {phrase}")
@@ -122,6 +129,7 @@ def main() -> int:
     require("app.js" not in landing + localized and "trial-page.js" not in landing + localized, "Legacy landing controllers must not load")
 
     for token in (
+        "setupCrossPlatformCopy",
         "setupProductPreview",
         "setupPresetExplorer",
         "preset-explorer-ready",
@@ -147,6 +155,7 @@ def main() -> int:
     require("purchaseAllowedHosts" in activation_js, "Activation page must allowlist checkout hosts")
     require(release.get("purchaseCheckoutAvailable") is False, "Checkout must remain disabled until configured")
     require("purchaseUrl" not in release, "Disabled checkout must not publish a purchase URL")
+    require(release.get("platforms") == ["windows-x64", "macos-universal"], "Release manifest must retain both supported platforms")
     require("font-weight: 610" in landing_css, "Refined headline weight must remain")
     require("@media (prefers-reduced-motion: reduce)" in experience_css, "Reduced-motion support is missing")
 
@@ -158,8 +167,8 @@ def main() -> int:
         require(token not in public_text, f"Prohibited token: {token}")
 
     print(
-        "Product-first V6 validation passed: static EN/ID routes, one release controller, hyperlink locales, "
-        "mobile navigation, readable typography, audio motion and optional activation separation."
+        "Product-first V6 validation passed: static cross-platform EN/ID routes, one release controller, "
+        "hyperlink locales, mobile navigation, readable typography, audio motion and optional activation separation."
     )
     return 0
 
