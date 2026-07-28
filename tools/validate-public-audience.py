@@ -79,6 +79,8 @@ def main() -> int:
         "No obligation to buy",
         "Local processing",
         "Official download",
+        "Official Windows and macOS downloads",
+        "Mac package",
         "13 professional starting points",
     ):
         require(phrase in html, f"Missing English public guidance: {phrase}")
@@ -87,12 +89,14 @@ def main() -> int:
         "Pengguna awam",
         "Musisi &amp; kreator",
         "Produser",
+        "Audio engineer",
         "VST3 atau Standalone?",
         "Instalasi dan verifikasi",
         "Tanpa akun atau kartu",
         "Tanpa tagihan otomatis",
         "Processing lokal",
-        "Unduhan Windows resmi",
+        "Unduhan resmi Windows dan macOS",
+        "Paket Mac",
         "13 titik awal profesional",
     ):
         require(phrase in localized, f"Missing Indonesian public guidance: {phrase}")
@@ -122,10 +126,9 @@ def main() -> int:
     require("font-family: Inter" in css, "Inter must remain the primary font")
 
     print(
-        "Audience/readability validation passed: "
-        f"static EN/ID routes, {parser.details}/{localized_parser.details} compact "
-        "FAQ/disclosures, four audience paths, merged technical/download flow "
-        "and mobile CTA."
+        "Audience/readability validation passed: static cross-platform EN/ID routes, "
+        f"{parser.details}/{localized_parser.details} compact FAQ/disclosures, four audience paths, "
+        "merged technical/download flow and mobile CTA."
     )
     return 0
 
