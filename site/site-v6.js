@@ -19,6 +19,7 @@
         error: 'Status rilis tidak dapat diperiksa',
         installer: 'Unduh gratis untuk Windows',
         installerShort: 'Unduh gratis',
+        macHero: 'Unduh gratis untuk Mac',
         eyebrow: 'Rilis terbaru',
         heading: 'Apa yang meningkat di',
         notes: 'Buka catatan rilis lengkap',
@@ -33,6 +34,7 @@
         error: 'Release status could not be checked',
         installer: 'Download free for Windows',
         installerShort: 'Download free',
+        macHero: 'Download free for Mac',
         eyebrow: 'Latest release',
         heading: 'What improved in',
         notes: 'Open full release notes',
@@ -80,7 +82,7 @@
     .filter((asset) => predicate(asset.name.toLowerCase()))
     .sort((a, b) => scorer(b.name) - scorer(a.name))[0] || null;
 
-  const cleanMarkdown = (value) => value
+  const cleanMarkdown = (value) => String(value || '')
     .replace(/!\[[^\]]*\]\([^)]*\)/g, '')
     .replace(/\[([^\]]+)\]\([^)]*\)/g, '$1')
     .replace(/[`*_~>#]/g, '')
@@ -95,8 +97,9 @@
     const highlights = [];
     const add = (value) => {
       const cleaned = cleanMarkdown(value).replace(/^[-+*]\s+/, '').replace(/^\d+[.)]\s+/, '');
-      if (!cleaned || cleaned.length < 8 || ignored.test(cleaned) || unique.has(cleaned.toLowerCase())) return;
-      unique.add(cleaned.toLowerCase());
+      const key = cleaned.toLowerCase();
+      if (!cleaned || cleaned.length < 8 || ignored.test(cleaned) || unique.has(key)) return;
+      unique.add(key);
       highlights.push(cleaned.length > 220 ? `${cleaned.slice(0, 217).trim()}…` : cleaned);
     };
 
@@ -104,7 +107,6 @@
       const trimmed = line.trim();
       if (/^[-+*]\s+/.test(trimmed) || /^\d+[.)]\s+/.test(trimmed)) add(trimmed);
     });
-
     if (!highlights.length) {
       body.split(/\r?\n\s*\r?\n/).forEach((paragraph) => {
         const trimmed = paragraph.trim();
@@ -170,14 +172,21 @@
 
   const setLink = (element, href, enabled = true) => {
     if (!element) return;
-    element.href = href || RELEASE_FALLBACK;
-    if (enabled) {
+    if (enabled && href) {
+      element.href = href;
       element.removeAttribute('aria-disabled');
       element.removeAttribute('data-release-pending');
     } else {
+      element.href = '#download';
       element.setAttribute('aria-disabled', 'true');
       element.setAttribute('data-release-pending', 'true');
     }
+  };
+
+  const lockDirectDownloadCtas = () => {
+    document.querySelectorAll('[data-installer-cta]').forEach((button) => setLink(button, null, false));
+    ['vst3-link', 'standalone-link', 'mac-dmg-link', 'mac-vst3-link', 'mac-standalone-link']
+      .forEach((id) => setLink(document.getElementById(id), null, false));
   };
 
   const updateStructuredData = (release) => {
@@ -187,13 +196,13 @@
       const data = JSON.parse(script.textContent);
       const software = data['@graph']?.find((entry) => entry['@type'] === 'SoftwareApplication');
       if (!software) return;
-      software.softwareVersion = release.version.replace(/^v/i, '');
+      software.softwareVersion = release.version?.replace(/^v/i, '') || software.softwareVersion;
       software.downloadUrl = release.installerUrl || release.releaseUrl;
       software.releaseNotes = release.releaseUrl;
       if (software.offers) software.offers.url = release.installerUrl || release.releaseUrl;
       script.textContent = JSON.stringify(data, null, 2);
     } catch (_) {
-      // Keep the static JSON-LD when enhancement fails.
+      // Keep the reviewed static JSON-LD when runtime enhancement fails.
     }
   };
 
@@ -211,6 +220,7 @@
       .release-update-list li::before{content:'↗';position:absolute;left:14px;top:11px;color:#d58cff;font-weight:700}
       .release-update-actions{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:18px}
       .release-update-source{font-size:.78rem;color:var(--muted,#9892a4)}
+      .hero-mac-download svg{width:1em;height:1em;flex:0 0 1em;fill:currentColor}
       @media (max-width:760px){.release-update-shell{grid-template-columns:1fr;border-radius:18px;padding:20px}.release-update-copy h2{font-size:1.65rem}.release-update-list li{font-size:.91rem}}
     `;
     document.head.appendChild(style);
@@ -243,6 +253,23 @@
     if (download?.parentNode) download.parentNode.insertBefore(section, download);
     else document.querySelector('main')?.appendChild(section);
     return section;
+  };
+
+  const ensureHeroMacCta = () => {
+    let link = document.getElementById('mac-dmg-link-hero');
+    if (link) return link;
+    const actions = document.querySelector('.landing-hero .hero-copy .actions');
+    if (!actions) return null;
+    link = document.createElement('a');
+    link.id = 'mac-dmg-link-hero';
+    link.className = 'button secondary hero-mac-download';
+    link.hidden = true;
+    link.setAttribute('aria-disabled', 'true');
+    link.href = '#download';
+    link.innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.79 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.53 4.1M12.03 7.25C11.88 5.02 13.69 3.18 15.77 3c.29 2.58-2.34 4.5-3.74 4.25"/></svg><span>${copy.macHero}</span>`;
+    const explore = actions.querySelector('a[href^="#"]');
+    actions.insertBefore(link, explore || null);
+    return link;
   };
 
   const renderHighlights = (release) => {
@@ -289,7 +316,6 @@
     if (!release?.macDmgUrl) return;
     const grid = document.querySelector('#download .download-grid');
     if (!grid) return;
-
     let option = document.getElementById('mac-download-option');
     if (!option) {
       option = document.createElement('article');
@@ -302,59 +328,53 @@
         <p>${isId
           ? 'Universal untuk Apple Silicon dan Intel. Ad-hoc signed, tanpa Developer ID dan tanpa notarization.'
           : 'Universal for Apple Silicon and Intel. Ad-hoc signed, without Developer ID signing or notarization.'}</p>
+        <a class="button secondary" id="mac-dmg-link" href="#download">${isId ? 'Unduh DMG Mac' : 'Download Mac DMG'}</a>
         <div class="mac-download-actions">
-          <a class="button secondary" id="mac-dmg-link" href="${RELEASE_FALLBACK}">${isId ? 'Unduh DMG Mac' : 'Download Mac DMG'}</a>
-          <a class="text-link" id="mac-vst3-link" href="${RELEASE_FALLBACK}">VST3 ZIP</a>
-          <a class="text-link" id="mac-standalone-link" href="${RELEASE_FALLBACK}">Standalone ZIP</a>
+          <a class="text-link" id="mac-vst3-link" href="#download">VST3 ZIP</a>
+          <a class="text-link" id="mac-standalone-link" href="#download">Standalone ZIP</a>
         </div>`;
       grid.appendChild(option);
-
-      if (!document.getElementById('mac-download-option-style')) {
-        const style = document.createElement('style');
-        style.id = 'mac-download-option-style';
-        style.textContent = '.mac-download-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.mac-download-actions .text-link{font-size:.82rem}';
-        document.head.appendChild(style);
-      }
     }
-
     setLink(document.getElementById('mac-dmg-link'), release.macDmgUrl, true);
-    setLink(document.getElementById('mac-vst3-link'), release.macVst3Url || release.releaseUrl, Boolean(release.macVst3Url));
-    setLink(document.getElementById('mac-standalone-link'), release.macStandaloneUrl || release.releaseUrl, Boolean(release.macStandaloneUrl));
-
-    const eyebrow = document.querySelector('#download .section-heading .eyebrow');
-    if (eyebrow) eyebrow.textContent = language === 'id'
-      ? 'Unduhan resmi Windows dan macOS'
-      : 'Official Windows and macOS downloads';
+    setLink(document.getElementById('mac-vst3-link'), release.macVst3Url, Boolean(release.macVst3Url));
+    setLink(document.getElementById('mac-standalone-link'), release.macStandaloneUrl, Boolean(release.macStandaloneUrl));
   };
 
   const renderRelease = (release) => {
     const state = release || { type: 'error', source: 'fallback', releaseUrl: RELEASE_FALLBACK, highlights: [] };
-    const installerUrl = state.installerUrl || state.releaseUrl || RELEASE_FALLBACK;
     const enabled = state.type === 'enabled' && Boolean(state.installerUrl);
 
     document.querySelectorAll('[data-installer-cta]').forEach((button) => {
-      setLink(button, installerUrl, enabled);
+      setLink(button, state.installerUrl, enabled);
       button.textContent = button.closest('#mobile-download-bar') || button.classList.contains('nav-download')
         ? copy.installerShort
         : copy.installer;
     });
 
-    setLink(document.getElementById('vst3-link'), state.vst3Url || state.releaseUrl, Boolean(state.vst3Url));
-    setLink(document.getElementById('standalone-link'), state.standaloneUrl || state.releaseUrl, Boolean(state.standaloneUrl));
-    setLink(document.getElementById('checksums-link'), state.checksumsUrl || state.releaseUrl, Boolean(state.checksumsUrl));
+    setLink(document.getElementById('vst3-link'), state.vst3Url, Boolean(state.vst3Url));
+    setLink(document.getElementById('standalone-link'), state.standaloneUrl, Boolean(state.standaloneUrl));
+    setLink(document.getElementById('checksums-link'), state.checksumsUrl, Boolean(state.checksumsUrl));
     ensureMacDownloadOption(state);
+
+    const heroMac = ensureHeroMacCta();
+    if (heroMac && state.macDmgUrl) {
+      setLink(heroMac, state.macDmgUrl, true);
+      heroMac.hidden = false;
+    } else if (heroMac) {
+      setLink(heroMac, null, false);
+      heroMac.hidden = true;
+    }
+
     setLink(document.getElementById('release-link'), state.releaseUrl || RELEASE_FALLBACK, true);
     setLink(document.getElementById('distribution-link'), state.releaseUrl || RELEASE_FALLBACK, true);
 
     document.querySelectorAll('[data-release-version]').forEach((element) => {
       if (state.version) element.textContent = state.version;
     });
-
     const statusText = state.type === 'enabled' ? copy.enabled : state.type === 'paused' ? copy.paused : copy.error;
     document.querySelectorAll('[data-release-status]').forEach((element) => {
       element.textContent = statusText;
     });
-
     const banner = document.getElementById('distribution-banner');
     if (banner) banner.dataset.state = state.type;
     root.dataset.releaseSource = state.source || 'fallback';
@@ -381,13 +401,11 @@
     const localPromise = fetchJson(`${siteBase}/release.json`, {
       cache: 'no-store', credentials: 'same-origin'
     }, 3000).then(parseManifest).catch(() => null);
-
     const latestPromise = fetchJson(LATEST_API, {
       cache: 'no-cache',
       headers: { Accept: 'application/vnd.github+json' },
       referrerPolicy: 'no-referrer'
     }, 4500).then(parseGitHubRelease).catch(() => null);
-
     const [latest, local] = await Promise.all([latestPromise, localPromise]);
     return latest || local || null;
   };
@@ -417,8 +435,10 @@
     }
   };
 
+  lockDirectDownloadCtas();
   setupMobileNavigation();
   setupMobileDownload();
   ensureReleasePanel();
+  ensureHeroMacCta();
   resolveRelease().then(renderRelease).catch(() => renderRelease(null));
 })();
