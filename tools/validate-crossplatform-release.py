@@ -79,7 +79,27 @@ def main() -> int:
         require(html, "macOS 11", label)
         require(html, 'id="mac-download-option"', label)
         require(html, 'id="mac-dmg-link"', label)
+        require(html, "SHA256SUMS.txt", label)
         reject(html, "GitHub Actions was not used", label)
+
+    for marker in (
+        "Musical VST3 audio enhancer for Windows and macOS",
+        "Official Windows and macOS downloads",
+        "Mac package",
+        "Download Mac DMG",
+        'operatingSystem":"Windows 10/11 64-bit; macOS 11 or later Universal"',
+    ):
+        require(site_en, marker, "static English cross-platform landing")
+    reject(site_en, "<h3>Paket Mac</h3>", "static English cross-platform landing")
+
+    for marker in (
+        "VST3 audio enhancer musikal untuk Windows dan macOS",
+        "Unduhan resmi Windows dan macOS",
+        "Paket Mac",
+        "Unduh DMG Mac",
+        'operatingSystem":"Windows 10/11 64-bit; macOS 11 atau lebih baru Universal"',
+    ):
+        require(site_id, marker, "static Indonesian cross-platform landing")
 
     for marker in (
         "setupCrossPlatformCopy",
@@ -102,7 +122,7 @@ def main() -> int:
     if workflow_names != ["build-macos-and-publish.yml"]:
         fail(f"Expected exactly one approved public workflow, found: {workflow_names}")
 
-    print("[PASS] Cross-platform release copy, metadata and provenance are consistent.")
+    print("[PASS] Static and live cross-platform release copy, metadata and provenance are consistent.")
     return 0
 
 
