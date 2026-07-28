@@ -1,57 +1,60 @@
-# ArSonKuPik VST — Musical Audio Enhancement for Windows and macOS
+# ArSonKuPik VST3 Audio Enhancer for Windows and macOS
 
-[![Website](https://img.shields.io/badge/Website-ArSonKuPik-9b68ff)](https://masarray.github.io/vst-enhancer/)
+[![Website](https://img.shields.io/badge/Product%20website-ArSonKuPik-8f72ff)](https://masarray.github.io/vst-enhancer/)
 [![Latest release](https://img.shields.io/github/v/release/masarray/vst-enhancer?label=Latest%20release)](https://github.com/masarray/vst-enhancer/releases/latest)
-[![Platforms](https://img.shields.io/badge/Platforms-Windows%20x64%20%7C%20macOS%20Universal-5b8def)](#compatibility)
-[![Formats](https://img.shields.io/badge/Formats-VST3%20%2B%20Standalone-c5a0ff)](#compatibility)
-[![Product licence](https://img.shields.io/badge/Product-Proprietary-ef7c8f)](EULA.txt)
+[![Platforms](https://img.shields.io/badge/Platforms-Windows%20x64%20%7C%20macOS%20Universal-5577dd)](#compatibility)
+[![Formats](https://img.shields.io/badge/Formats-VST3%20%7C%20Standalone-b896ff)](#downloads)
+[![Product licence](https://img.shields.io/badge/Product-Proprietary-e46f8d)](EULA.txt)
 
-**English:** ArSonKuPik is a focused, musical VST3 and standalone audio enhancer for Windows and macOS. It helps creators achieve fuller, clearer and more dimensional sound without building a complex processing chain.
+**ArSonKuPik** is a musical VST3 audio enhancer and standalone audio processor for Windows and macOS. It helps musicians, creators, producers and audio engineers achieve fuller body, clearer presence, deeper stereo dimension and polished detail without building a long plug-in chain.
 
-**Bahasa Indonesia:** ArSonKuPik adalah audio enhancer VST3 dan standalone untuk Windows dan macOS yang fokus dan musikal. Produk ini membantu kreator menghasilkan suara yang lebih berisi, jernih, dan berdimensi tanpa membangun rangkaian processing yang rumit.
+**ArSonKuPik** adalah audio enhancer VST3 dan aplikasi standalone untuk Windows serta macOS. Produk ini membantu musisi, kreator, produser, dan audio engineer menghasilkan body yang lebih berisi, presence yang lebih jelas, dimensi stereo yang lebih dalam, serta detail yang polished tanpa membangun rangkaian plug-in yang panjang.
 
 <p align="center">
   <a href="https://masarray.github.io/vst-enhancer/">
-    <img src="site/assets/arsonkupik-vst-ui-v050.webp" width="1080" alt="ArSonKuPik VST interface showing the Mas Ari Signature engine, professional preset selector, musical enhancement controls, A/B comparison and level meters">
+    <img src="site/assets/arsonkupik-vst-ui-v050.webp" width="1080" alt="ArSonKuPik VST3 audio enhancer interface showing the Mas Ari Signature engine, professional preset selector, six musical controls, A/B comparison and level meters">
   </a>
 </p>
 
-## Product direction / Arah produk
+## Overview
 
 ArSonKuPik is designed around one principle: **shape the musical result, not the complexity**.
 
-ArSonKuPik dirancang berdasarkan satu prinsip: **bentuk hasil suaranya, bukan kerumitannya**.
+Every factory starting point uses the same **Mas Ari Signature Engine**. Presets do not replace the DSP topology; they provide carefully tuned starting positions over one consistent sonic foundation.
 
-The interface combines six focused controls:
+### Six focused controls
 
-- Enhance
-- Smart Bass
-- Smart Treble
-- Vocal
-- Stereo
-- Smart Protect
+- **Enhance** — overall musical enhancement amount
+- **Smart Bass** — controlled low-end weight and body
+- **Smart Treble** — clarity, openness and polished air
+- **Vocal** — lead presence and intelligibility
+- **Stereo** — width and depth around a grounded centre
+- **Smart Protect** — output protection for safer level management
 
-The **Mas Ari Signature Engine** is the single sonic foundation behind every factory preset. It is tuned to make familiar music feel more alive, reveal fine detail and create a more convincing live-music impression while retaining a grounded centre.
+### Professional starting points
 
-**Mas Ari Signature Engine** adalah satu-satunya pondasi suara di balik seluruh preset factory. Engine ini dituning agar musik familiar terasa lebih hidup, menampilkan detail halus, dan menciptakan kesan live music yang lebih meyakinkan dengan centre yang tetap kokoh.
+The current public product includes **13 curated factory starting points** plus user preset management through `.askpreset` files.
 
-## 13 professional starting points / 13 titik awal profesional
+| Category | Starting points |
+|---|---:|
+| Signature | 1 |
+| Mastering | 3 |
+| Problem solving | 3 |
+| Mix bus | 1 |
+| Tracks | 5 |
 
-Every factory preset is a curated starting point over the same engine. Preset selection never swaps DSP topology, and users can save, load, rename and delete their own `.askpreset` files.
+Factory presets include Signature Balanced, Transparent Polish, Open & Detailed, Warm Glue, Dense Mix Clarity, Dark Mix Lift, Bright Mix Safe, Punch & Separation, Vocal Forward & Silky, Guitar Definition & Body, Bass Authority, Drums Punch & Skin, and Acoustic Natural Air.
 
-- **Signature — 1:** Signature Balanced
-- **Mastering — 3:** Transparent Polish, Open & Detailed, Warm Glue
-- **Problem Solving — 3:** Dense Mix Clarity, Dark Mix Lift, Bright Mix Safe
-- **Mix Bus — 1:** Punch & Separation
-- **Tracks — 5:** Vocal Forward & Silky, Guitar Definition & Body, Bass Authority, Drums Punch & Skin, Acoustic Natural Air
+## Current public release
 
-Semua preset factory adalah titik awal terkurasi di atas engine yang sama. Pemilihan preset tidak pernah mengganti topologi DSP, dan pengguna dapat menyimpan, membuka, mengganti nama, serta menghapus file `.askpreset` miliknya sendiri.
+The reviewed public manifest records **v0.5.20** for Windows x64 and macOS Universal. The product website resolves the latest supported GitHub Release and routes downloads only to official assets from this repository.
 
-## Current public release / Rilis publik saat ini
+- [Open the product website](https://masarray.github.io/vst-enhancer/)
+- [Download the latest supported release](https://github.com/masarray/vst-enhancer/releases/latest)
+- [Read the public changelog](CHANGELOG.md)
+- [Review release provenance](RELEASE-PROVENANCE.md)
 
-The reviewed public manifest records **v0.5.20** for Windows x64 and macOS Universal. The website resolves the latest published full release and routes downloads only to official assets in this repository.
-
-Manifest publik yang telah direview mencatat **v0.5.20** untuk Windows x64 dan macOS Universal. Website mengambil rilis penuh terbaru yang telah dipublikasikan dan hanya mengarahkan unduhan ke aset resmi repository ini.
+## Downloads
 
 ### Windows
 
@@ -63,37 +66,14 @@ Manifest publik yang telah direview mencatat **v0.5.20** untuk Windows x64 dan m
 ### macOS
 
 - macOS 11 or later
-- Universal Apple Silicon `arm64` + Intel `x86_64`
+- Universal Apple Silicon `arm64` and Intel `x86_64`
 - VST3 ZIP, Standalone ZIP and DMG
 - Ad-hoc signed only; not Developer ID signed and not notarized
-- Gatekeeper may require Control-click → Open or **Open Anyway**
+- Gatekeeper may require Control-click → **Open** or **Open Anyway**
 
-## Sound and comparison behaviour
+### Verify every download
 
-Gain Match defaults to OFF. In normal listening mode, safe creative lift stays audible instead of being attenuated toward an internal loudness target. Gain Match ON is the explicit level-equal comparison mode; independent `-1 dBFS` peak safety remains active in both modes.
-
-Gain Match secara default berada pada posisi OFF. Dalam mode dengar normal, creative lift yang aman tetap terdengar dan tidak ditahan menuju target loudness internal. Gain Match ON adalah mode perbandingan level yang setara; proteksi peak independen `-1 dBFS` tetap aktif pada kedua mode.
-
-## Evaluation and optional activation / Evaluasi dan aktivasi opsional
-
-Every preset and editing control is available for 365 days from first launch on each computer. No account, payment card, subscription, automatic renewal or automatic charge is required.
-
-Seluruh preset dan kontrol editing tersedia selama 365 hari sejak pertama kali dijalankan pada tiap komputer. Tidak memerlukan akun, kartu pembayaran, langganan, perpanjangan otomatis, atau tagihan otomatis.
-
-After full editing ends, existing projects, saved values, meters, automation playback and audio processing are designed to continue in project-safe read-only mode. Optional activation is relevant only for continued editing, subject to the EULA and technical compatibility.
-
-Setelah full editing berakhir, project lama, nilai tersimpan, meter, playback automation, dan processing audio dirancang tetap berjalan dalam mode project-safe read-only. Aktivasi opsional hanya relevan untuk melanjutkan editing, tunduk pada EULA dan kompatibilitas teknis.
-
-There is no obligation to buy. Optional perpetual activation for one active computer is **Rp399.000**. A purchase provides concrete licence rights; it is not a donation.
-
-Tidak ada kewajiban membeli. Aktivasi perpetual opsional untuk satu komputer aktif adalah **Rp399.000**. Pembelian memberikan hak lisensi yang nyata; pembayaran tersebut bukan donasi.
-
-## Install and verify / Instalasi dan verifikasi
-
-1. Open the [latest official release](https://github.com/masarray/vst-enhancer/releases/latest).
-2. Download the package for your operating system.
-3. Download `SHA256SUMS.txt` from the same release.
-4. Verify the exact downloaded filename before installation.
+Download `SHA256SUMS.txt` from the same release and verify the exact filename before installation.
 
 Windows PowerShell:
 
@@ -107,60 +87,67 @@ macOS Terminal:
 shasum -a 256 <downloaded-file-name>
 ```
 
-Do not continue when the calculated value differs from `SHA256SUMS.txt`. A matching SHA-256 verifies file identity against the official release value, but it does not replace antivirus, endpoint protection, backups, Gatekeeper or compatibility testing.
+Do not continue when the calculated value differs from the official checksum. A matching SHA-256 confirms file identity against the published hash; it does not replace antivirus, endpoint protection, Gatekeeper, backups or compatibility testing.
 
-## Release integrity and provenance
+## Sound and A/B comparison
 
-- Windows packages are built and audited locally on Windows.
-- macOS Universal packages are built and audited by the single approved manual workflow in this public repository using an exact tag from the private proprietary source repository.
-- Public packages are binary-only and exclude proprietary source, private signing material, Key Activator and customer activation records.
-- See [RELEASE-PROVENANCE.md](RELEASE-PROVENANCE.md) for the reviewed v0.5.20 release path and disclosure boundaries.
+**Gain Match defaults to OFF.** Normal listening keeps the intended safe creative lift audible. Enable Gain Match only when you want an explicit level-equal comparison of tonal character. Independent `-1 dBFS` peak safety remains active in both modes.
 
-## Privacy summary / Ringkasan privasi
+## Evaluation and optional activation
 
-ArSonKuPik processes audio locally and does not intentionally transmit audio, DAW projects, presets, parameter values, licence codes, crash analytics, advertising identifiers or usage analytics during normal operation.
+Every preset and editing control is available for **365 days from first launch on each computer**.
 
-- The application may make one quiet latest-release metadata check after at least 30 seconds, no more than once per 24 hours per computer; a manual check may bypass that cooldown.
-- The website stores only the selected EN/ID language value in browser local storage.
-- Activation uses a locally generated Computer Request ID shared only when the user creates or checks an order, requests recovery, or explicitly requests manual activation.
-- Public GitHub Issues must not contain activation codes, Computer Request IDs, customer audio, private projects, order documents or personal data.
+- No account required
+- No payment card required
+- No subscription
+- No automatic renewal
+- No automatic charge
+- No obligation to buy
 
-See [PRIVACY.txt](PRIVACY.txt).
+After full editing ends, existing projects, saved values, meters, automation playback and audio processing are designed to continue in project-safe read-only mode. Optional activation is relevant only for continued editing, subject to the EULA and technical compatibility.
 
-## Official links / Tautan resmi
-
-- **[Product website / Website produk](https://masarray.github.io/vst-enhancer/)**
-- **[Latest supported release / Rilis terbaru](https://github.com/masarray/vst-enhancer/releases/latest)**
-- **[Optional support and activation / Dukungan dan aktivasi opsional](https://masarray.github.io/vst-enhancer/activation/)**
-- **[Report a reproducible public bug / Laporkan bug publik](https://github.com/masarray/vst-enhancer/issues/new/choose)**
-- **[Private security reporting / Pelaporan keamanan privat](SECURITY.md)**
-- **[Public changelog / Catatan perubahan](CHANGELOG.md)**
-
-> Download only from the official website or this repository's GitHub Releases. Avoid mirrors and re-uploaded packages. Verify `SHA256SUMS.txt` from the same release before opening a package.
->
-> Unduh hanya melalui website resmi atau GitHub Releases repository ini. Hindari mirror dan paket yang diunggah ulang. Verifikasi `SHA256SUMS.txt` dari rilis yang sama sebelum membuka paket.
+Optional perpetual activation for one active computer is **Rp399.000**. A purchase provides concrete licence rights; it is not a donation.
 
 ## Compatibility
 
-- Windows 10/11, 64-bit
-- macOS 11 or later, Universal `arm64` + `x86_64`
-- VST3 plug-in for use inside a compatible DAW
-- Standalone application for supported audio-device workflows
-- Linux, VST2, AAX and Audio Unit are not currently distributed
-- Compatibility varies by DAW, driver, audio interface, sample rate, buffer, device and security policy
-- Evaluate in your own workflow before critical delivery or broadcast
+| Area | Supported public configuration |
+|---|---|
+| Windows | Windows 10/11, 64-bit |
+| macOS | macOS 11 or later, Universal `arm64` + `x86_64` |
+| Plug-in format | VST3 in a compatible host or DAW |
+| Standalone | Supported audio-device workflows |
+| Not currently distributed | Linux, VST2, AAX and Audio Unit |
+
+Compatibility varies by DAW, host, driver, audio interface, sample rate, buffer size, device and security policy. Evaluate the current release in the actual target workflow before critical delivery, recording, streaming or broadcast.
+
+## Privacy and security
+
+ArSonKuPik processes audio locally and does not intentionally transmit audio, DAW projects, presets, parameter values, licence codes, crash analytics, advertising identifiers or usage analytics during normal operation.
+
+- The application may make a bounded latest-release metadata check after an initial delay.
+- The website stores only the selected EN/ID language value in browser local storage.
+- Public GitHub Issues must not contain activation codes, Computer Request IDs, customer audio, private projects, order documents or personal data.
+
+Read the complete [Privacy Notice](PRIVACY.txt) and [Security Policy](SECURITY.md).
 
 ## Repository scope
 
-This repository contains public product information, website source, release metadata, checksums, supported downloads, feedback surfaces and public legal notices.
+This public repository contains:
 
-The proprietary DSP implementation, preset recipes, application source, private signing material, Key Activator and customer activation records are not included.
+- bilingual product website source;
+- public release metadata and checksums;
+- supported download and release information;
+- public legal, privacy, support and security notices;
+- validation tools for the public distribution surface; and
+- issue and contribution workflows.
+
+This repository does **not** contain the proprietary DSP implementation, preset recipes, application source, private signing material, Key Activator or customer activation records.
 
 The separately published MIT-licensed ArSonKuPik project remains governed by its original MIT terms. Its publication does not make this proprietary VST product open source.
 
 ## Local validation
 
-Run on Windows:
+Run the reviewed validation entry point on Windows:
 
 ```powershell
 .\tools\validate-public-release.ps1
@@ -172,10 +159,25 @@ Optionally validate public release URLs from a connected machine:
 .\tools\validate-public-release.ps1 --check-remote
 ```
 
-## Safe feedback
+## Support and contributions
 
-Include the ArSonKuPik version, package type, DAW and version, operating-system version, audio interface and driver, sample rate, buffer size, preset, checksum, expected behaviour, actual behaviour and exact reproduction steps.
+- Read [SUPPORT.md](SUPPORT.md) before opening a public bug report.
+- Use the structured [issue forms](https://github.com/masarray/vst-enhancer/issues/new/choose) for reproducible, non-confidential problems.
+- Report vulnerabilities through [GitHub private vulnerability reporting](https://github.com/masarray/vst-enhancer/security/advisories/new).
+- Read [CONTRIBUTING.md](CONTRIBUTING.md) before proposing website, documentation, localization, validation or public-metadata changes.
 
-Never publish activation codes, Computer Request IDs, customer audio, private projects, personal data, order records or security exploit details. Use [SECURITY.md](SECURITY.md) for private vulnerability reporting.
+Never publish activation codes, Computer Request IDs, customer audio, private projects, personal data, order records or security exploit details.
+
+## Official links
+
+- [Product website](https://masarray.github.io/vst-enhancer/)
+- [Bahasa Indonesia website](https://masarray.github.io/vst-enhancer/id/)
+- [Latest supported release](https://github.com/masarray/vst-enhancer/releases/latest)
+- [Optional support and activation](https://masarray.github.io/vst-enhancer/activation/)
+- [Public changelog](CHANGELOG.md)
+- [End User Licence Agreement](EULA.txt)
+- [Purchase Terms](PURCHASE_TERMS.txt)
+
+> Download only from the official website or this repository's GitHub Releases. Avoid mirrors and re-uploaded packages, and verify `SHA256SUMS.txt` from the same release before opening any package.
 
 Copyright (C) 2026 Tutorial Mas Ari / MasArray. All rights reserved. ArSonKuPik VST is proprietary software licensed under `EULA.txt`; third-party components remain governed by their own licence terms.
