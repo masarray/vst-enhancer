@@ -1,5 +1,16 @@
 # Public Distribution Changelog
 
+## v0.5.22 - 31 July 2026
+
+### Cross-platform distribution
+
+- Built and audited Windows x64 binaries locally on Windows.
+- Built and audited macOS Universal binaries through the single approved manual workflow in `masarray/vst-enhancer`, using the exact `v0.5.22` tag and pinned commit from the private proprietary source repository.
+- Published Windows installer, VST3 and Standalone packages plus macOS Universal VST3, Standalone and DMG packages.
+- macOS packages target macOS 11.0, contain Apple Silicon `arm64` and Intel `x86_64`, are ad-hoc signed, and are not Developer ID signed or notarized.
+- Published binary-only assets with Windows, macOS and combined SHA-256 checksums plus build-provenance metadata.
+- GitHub Actions was used only by the public binary repository for the macOS build; Actions remained disabled in the private source repository.
+
 ## v0.5.21 — 28 July 2026
 
 ### Cross-platform distribution
