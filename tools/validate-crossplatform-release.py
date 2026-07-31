@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 
@@ -47,8 +48,8 @@ def main() -> int:
     reject(readme, "Musical Audio Enhancement for Windows\n", "README title")
 
     require(changelog, "## Unreleased", "CHANGELOG")
-    require(changelog, "Built and audited Windows x64 binaries locally on Windows.", "CHANGELOG v0.5.20")
-    require(changelog, "single approved manual workflow", "CHANGELOG v0.5.20")
+    require(changelog, "Built and audited Windows x64 binaries locally on Windows.", "CHANGELOG")
+    require(changelog, "single approved manual workflow", "CHANGELOG")
     reject(changelog, "GitHub Actions was not used", "CHANGELOG")
     for marker in ("â€”", "ï»¿", "ðŸ", "Ã"):
         reject(changelog, marker, "CHANGELOG encoding")
@@ -56,8 +57,11 @@ def main() -> int:
         fail("Unreleased changes must appear before published versions.")
 
     expected_platforms = ["windows-x64", "macos-universal"]
-    if release.get("version") != "v0.5.20":
-        fail(f"site/release.json version is {release.get('version')!r}, expected 'v0.5.20'.")
+    version = release.get("version")
+    if not isinstance(version, str) or re.fullmatch(r"v\d+\.\d+\.\d+", version) is None:
+        fail(f"site/release.json has an invalid release version: {version!r}.")
+    if release.get("releaseUrl") != f"https://github.com/masarray/vst-enhancer/releases/tag/{version}":
+        fail("site/release.json releaseUrl does not match its current version.")
     if release.get("platforms") != expected_platforms:
         fail(f"site/release.json platforms are {release.get('platforms')!r}, expected {expected_platforms!r}.")
     if release.get("macArchitectures") != ["arm64", "x86_64"]:
@@ -72,7 +76,7 @@ def main() -> int:
         fail("macAdHocSigned must be true for the current macOS package disclosure.")
     for field in ("macDmgUrl", "macVst3Url", "macStandaloneUrl", "macChecksumsUrl"):
         value = release.get(field)
-        if not isinstance(value, str) or "releases/download/v0.5.20/" not in value:
+        if not isinstance(value, str) or f"releases/download/{version}/" not in value:
             fail(f"Invalid or stale macOS release URL field: {field}={value!r}")
 
     for label, html in (("English landing", site_en), ("Indonesian landing", site_id)):

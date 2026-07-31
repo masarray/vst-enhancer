@@ -64,7 +64,9 @@ def main() -> int:
     experience_css = read(root / "site" / "experience-v4.css")
     typography_css = read(root / "site" / "typography-v5.css")
     hardening_css = read(root / "site" / "hardening-v6.css")
-    site_js = read(root / "site" / "site-v6.js")
+    site_loader = read(root / "site" / "site-v6.js")
+    site_core = read(root / "site" / "site-v6-core.js")
+    site_js = site_loader + "\n" + site_core
     experience_js = read(root / "site" / "experience-v4.js")
     activation_js = read(root / "site" / "activation" / "activation.js")
     release = json.loads(read(root / "site" / "release.json"))
@@ -123,6 +125,7 @@ def main() -> int:
             require(f"{prefix}{stylesheet}" in page.styles, f"Missing static stylesheet {stylesheet}")
 
     require("fetchJson(`${siteBase}/release.json`" in site_js, "Single release manifest request is missing")
+    require("site-v6-core.js" in site_loader, "Locale loader must load the core release runtime")
     require("officialReleaseUrl" in site_js, "Release URL allowlist is missing")
     require("querySelectorAll('[data-installer-cta]')" in site_js, "Single release controller must manage all installer CTAs")
     require("latest-release.js" not in landing + localized, "Second release resolver must not load")

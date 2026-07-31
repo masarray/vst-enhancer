@@ -52,7 +52,9 @@ def main() -> int:
     root = Path(__file__).resolve().parents[1]
     landing = read(root / "site" / "index.html")
     localized = read(root / "site" / "id" / "index.html")
-    site_js = read(root / "site" / "site-v6.js")
+    site_loader = read(root / "site" / "site-v6.js")
+    site_core = read(root / "site" / "site-v6-core.js")
+    site_js = site_loader + "\n" + site_core
     experience_js = read(root / "site" / "experience-v4.js")
     experience_css = read(root / "site" / "experience-v4.css")
     typography_css = read(root / "site" / "typography-v5.css")
@@ -119,6 +121,7 @@ def main() -> int:
 
     require("document.createElement('link')" not in experience_js, "Experience script must not inject stylesheets")
     require("createElement('link')" not in site_js, "Release controller must not inject stylesheets")
+    require("site-v6-core.js" in site_loader, "Locale loader must load the core release runtime")
     require("latest-release.js" not in landing + localized, "Second release resolver must not be loaded")
     require("fetchJson(`${siteBase}/release.json`" in site_js, "V6 must use one localized-safe manifest request")
     require("officialReleaseUrl" in site_js and "releases/download/" in site_js, "Official release URL validation is missing")

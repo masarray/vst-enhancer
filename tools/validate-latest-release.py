@@ -22,8 +22,12 @@ def load_module(path: Path):
 
 def main() -> int:
     root = Path(__file__).resolve().parents[1]
-    runtime = (root / "site/site-v6.js").read_text(encoding="utf-8")
-    workflow = (root / ".github/workflows/pages.yml").read_text(encoding="utf-8")
+    loader = (root / "site/site-v6.js").read_text(encoding="utf-8")
+    core = (root / "site/site-v6-core.js").read_text(encoding="utf-8")
+    runtime = loader + "\n" + core
+    workflow = (
+        root / ".github/workflows/build-macos-and-publish.yml"
+    ).read_text(encoding="utf-8")
     sync_path = root / "tools/sync-latest-release.py"
     sync = sync_path.read_text(encoding="utf-8")
 
@@ -39,16 +43,15 @@ def main() -> int:
         require(token in runtime, f"Latest-release runtime missing {token}")
 
     for token in (
-        "release:",
-        "types: [published, edited]",
-        "ref: ${{ github.event.repository.default_branch }}",
-        "actions/setup-python@v5",
-        "python tools/sync-latest-release.py --allow-reviewed-fallback",
-        "python tools/validate-public-release.py",
-        "python tools/validate-latest-release.py",
-        "node --check site/site-v6.js",
+        "workflow_dispatch:",
+        "github.event_name == 'workflow_dispatch'",
+        "Update public metadata",
+        "Deploy and verify exact gh-pages source",
+        "git -C \"$pages_dir\" push origin HEAD:gh-pages",
+        "Remote gh-pages ref does not match the exact staged site commit.",
+        "gh-pages release manifest does not match the release tag.",
     ):
-        require(token in workflow, f"Pages workflow missing {token}")
+        require(token in workflow, f"Release workflow missing {token}")
 
     for token in (
         "GITHUB_TOKEN",

@@ -62,10 +62,10 @@ def main() -> int:
             "English reading paths are incomplete")
     require(not shared_sections.difference(localized_parser.ids) and "sound" in localized_parser.ids,
             "Indonesian reading paths are incomplete")
-    require(9 <= parser.details <= 11 and 9 <= localized_parser.details <= 11,
-            "Expected 9-11 disclosures on each localized page")
-    require(html.count("<section") <= 10 and localized.count("<section") <= 10,
-            "Localized landing should not exceed ten major sections")
+    require(12 <= parser.details <= 14 and 12 <= localized_parser.details <= 14,
+            "Expected 12-14 disclosures on each localized page")
+    require(html.count("<section") <= 11 and localized.count("<section") <= 11,
+            "Localized landing should not exceed eleven major sections")
 
     for phrase in (
         "First-time user",

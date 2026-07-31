@@ -330,24 +330,23 @@ jobs:
           }
 
           cat >"$MAC_DIST/release-notes-final.md" <<EOF_NOTES
-          # ArSonKuPik VST $RELEASE_TAG — Windows and macOS
+          # ArSonKuPik VST $RELEASE_TAG - Windows and macOS
 
-          ## v0.5.21 highlights
-          - Contrast-first kick path with stronger onset definition and localised 185 Hz chest energy.
-          - Reduced sustained low-frequency masking while preserving guitar-bass tone and vocal body.
-          - Held headroom reserve across kick intervals for stronger moderate and hot transient crest.
-          - Dedicated P8/P9 release gates verify kick attack-to-tail contrast, chest localisation, peak safety and bass/vocal neutrality.
+          ## Release highlights
+          - The exact tagged product source passed the version-specific DSP, crackle, realtime, multirate and plugin-parity gates.
+          - Windows and macOS packages are binary-only and built through the approved platform-specific release paths.
+          - Platform checksums, combined checksums and build provenance are attached to this release.
 
           ## Windows
-          - Windows 10/11 x64 installer
-          - Manual VST3 ZIP
-          - Standalone ZIP
+          - [Windows 10/11 x64 installer](https://github.com/$PUBLIC_REPO/releases/download/$RELEASE_TAG/ArSonKuPik-$RELEASE_TAG-Windows-x64-Setup.exe)
+          - [Manual VST3 ZIP](https://github.com/$PUBLIC_REPO/releases/download/$RELEASE_TAG/ArSonKuPik-$RELEASE_TAG-Windows-x64-VST3.zip)
+          - [Standalone ZIP](https://github.com/$PUBLIC_REPO/releases/download/$RELEASE_TAG/ArSonKuPik-$RELEASE_TAG-Windows-x64-Standalone.zip)
           - Windows packages are not commercially code-signed and may trigger SmartScreen.
 
           ## macOS
-          - Universal Apple Silicon arm64 + Intel x86_64 VST3 ZIP
-          - Universal Standalone ZIP
-          - Universal DMG package
+          - [Universal DMG package](https://github.com/$PUBLIC_REPO/releases/download/$RELEASE_TAG/ArSonKuPik-$RELEASE_TAG-macOS-Universal.dmg)
+          - [Universal Apple Silicon arm64 + Intel x86_64 VST3 ZIP](https://github.com/$PUBLIC_REPO/releases/download/$RELEASE_TAG/ArSonKuPik-$RELEASE_TAG-macOS-Universal-VST3.zip)
+          - [Universal Standalone ZIP](https://github.com/$PUBLIC_REPO/releases/download/$RELEASE_TAG/ArSonKuPik-$RELEASE_TAG-macOS-Universal-Standalone.zip)
           - Ad-hoc signed only; not Developer ID signed and not notarized
           - Gatekeeper may require Control-click > Open or Open Anyway
 
@@ -360,10 +359,10 @@ jobs:
           - Proprietary source tag: $RELEASE_TAG
           - Proprietary source commit: $SOURCE_COMMIT
           - Reviewed release helper commit: $HELPER_COMMIT
-          - v0.5.21 uses only the reviewed three-file Xcode/Clang portability patch; no DSP tuning is patched
+          - When approved, the runner uses only the reviewed three-file Xcode/Clang portability patch; no DSP tuning is patched
           - Public workflow run: https://github.com/$PUBLIC_REPO/actions/runs/$GITHUB_RUN_ID
           - Public packages are binary-only
-          - Verify every download against SHA256SUMS.txt from this release
+          - [Verify every download against SHA256SUMS.txt](https://github.com/$PUBLIC_REPO/releases/download/$RELEASE_TAG/SHA256SUMS.txt)
           EOF_NOTES
 
       - name: Upload approved macOS assets

@@ -188,23 +188,42 @@ def validate_sitemap(root: Path) -> None:
     tree = ElementTree.fromstring(read(root / "site/sitemap.xml"))
     ns = {"s": "http://www.sitemaps.org/schemas/sitemap/0.9", "x": "http://www.w3.org/1999/xhtml"}
     urls = tree.findall("s:url", ns)
-    require([item.findtext("s:loc", default="", namespaces=ns) for item in urls] == [ROOT_URL, ID_URL], "Sitemap localized URLs mismatch")
-    expected = {"en": ROOT_URL, "id": ID_URL, "x-default": ROOT_URL}
+    expected = [ROOT_URL, ID_URL, ROOT_URL + "guide/", ID_URL + "guide/"]
+    require(
+        [item.findtext("s:loc", default="", namespaces=ns) for item in urls] == expected,
+        "Sitemap localized URLs mismatch",
+    )
     for item in urls:
-        require({link.attrib.get("hreflang"): link.attrib.get("href") for link in item.findall("x:link", ns)} == expected, "Sitemap hreflang mismatch")
+        loc = item.findtext("s:loc", default="", namespaces=ns)
+        if loc.endswith("/guide/"):
+            expected_links = {
+                "en": ROOT_URL + "guide/",
+                "id": ID_URL + "guide/",
+                "x-default": ROOT_URL + "guide/",
+            }
+        else:
+            expected_links = {"en": ROOT_URL, "id": ID_URL, "x-default": ROOT_URL}
+        actual_links = {
+            link.attrib.get("hreflang"): link.attrib.get("href")
+            for link in item.findall("x:link", ns)
+        }
+        require(actual_links == expected_links, "Sitemap hreflang mismatch")
 
 
 def validate_runtime(root: Path) -> None:
-    site_js = read(root / "site/site-v6.js")
+    site_loader = read(root / "site/site-v6.js")
+    site_core = read(root / "site/site-v6-core.js")
+    release_runtime = site_loader + "\n" + site_core
     experience = read(root / "site/experience-v4.js")
     styles = read(root / "site/experience-v4.css")
     typography = read(root / "site/typography-v5.css")
     hardening = read(root / "site/hardening-v6.css")
 
     for token in ("siteBase", "officialReleaseUrl", "data-installer-cta", "data-release-status", "IntersectionObserver", "release.json", "macDmgUrl", "macVst3Url", "macStandaloneUrl"):
-        require(token in site_js, f"V6 release runtime missing {token}")
-    require("latest-release.js" not in site_js, "Second resolver must not return")
-    require("createElement('link')" not in site_js, "Release runtime must not inject CSS")
+        require(token in release_runtime, f"V6 release runtime missing {token}")
+    require("site-v6-core.js" in site_loader, "V6 locale loader must load the core release runtime")
+    require("latest-release.js" not in release_runtime, "Second resolver must not return")
+    require("createElement('link')" not in release_runtime, "Release runtime must not inject CSS")
 
     for token in ("setupCrossPlatformCopy", "setupProductPreview", "setupPresetExplorer", "preset-explorer-ready", "preset-browser", "setupScrollReveals", "setupNavigationState", "setupPointerDepth", "prefers-reduced-motion"):
         require(token in experience, f"Audio runtime missing {token}")
