@@ -2,3 +2,4 @@ User-agent: *
 Allow: /
 
 Sitemap: https://masarray.github.io/vst-enhancer/sitemap.xml
+Sitemap: https://masarray.github.io/vst-enhancer/sitemap.txt
