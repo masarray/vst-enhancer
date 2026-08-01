@@ -397,6 +397,7 @@ jobs:
             echo "Public metadata update failed. Detailed private output was withheld." >&2
             exit 1
           fi
+          python3 public/tools/refresh-sitemap-lastmod.py --date "$(date -u +%F)"
           python3 public/tools/validate-seo.py
           git -C public config user.name "Mas Ari Release Automation"
           git -C public config user.email "258017373+masarray@users.noreply.github.com"
