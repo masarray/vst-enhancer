@@ -397,6 +397,8 @@ jobs:
             echo "Public metadata update failed. Detailed private output was withheld." >&2
             exit 1
           fi
+          python3 public/tools/refresh-sitemap-lastmod.py --date "$(date -u +%F)"
+          python3 public/tools/validate-seo.py
           git -C public config user.name "Mas Ari Release Automation"
           git -C public config user.email "258017373+masarray@users.noreply.github.com"
           git -C public add README.md CHANGELOG.md site
@@ -453,6 +455,7 @@ jobs:
               raise SystemExit("gh-pages release manifest is not cross-platform.")
           print("[PASS] Exact gh-pages ref and cross-platform manifest verified.")
           PY
+          python3 public/tools/validate-live-seo.py --expected-version "$RELEASE_TAG"
 
       - name: Publish and verify the complete release
         env:
