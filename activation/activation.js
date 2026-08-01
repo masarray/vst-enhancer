@@ -1,11 +1,12 @@
 (() => {
   'use strict';
 
-  const STORAGE_KEY = 'askp-language';
-  const SUPPORTED = ['en', 'id'];
-  const RELEASE_FALLBACK = 'https://github.com/masarray/vst-enhancer/releases/latest';
-  const OFFICIAL_RELEASE_PATH = '/masarray/vst-enhancer/releases';
-  const REQUIRED_CHECKOUT_FIELDS = [
+  const root = document.documentElement;
+  const language = root.lang.toLowerCase().startsWith('id') ? 'id' : 'en';
+  const siteBase = root.dataset.siteBase || '..';
+  const releaseFallback = 'https://github.com/masarray/vst-enhancer/releases/latest';
+  const officialReleasePath = '/masarray/vst-enhancer/releases';
+  const requiredCheckoutFields = [
     'purchaseUrl',
     'purchaseAllowedHosts',
     'sellerName',
@@ -17,7 +18,6 @@
     'refundSummaryId'
   ];
 
-  let currentLanguage = 'en';
   let releaseState = null;
 
   const formatPrice = (amount, currency) => {
@@ -35,13 +35,11 @@
 
   const officialReleaseUrl = (value, asset = false) => {
     if (typeof value !== 'string' || value.length > 500) return null;
-
     try {
       const url = new URL(value);
-      const releaseRoot = `${OFFICIAL_RELEASE_PATH}/`;
-      const isOfficialPath = url.pathname === OFFICIAL_RELEASE_PATH || url.pathname.startsWith(releaseRoot);
-
-      if (url.protocol !== 'https:' || url.hostname !== 'github.com' || !isOfficialPath) return null;
+      const releaseRoot = `${officialReleasePath}/`;
+      const officialPath = url.pathname === officialReleasePath || url.pathname.startsWith(releaseRoot);
+      if (url.protocol !== 'https:' || url.hostname !== 'github.com' || !officialPath) return null;
       if (asset && !url.pathname.includes('/releases/download/')) return null;
       return url.href;
     } catch (_) {
@@ -50,9 +48,8 @@
   };
 
   const trustedCheckoutUrl = (release) => {
-    if (!release || REQUIRED_CHECKOUT_FIELDS.some((field) => release[field] == null)) return null;
+    if (!release || requiredCheckoutFields.some((field) => release[field] == null)) return null;
     if (!Array.isArray(release.purchaseAllowedHosts) || release.purchaseAllowedHosts.length === 0) return null;
-
     try {
       const url = new URL(release.purchaseUrl);
       const allowedHosts = release.purchaseAllowedHosts
@@ -68,76 +65,29 @@
     }
   };
 
-  const chooseLanguage = () => {
-    const query = new URLSearchParams(location.search).get('lang');
-    if (SUPPORTED.includes(query)) return query;
-
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (SUPPORTED.includes(stored)) return stored;
-    } catch (_) {}
-
-    return navigator.language?.toLowerCase().startsWith('id') ? 'id' : 'en';
-  };
-
   const checkoutCopy = (release, checkoutUrl) => {
     const amount = Number.isFinite(release.activationPriceAmount)
       ? release.activationPriceAmount
       : release.activationPriceUsd;
     const price = formatPrice(amount, release.priceCurrency || 'USD');
 
-    return currentLanguage === 'id'
+    return language === 'id'
       ? {
           title: 'Checkout resmi tersedia',
           status: 'Tinjau identitas penjual, jumlah final, pajak, refund, privasi, dan ketentuan penyedia sebelum membayar.',
-          seller: 'Penjual',
-          provider: 'Penyedia checkout',
-          price: 'Harga publik',
-          tax: 'Pajak',
-          refund: 'Refund',
-          taxValue: release.taxSummaryId,
-          refundValue: release.refundSummaryId,
+          labels: ['Penjual', 'Penyedia checkout', 'Harga publik', 'Pajak', 'Refund'],
+          values: [release.sellerName, release.purchaseProvider, price, release.taxSummaryId, release.refundSummaryId],
           button: 'Lanjut ke checkout aman',
-          priceValue: price,
           checkoutUrl
         }
       : {
           title: 'Authorised checkout available',
           status: 'Review seller identity, final amount, tax, refund, privacy and provider terms before paying.',
-          seller: 'Seller',
-          provider: 'Checkout provider',
-          price: 'Published price',
-          tax: 'Tax',
-          refund: 'Refund',
-          taxValue: release.taxSummaryEn,
-          refundValue: release.refundSummaryEn,
+          labels: ['Seller', 'Checkout provider', 'Published price', 'Tax', 'Refund'],
+          values: [release.sellerName, release.purchaseProvider, price, release.taxSummaryEn, release.refundSummaryEn],
           button: 'Continue to secure checkout',
-          priceValue: price,
           checkoutUrl
         };
-  };
-
-  const setMetadataForCheckout = (ready) => {
-    const robots = document.querySelector('meta[name="robots"]');
-    const description = document.querySelector('meta[name="description"]');
-
-    if (robots) {
-      robots.setAttribute(
-        'content',
-        ready
-          ? 'index,follow,max-image-preview:large,max-snippet:-1'
-          : 'noindex,follow'
-      );
-    }
-
-    if (ready && description) {
-      description.setAttribute(
-        'content',
-        currentLanguage === 'id'
-          ? 'Aktivasi perpetual opsional ArSonKuPik bagi pengguna yang telah mengevaluasi produk dan ingin terus mengedit.'
-          : 'Optional perpetual ArSonKuPik activation for users who have evaluated the product and want to keep editing.'
-      );
-    }
   };
 
   const renderCheckout = () => {
@@ -147,110 +97,79 @@
 
     const release = releaseState;
     if (!release || release.purchaseCheckoutAvailable !== true) {
-      setMetadataForCheckout(false);
       const inAppAvailable = release?.purchaseStatus === 'available-in-app';
-      if (title) title.textContent = inAppAvailable
-        ? (currentLanguage === 'id' ? 'Checkout tersedia di dalam ArSonKuPik' : 'Checkout is available inside ArSonKuPik')
-        : (currentLanguage === 'id' ? 'Checkout belum dibuka' : 'Checkout is not open yet');
-      if (status) status.textContent = inAppAvailable
-        ? (currentLanguage === 'id'
-            ? 'Buka kartu Unlock di VST3 atau Standalone untuk checkout hosted dan recovery order. Halaman website ini tidak menerima data pembayaran.'
-            : 'Open the Unlock card in the VST3 or Standalone app for hosted checkout and order recovery. This website does not collect payment data.')
-        : (currentLanguage === 'id'
-            ? 'Evaluasi gratis 365 hari tetap tersedia. Tidak ada pembayaran yang dapat dilakukan melalui halaman ini.'
-            : 'The free 365-day evaluation remains available. No payment can be made through this page.');
+      if (title) {
+        title.textContent = language === 'id'
+          ? (inAppAvailable ? 'Checkout tersedia di dalam ArSonKuPik' : 'Checkout belum dibuka')
+          : (inAppAvailable ? 'Checkout is available inside ArSonKuPik' : 'Checkout is not open yet');
+      }
+      if (status) {
+        status.textContent = language === 'id'
+          ? (inAppAvailable
+              ? 'Buka kartu Unlock di VST3 atau Standalone untuk checkout hosted dan pemulihan order. Website ini tidak menerima data pembayaran.'
+              : 'Evaluasi gratis tetap tersedia. Tidak ada pembayaran yang dapat dilakukan melalui halaman ini.')
+          : (inAppAvailable
+              ? 'Open the Unlock card in the VST3 or Standalone app for hosted checkout and order recovery. This website does not collect payment data.'
+              : 'The free evaluation remains available. No payment can be made through this page.');
+      }
       return;
     }
 
     const checkoutUrl = trustedCheckoutUrl(release);
     const ready = Boolean(checkoutUrl && release.purchasePageIndexable === true);
-    setMetadataForCheckout(ready);
-
     if (!ready) {
-      if (title) title.textContent = currentLanguage === 'id'
+      if (title) title.textContent = language === 'id'
         ? 'Konfigurasi checkout belum lengkap'
         : 'Checkout configuration is incomplete';
-      if (status) status.textContent = currentLanguage === 'id'
-        ? 'Tautan pembayaran tidak ditampilkan sampai domain, identitas penjual, mata uang, pajak, refund, dan status index halaman tervalidasi.'
-        : 'No payment link is shown until the domain, seller identity, currency, tax, refund and page-indexing status are validated.';
+      if (status) status.textContent = language === 'id'
+        ? 'Tautan pembayaran tidak ditampilkan sampai domain, identitas penjual, mata uang, pajak, refund, dan keamanan checkout tervalidasi.'
+        : 'No payment link is shown until the domain, seller identity, currency, tax, refund and checkout security are validated.';
       return;
     }
 
-    const text = checkoutCopy(release, checkoutUrl);
-    if (title) title.textContent = text.title;
-    if (status) status.textContent = text.status;
+    const copy = checkoutCopy(release, checkoutUrl);
+    if (title) title.textContent = copy.title;
+    if (status) status.textContent = copy.status;
 
     const panel = document.createElement('div');
     panel.id = 'checkout-ready';
     panel.className = 'checkout-ready';
 
     const details = document.createElement('dl');
-    for (const [label, value] of [
-      [text.seller, release.sellerName],
-      [text.provider, release.purchaseProvider],
-      [text.price, text.priceValue],
-      [text.tax, text.taxValue],
-      [text.refund, text.refundValue]
-    ]) {
+    copy.labels.forEach((label, index) => {
       const term = document.createElement('dt');
       term.textContent = label;
       const description = document.createElement('dd');
-      description.textContent = String(value);
+      description.textContent = String(copy.values[index] ?? '');
       details.append(term, description);
-    }
+    });
 
     const button = document.createElement('a');
     button.className = 'button primary';
-    button.href = text.checkoutUrl;
+    button.href = copy.checkoutUrl;
     button.target = '_blank';
     button.rel = 'noopener noreferrer';
-    button.textContent = text.button;
+    button.textContent = copy.button;
 
     panel.append(details, button);
     document.querySelector('.activation-status')?.after(panel);
   };
 
-  const setLanguage = (language) => {
-    if (!SUPPORTED.includes(language)) return;
-
-    currentLanguage = language;
-    document.documentElement.lang = language;
-
-    document.querySelectorAll('[data-en][data-id]').forEach((element) => {
-      element.textContent = element.dataset[language] || element.dataset.en || element.textContent;
-    });
-
-    document.querySelectorAll('[data-lang-button]').forEach((button) => {
-      button.setAttribute('aria-pressed', String(button.dataset.langButton === language));
-    });
-
-    try { localStorage.setItem(STORAGE_KEY, language); } catch (_) {}
-
-    document.title = language === 'id'
-      ? 'Aktivasi Opsional ArSonKuPik | Teruskan Editing'
-      : 'Optional ArSonKuPik Activation | Keep Editing';
-
-    renderCheckout();
-  };
-
-  document.querySelectorAll('[data-lang-button]').forEach((button) => {
-    button.addEventListener('click', () => setLanguage(button.dataset.langButton));
-  });
-
-  setLanguage(chooseLanguage());
-
-  (async () => {
+  const loadRelease = async () => {
     try {
-      const response = await fetch('../release.json', { cache: 'no-store', credentials: 'same-origin' });
+      const response = await fetch(`${siteBase}/release.json`, {
+        cache: 'no-store',
+        credentials: 'same-origin'
+      });
       if (!response.ok) throw new Error(`Release metadata returned ${response.status}`);
 
-      const release = await response.json();
-      releaseState = release;
-
-      const amount = Number.isFinite(release.activationPriceAmount)
-        ? release.activationPriceAmount
-        : release.activationPriceUsd;
-      const currency = typeof release.priceCurrency === 'string' ? release.priceCurrency : 'USD';
+      releaseState = await response.json();
+      const amount = Number.isFinite(releaseState.activationPriceAmount)
+        ? releaseState.activationPriceAmount
+        : releaseState.activationPriceUsd;
+      const currency = typeof releaseState.priceCurrency === 'string'
+        ? releaseState.priceCurrency
+        : 'USD';
 
       if (Number.isFinite(amount)) {
         document.getElementById('activation-price')?.replaceChildren(formatPrice(amount, currency));
@@ -258,27 +177,20 @@
 
       const freeDownload = document.getElementById('free-download-link');
       if (freeDownload) {
-        const releaseUrl = officialReleaseUrl(release.releaseUrl) || RELEASE_FALLBACK;
-        const installerUrl = officialReleaseUrl(release.installerUrl, true);
-        freeDownload.href = release.distributionEnabled === true && installerUrl
+        const releaseUrl = officialReleaseUrl(releaseState.releaseUrl) || releaseFallback;
+        const installerUrl = officialReleaseUrl(releaseState.installerUrl, true);
+        freeDownload.href = releaseState.distributionEnabled === true && installerUrl
           ? installerUrl
           : releaseUrl;
       }
-
-      renderCheckout();
     } catch (_) {
       releaseState = null;
       const freeDownload = document.getElementById('free-download-link');
-      if (freeDownload) freeDownload.href = RELEASE_FALLBACK;
-      renderCheckout();
+      if (freeDownload) freeDownload.href = releaseFallback;
     }
-  })();
-})();
 
-(() => {
-  const latestReleaseScript = document.createElement('script');
-  latestReleaseScript.src = '../latest-release.js';
-  latestReleaseScript.async = true;
-  latestReleaseScript.setAttribute('data-release-resolver', 'github-latest');
-  document.head.append(latestReleaseScript);
+    renderCheckout();
+  };
+
+  loadRelease();
 })();
