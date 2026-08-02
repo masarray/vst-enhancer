@@ -4,3 +4,11 @@ https://masarray.github.io/vst-enhancer/guide/
 https://masarray.github.io/vst-enhancer/id/guide/
 https://masarray.github.io/vst-enhancer/activation/
 https://masarray.github.io/vst-enhancer/id/activation/
+https://masarray.github.io/vst-enhancer/about/
+https://masarray.github.io/vst-enhancer/id/about/
+https://masarray.github.io/vst-enhancer/measurements/
+https://masarray.github.io/vst-enhancer/id/measurements/
+https://masarray.github.io/vst-enhancer/audio-comparisons/
+https://masarray.github.io/vst-enhancer/id/audio-comparisons/
+https://masarray.github.io/vst-enhancer/use-cases/windows-system-audio/
+https://masarray.github.io/vst-enhancer/id/use-cases/windows-system-audio/
