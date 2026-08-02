@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
     inputs:
       release_tag:
-        description: Exact release tag, for example v0.5.21
+        description: Exact release tag, for example v0.5.23
         required: true
         type: string
       confirm_publish:
@@ -20,15 +20,15 @@ on:
         type: boolean
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: arsonkupik-public-macos-release
   cancel-in-progress: false
 
 jobs:
-  build-macos-and-publish:
-    name: Universal macOS build and final publication
+  build-macos:
+    name: Build audited source-free macOS handoff
     if: >-
       github.event_name == 'workflow_dispatch' &&
       github.repository == 'masarray/vst-enhancer' &&
@@ -38,13 +38,26 @@ jobs:
     environment: mac-release
     runs-on: macos-15
     timeout-minutes: 90
+    permissions:
+      contents: read
+    outputs:
+      release_tag: ${{ steps.boundary.outputs.release_tag }}
+      release_number: ${{ steps.boundary.outputs.release_number }}
+      release_repair: ${{ steps.boundary.outputs.release_repair }}
+      source_commit: ${{ steps.private_inputs.outputs.source_commit }}
+      helper_commit: ${{ steps.private_inputs.outputs.helper_commit }}
+      allow_patches: ${{ steps.request.outputs.allow_patches }}
     env:
       PUBLIC_REPO: masarray/vst-enhancer
       PRIVATE_REPO: masarray/askp-vst
       APPROVED_WORKFLOW: .github/workflows/build-macos-and-publish.yml
+      REQUEST_PATH: ${{ runner.temp }}/approved-release-request.json
+      MAC_DIST: ${{ runner.temp }}/askp-mac-dist
+      HANDOFF_DIR: ${{ runner.temp }}/publish-handoff
 
     steps:
       - name: Resolve and verify release boundary
+        id: boundary
         env:
           GH_TOKEN: ${{ github.token }}
           INPUT_TAG: ${{ inputs.release_tag }}
@@ -98,57 +111,99 @@ jobs:
             }
           done
 
+          number="${tag#v}"
           echo "RELEASE_TAG=$tag" >>"$GITHUB_ENV"
-          echo "RELEASE_NUMBER=${tag#v}" >>"$GITHUB_ENV"
+          echo "RELEASE_NUMBER=$number" >>"$GITHUB_ENV"
           echo "RELEASE_REPAIR=$repair" >>"$GITHUB_ENV"
-          echo "MAC_DIST=$RUNNER_TEMP/askp-mac-dist" >>"$GITHUB_ENV"
+          echo "release_tag=$tag" >>"$GITHUB_OUTPUT"
+          echo "release_number=$number" >>"$GITHUB_OUTPUT"
+          echo "release_repair=$repair" >>"$GITHUB_OUTPUT"
 
-      - name: Checkout reviewed helper and exact proprietary source tag
+      - name: Resolve approved helper and exact proprietary source
+        id: private_inputs
         env:
           GH_TOKEN: ${{ secrets.ASKP_PRIVATE_SOURCE_TOKEN }}
         run: |
           set -euo pipefail
           [[ -n "${GH_TOKEN:-}" ]] || {
-            echo "Repository secret ASKP_PRIVATE_SOURCE_TOKEN is missing." >&2
+            echo "Environment secret ASKP_PRIVATE_SOURCE_TOKEN is missing." >&2
             exit 1
           }
+
           private="$(gh api "repos/$PRIVATE_REPO" --jq '.private')"
           [[ "$private" == true ]] || {
             echo "The proprietary source repository is not private." >&2
             exit 1
           }
+          gh auth setup-git
 
-          rm -rf helper source
-          gh repo clone "$PRIVATE_REPO" helper -- --branch master --depth 1
-          helper_commit="$(git -C helper rev-parse HEAD)"
+          rm -rf private helper source "$REQUEST_PATH"
+          gh api "repos/$PRIVATE_REPO/contents/.github/release-request.json?ref=master" \
+            --jq '.content' | base64 --decode >"$REQUEST_PATH"
 
-          gh repo clone "$PRIVATE_REPO" source -- --branch "$RELEASE_TAG" --depth 1
-          source_commit="$(git -C source rev-parse HEAD)"
-          exact_tag="$(git -C source describe --tags --exact-match)"
-          [[ "$exact_tag" == "$RELEASE_TAG" ]] || {
-            echo "Private checkout does not match $RELEASE_TAG." >&2
+          helper_commit="$(jq -er '.helperCommit' "$REQUEST_PATH")"
+          requested_source="$(jq -er '.sourceCommit' "$REQUEST_PATH")"
+          [[ "$helper_commit" =~ ^[0-9a-f]{40}$ ]] || {
+            echo "Approved helper commit is not a full SHA." >&2
+            exit 1
+          }
+          [[ "$requested_source" =~ ^[0-9a-f]{40}$ ]] || {
+            echo "Approved source commit is not a full SHA." >&2
             exit 1
           }
 
-          echo "HELPER_COMMIT=$helper_commit" >>"$GITHUB_ENV"
-          echo "SOURCE_COMMIT=$source_commit" >>"$GITHUB_ENV"
+          gh repo clone "$PRIVATE_REPO" private -- --no-checkout --filter=blob:none
+          git -C private fetch --no-tags --depth 1 origin "$helper_commit"
+          git -C private branch p0-approved-helper FETCH_HEAD
+          git -C private worktree add --detach "$GITHUB_WORKSPACE/helper" p0-approved-helper
 
-      - name: Verify approved release request and pinned source
+          git -C private fetch --depth 1 origin \
+            "refs/tags/$RELEASE_TAG:refs/tags/$RELEASE_TAG"
+          git -C private worktree add --detach "$GITHUB_WORKSPACE/source" \
+            "refs/tags/$RELEASE_TAG"
+
+          actual_helper="$(git -C helper rev-parse HEAD)"
+          source_commit="$(git -C source rev-parse HEAD)"
+          exact_tag="$(git -C source describe --tags --exact-match)"
+          [[ "$actual_helper" == "$helper_commit" ]] || {
+            echo "Helper checkout does not match the approved helper commit." >&2
+            exit 1
+          }
+          [[ "$exact_tag" == "$RELEASE_TAG" ]] || {
+            echo "Private source checkout does not match $RELEASE_TAG." >&2
+            exit 1
+          }
+          [[ "$source_commit" == "$requested_source" ]] || {
+            echo "Private tag commit does not match the approved source commit." >&2
+            exit 1
+          }
+
+          echo "HELPER_COMMIT=$actual_helper" >>"$GITHUB_ENV"
+          echo "SOURCE_COMMIT=$source_commit" >>"$GITHUB_ENV"
+          echo "helper_commit=$actual_helper" >>"$GITHUB_OUTPUT"
+          echo "source_commit=$source_commit" >>"$GITHUB_OUTPUT"
+
+      - name: Verify approved release request
+        id: request
         run: |
           set -euo pipefail
-          python3 - "$RELEASE_NUMBER" "$SOURCE_COMMIT" "$RELEASE_REPAIR" <<'PY'
+          python3 - \
+            "$REQUEST_PATH" \
+            "$RELEASE_NUMBER" \
+            "$SOURCE_COMMIT" \
+            "$HELPER_COMMIT" \
+            "$RELEASE_REPAIR" <<'PY'
           import json
           import pathlib
           import sys
 
-          number, source_commit, repair = sys.argv[1:]
-          request = json.loads(
-              pathlib.Path("helper/.github/release-request.json").read_text(encoding="utf-8")
-          )
+          path, number, source_commit, helper_commit, repair = sys.argv[1:]
+          request = json.loads(pathlib.Path(path).read_text(encoding="utf-8"))
           expected = {
-              "schemaVersion": 4,
+              "schemaVersion": 5,
               "requestedVersion": number,
               "sourceCommit": source_commit,
+              "helperCommit": helper_commit,
               "approved": True,
               "mode": "local-two-stage-public-binary-release",
               "macBuildProvider": "public-github-actions",
@@ -162,14 +217,17 @@ jobs:
               "publicWorkflowTrigger": "workflow_dispatch-only",
               "publicWorkflowActor": "masarray",
               "publicWorkflowLogsMayContainSource": False,
+              "publicBuildJobPermissions": "contents-read",
+              "publicPublishJobSourceFree": True,
           }
           for key, value in expected.items():
               if request.get(key) != value:
                   raise SystemExit(
-                      f"Release request mismatch: {key}={request.get(key)!r}, expected {value!r}"
+                      f"Release request mismatch: {key}={request.get(key)!r}, "
+                      f"expected {value!r}"
                   )
           if repair == "true" and request.get("allowPublishedReleaseRepair") is not True:
-              raise SystemExit("Published-release repair is not approved by the private request.")
+              raise SystemExit("Published-release repair is not approved.")
           if not isinstance(request.get("allowRunnerPortabilityPatches"), bool):
               raise SystemExit("Runner portability-patch policy must be explicit.")
           package = request.get("macPackage", {})
@@ -183,11 +241,12 @@ jobs:
               or package.get("adHocSigned") is not True
           ):
               raise SystemExit("macOS signing disclosure is inconsistent.")
-          print("[PASS] Release request pins the exact source tag and commit.")
+          print("[PASS] Source and helper commits are independently approved.")
           PY
-          allow_patches="$(jq -r '.allowRunnerPortabilityPatches' \
-            helper/.github/release-request.json)"
+
+          allow_patches="$(jq -r '.allowRunnerPortabilityPatches' "$REQUEST_PATH")"
           echo "ALLOW_RUNNER_PORTABILITY_PATCHES=$allow_patches" >>"$GITHUB_ENV"
+          echo "allow_patches=$allow_patches" >>"$GITHUB_OUTPUT"
 
       - name: Stage canonical legal bundle
         env:
@@ -211,7 +270,10 @@ jobs:
                   "Steinberg-VST3-SDK-MIT.txt",
                   "Plus-Jakarta-Sans-OFL-1.1.txt",
               ),
-              "ArSonKuPik-MIT.txt": ("MIT License", "Copyright (c) 2026 Tutorial Mas Ari"),
+              "ArSonKuPik-MIT.txt": (
+                  "MIT License",
+                  "Copyright (c) 2026 Tutorial Mas Ari",
+              ),
               "Steinberg-VST3-SDK-MIT.txt": (
                   "MIT License",
                   "Steinberg Media Technologies GmbH",
@@ -238,15 +300,16 @@ jobs:
                   raise SystemExit(f"Canonical legal payload failed validation: {name}")
               Path("source", name).write_bytes(raw)
 
-          print("[PASS] Canonical public legal bundle staged from the workflow commit.")
+          print("[PASS] Canonical public legal bundle staged.")
           PY
 
       - name: Build, audit and package macOS Universal binaries
         run: |
           set -euo pipefail
-          ASKP_RELEASE_REQUEST_PATH="$GITHUB_WORKSPACE/helper/.github/release-request.json" \
+          ASKP_RELEASE_REQUEST_PATH="$REQUEST_PATH" \
           ASKP_RELEASE_HELPER_COMMIT="$HELPER_COMMIT" \
-            bash helper/scripts/build-macos-ci.sh "$RELEASE_NUMBER" "$MAC_DIST" source
+            bash helper/scripts/build-macos-ci.sh \
+              "$RELEASE_NUMBER" "$MAC_DIST" source
 
       - name: Verify macOS provenance and platform checksums
         run: |
@@ -305,14 +368,17 @@ jobs:
           for key, value in expected.items():
               if payload.get(key) != value:
                   raise SystemExit(
-                      f"macOS provenance mismatch: {key}={payload.get(key)!r}, expected {value!r}"
+                      f"macOS provenance mismatch: {key}={payload.get(key)!r}, "
+                      f"expected {value!r}"
                   )
-          if not re.fullmatch(r"[0-9a-f]{64}", payload.get("compiledSourceTreeHash", "")):
+          if not re.fullmatch(
+              r"[0-9a-f]{64}", payload.get("compiledSourceTreeHash", "")
+          ):
               raise SystemExit("Compiled-source tree hash is missing or invalid.")
-          print("[PASS] macOS build provenance matches the approved source and workflow.")
+          print("[PASS] macOS build provenance matches approved inputs.")
           PY
 
-      - name: Create combined checksums and final release notes
+      - name: Create combined checksums and release notes
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -322,7 +388,8 @@ jobs:
             --pattern SHA256SUMS-Windows.txt \
             --dir "$MAC_DIST" \
             --clobber
-          cat "$MAC_DIST/SHA256SUMS-Windows.txt" "$MAC_DIST/SHA256SUMS-macOS.txt" \
+          cat "$MAC_DIST/SHA256SUMS-Windows.txt" \
+              "$MAC_DIST/SHA256SUMS-macOS.txt" \
             | LC_ALL=C sort >"$MAC_DIST/SHA256SUMS.txt"
           [[ "$(wc -l <"$MAC_DIST/SHA256SUMS.txt" | tr -d ' ')" == 8 ]] || {
             echo "Combined checksum inventory must contain exactly 8 entries." >&2
@@ -359,11 +426,149 @@ jobs:
           - Proprietary source tag: $RELEASE_TAG
           - Proprietary source commit: $SOURCE_COMMIT
           - Reviewed release helper commit: $HELPER_COMMIT
-          - When approved, the runner uses only the reviewed three-file Xcode/Clang portability patch; no DSP tuning is patched
+          - The build job had read-only public-repository permission.
+          - The publish job receives only the verified source-free handoff.
           - Public workflow run: https://github.com/$PUBLIC_REPO/actions/runs/$GITHUB_RUN_ID
           - Public packages are binary-only
           - [Verify every download against SHA256SUMS.txt](https://github.com/$PUBLIC_REPO/releases/download/$RELEASE_TAG/SHA256SUMS.txt)
           EOF_NOTES
+
+      - name: Create and verify source-free publish handoff
+        run: |
+          set -euo pipefail
+          rm -rf "$HANDOFF_DIR"
+          mkdir -p "$HANDOFF_DIR"
+
+          expected="$RUNNER_TEMP/expected-handoff-files.txt"
+          cat >"$expected" <<EOF_EXPECTED
+          ArSonKuPik-$RELEASE_TAG-macOS-Universal-Standalone.zip
+          ArSonKuPik-$RELEASE_TAG-macOS-Universal-VST3.zip
+          ArSonKuPik-$RELEASE_TAG-macOS-Universal.dmg
+          BUILDINFO-macOS.json
+          SHA256SUMS-macOS.txt
+          SHA256SUMS.txt
+          release-notes-final.md
+          EOF_EXPECTED
+          sed -i '' 's/^          //' "$expected"
+
+          while IFS= read -r name; do
+            [[ -f "$MAC_DIST/$name" ]] || {
+              echo "Missing publish handoff file: $name" >&2
+              exit 1
+            }
+            cp "$MAC_DIST/$name" "$HANDOFF_DIR/$name"
+          done <"$expected"
+
+          actual="$RUNNER_TEMP/actual-handoff-files.txt"
+          find "$HANDOFF_DIR" -maxdepth 1 -type f -exec basename {} \; \
+            | LC_ALL=C sort >"$actual"
+          LC_ALL=C sort -o "$expected" "$expected"
+          diff -u "$expected" "$actual"
+
+          if find "$HANDOFF_DIR" -type f | grep -Eiq \
+            '\.(c|cc|cpp|cxx|h|hh|hpp|inl|inc|ipp|tpp|m|mm|swift|metal|s|asm|o|obj|a|lib|bc|pdb|map)$'; then
+            echo "Source or development material entered the publish handoff." >&2
+            exit 1
+          fi
+
+          (
+            cd "$HANDOFF_DIR"
+            find . -maxdepth 1 -type f ! -name HANDOFF-SHA256SUMS.txt -print0 \
+              | LC_ALL=C sort -z \
+              | xargs -0 shasum -a 256 \
+              >HANDOFF-SHA256SUMS.txt
+            shasum -a 256 -c HANDOFF-SHA256SUMS.txt
+          )
+
+          rm -rf helper source private "$REQUEST_PATH" "$MAC_DIST"
+          [[ ! -e helper && ! -e source && ! -e private ]] || {
+            echo "Private checkout cleanup failed." >&2
+            exit 1
+          }
+          [[ ! -e "$REQUEST_PATH" && ! -e "$MAC_DIST" ]] || {
+            echo "Private metadata or build workspace cleanup failed." >&2
+            exit 1
+          }
+
+      - name: Upload verified source-free handoff
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: askp-macos-publish-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/publish-handoff
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 0
+          include-hidden-files: false
+
+  publish-release:
+    name: Publish verified binary-only release
+    needs: build-macos
+    if: needs.build-macos.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      actions: read
+      contents: write
+    env:
+      PUBLIC_REPO: masarray/vst-enhancer
+      RELEASE_TAG: ${{ needs.build-macos.outputs.release_tag }}
+      RELEASE_NUMBER: ${{ needs.build-macos.outputs.release_number }}
+      RELEASE_REPAIR: ${{ needs.build-macos.outputs.release_repair }}
+      SOURCE_COMMIT: ${{ needs.build-macos.outputs.source_commit }}
+      HELPER_COMMIT: ${{ needs.build-macos.outputs.helper_commit }}
+      MAC_DIST: ${{ runner.temp }}/publish-handoff
+
+    steps:
+      - name: Download source-free handoff
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
+        with:
+          name: askp-macos-publish-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/publish-handoff
+
+      - name: Verify handoff integrity and boundary
+        run: |
+          set -euo pipefail
+          [[ -d "$MAC_DIST" ]] || {
+            echo "Publish handoff directory is missing." >&2
+            exit 1
+          }
+
+          (
+            cd "$MAC_DIST"
+            shasum -a 256 -c HANDOFF-SHA256SUMS.txt
+          )
+
+          expected="$RUNNER_TEMP/expected-publish-files.txt"
+          cat >"$expected" <<EOF_EXPECTED
+          ArSonKuPik-$RELEASE_TAG-macOS-Universal-Standalone.zip
+          ArSonKuPik-$RELEASE_TAG-macOS-Universal-VST3.zip
+          ArSonKuPik-$RELEASE_TAG-macOS-Universal.dmg
+          BUILDINFO-macOS.json
+          HANDOFF-SHA256SUMS.txt
+          SHA256SUMS-macOS.txt
+          SHA256SUMS.txt
+          release-notes-final.md
+          EOF_EXPECTED
+          sed -i 's/^          //' "$expected"
+          LC_ALL=C sort -o "$expected" "$expected"
+
+          actual="$RUNNER_TEMP/actual-publish-files.txt"
+          find "$MAC_DIST" -maxdepth 1 -type f -exec basename {} \; \
+            | LC_ALL=C sort >"$actual"
+          diff -u "$expected" "$actual"
+
+          if find "$MAC_DIST" -type f | grep -Eiq \
+            '\.(c|cc|cpp|cxx|h|hh|hpp|inl|inc|ipp|tpp|m|mm|swift|metal|s|asm|o|obj|a|lib|bc|pdb|map)$'; then
+            echo "Publish job received source or development material." >&2
+            exit 1
+          fi
+
+          for prohibited in helper source private askp-vst engine src tools .github; do
+            if find "$MAC_DIST" -type d -name "$prohibited" -print -quit | grep -q .; then
+              echo "Publish job received prohibited directory: $prohibited" >&2
+              exit 1
+            fi
+          done
 
       - name: Upload approved macOS assets
         env:
@@ -380,7 +585,7 @@ jobs:
             --repo "$PUBLIC_REPO" \
             --clobber
 
-      - name: Update public metadata
+      - name: Update public metadata from public tooling
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -388,25 +593,35 @@ jobs:
           gh auth setup-git
           rm -rf public
           git clone "https://github.com/$PUBLIC_REPO.git" public
-          if ! python3 helper/scripts/update-public-crossplatform-release.py \
+
+          updater="public/tools/update-public-crossplatform-release.py"
+          [[ -f "$updater" ]] || {
+            echo "Public metadata updater is missing." >&2
+            exit 1
+          }
+          if ! python3 "$updater" \
             --repo public \
             --version "$RELEASE_TAG" \
             --source-commit "$SOURCE_COMMIT" \
             >"$RUNNER_TEMP/public-metadata.log" 2>&1
           then
-            echo "Public metadata update failed. Detailed private output was withheld." >&2
+            echo "Public metadata update failed." >&2
+            cat "$RUNNER_TEMP/public-metadata.log" >&2
             exit 1
           fi
+
           python3 public/tools/refresh-sitemap-lastmod.py --date "$(date -u +%F)"
           python3 public/tools/validate-seo.py
           git -C public config user.name "Mas Ari Release Automation"
           git -C public config user.email "258017373+masarray@users.noreply.github.com"
           git -C public add README.md CHANGELOG.md site
           if ! git -C public diff --cached --quiet; then
-            git -C public commit -m "Publish ArSonKuPik VST $RELEASE_TAG cross-platform metadata"
+            git -C public commit \
+              -m "Publish ArSonKuPik VST $RELEASE_TAG cross-platform metadata"
             git -C public push origin HEAD:main
           fi
-          echo "PUBLIC_METADATA_COMMIT=$(git -C public rev-parse HEAD)" >>"$GITHUB_ENV"
+          echo "PUBLIC_METADATA_COMMIT=$(git -C public rev-parse HEAD)" \
+            >>"$GITHUB_ENV"
 
       - name: Deploy and verify exact gh-pages source
         env:
@@ -425,37 +640,53 @@ jobs:
           rm -rf "$site_copy" "$pages_dir"
           cp -R public/site "$site_copy"
           git -C public fetch origin gh-pages
-          git -C public worktree add -B release-gh-pages "$pages_dir" origin/gh-pages
-          find "$pages_dir" -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
+          git -C public worktree add -B release-gh-pages \
+            "$pages_dir" origin/gh-pages
+          find "$pages_dir" -mindepth 1 -maxdepth 1 ! -name .git \
+            -exec rm -rf {} +
           cp -R "$site_copy"/. "$pages_dir"/
           touch "$pages_dir/.nojekyll"
           git -C "$pages_dir" config user.name "Mas Ari Release Automation"
-          git -C "$pages_dir" config user.email "258017373+masarray@users.noreply.github.com"
+          git -C "$pages_dir" config user.email \
+            "258017373+masarray@users.noreply.github.com"
           git -C "$pages_dir" add -A
           if ! git -C "$pages_dir" diff --cached --quiet; then
-            git -C "$pages_dir" commit -m "Deploy ArSonKuPik $RELEASE_TAG landing"
+            git -C "$pages_dir" commit \
+              -m "Deploy ArSonKuPik $RELEASE_TAG landing"
             git -C "$pages_dir" push origin HEAD:gh-pages
           fi
 
           pages_commit="$(git -C "$pages_dir" rev-parse HEAD)"
-          remote_commit="$(gh api "repos/$PUBLIC_REPO/git/ref/heads/gh-pages" --jq '.object.sha')"
+          remote_commit="$(gh api "repos/$PUBLIC_REPO/git/ref/heads/gh-pages" \
+            --jq '.object.sha')"
           [[ "$remote_commit" == "$pages_commit" ]] || {
-            echo "Remote gh-pages ref does not match the exact staged site commit." >&2
+            echo "Remote gh-pages ref does not match the staged site commit." >&2
             exit 1
           }
+
           python3 - "$pages_dir/release.json" "$RELEASE_TAG" <<'PY'
           import json
           import pathlib
           import sys
 
-          payload = json.loads(pathlib.Path(sys.argv[1]).read_text(encoding="utf-8"))
+          payload = json.loads(
+              pathlib.Path(sys.argv[1]).read_text(encoding="utf-8")
+          )
           if payload.get("version") != sys.argv[2]:
-              raise SystemExit("gh-pages release manifest does not match the release tag.")
-          if payload.get("platforms") != ["windows-x64", "macos-universal"]:
-              raise SystemExit("gh-pages release manifest is not cross-platform.")
-          print("[PASS] Exact gh-pages ref and cross-platform manifest verified.")
+              raise SystemExit(
+                  "gh-pages release manifest does not match the release tag."
+              )
+          if payload.get("platforms") != [
+              "windows-x64",
+              "macos-universal",
+          ]:
+              raise SystemExit(
+                  "gh-pages release manifest is not cross-platform."
+              )
+          print("[PASS] Exact gh-pages ref and manifest verified.")
           PY
-          python3 public/tools/validate-live-seo.py --expected-version "$RELEASE_TAG"
+          python3 public/tools/validate-live-seo.py \
+            --expected-version "$RELEASE_TAG"
 
       - name: Publish and verify the complete release
         env:
@@ -470,8 +701,10 @@ jobs:
             --prerelease=false \
             --latest
 
-          final_state="$(gh release view "$RELEASE_TAG" --repo "$PUBLIC_REPO" \
-            --json isDraft,isPrerelease --jq '[.isDraft,.isPrerelease] | @tsv')"
+          final_state="$(gh release view "$RELEASE_TAG" \
+            --repo "$PUBLIC_REPO" \
+            --json isDraft,isPrerelease \
+            --jq '[.isDraft,.isPrerelease] | @tsv')"
           [[ "$final_state" == $'false\tfalse' ]] || {
             echo "Release did not finish as a published production release." >&2
             exit 1
@@ -492,13 +725,17 @@ jobs:
           SHA256SUMS-macOS.txt
           SHA256SUMS.txt
           EOF_ASSETS
+          sed -i 's/^          //' "$expected"
           LC_ALL=C sort -o "$expected" "$expected"
           gh release view "$RELEASE_TAG" --repo "$PUBLIC_REPO" \
-            --json assets --jq '.assets[].name' | LC_ALL=C sort >"$actual"
+            --json assets --jq '.assets[].name' \
+            | LC_ALL=C sort >"$actual"
           diff -u "$expected" "$actual"
 
-          invalid_digests="$(gh release view "$RELEASE_TAG" --repo "$PUBLIC_REPO" \
-            --json assets --jq '.assets[] | select((.digest // "") | startswith("sha256:") | not) | .name')"
+          invalid_digests="$(gh release view "$RELEASE_TAG" \
+            --repo "$PUBLIC_REPO" \
+            --json assets \
+            --jq '.assets[] | select((.digest // "") | startswith("sha256:") | not) | .name')"
           [[ -z "$invalid_digests" ]] || {
             echo "One or more release assets lack a GitHub SHA-256 digest." >&2
             printf '%s\n' "$invalid_digests" >&2
