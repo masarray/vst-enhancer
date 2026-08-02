@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>How to Use ArSonKuPik | VST3, Standalone and Laptop Audio</title>
-  <meta name="description" content="Beginner-friendly ArSonKuPik guide for VST3 in a DAW, Standalone audio-device workflows, and enhancing YouTube, Spotify and laptop sound through VB-CABLE on Windows.">
-  <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">
+  <title>ArSonKuPik Guide – VST3, Standalone and Windows Audio Routing</title>
+  <meta name="description" content="Learn how to use ArSonKuPik as a VST3, Standalone processor, or Windows system-audio enhancer for YouTube and Spotify through VB-CABLE.">
+  <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
   <meta name="author" content="Tutorial Mas Ari / MasArray">
   <meta name="theme-color" content="#0b0910">
   <meta name="color-scheme" content="dark">
@@ -14,6 +14,8 @@
   <link rel="alternate" hreflang="en" href="https://masarray.github.io/vst-enhancer/guide/">
   <link rel="alternate" hreflang="id" href="https://masarray.github.io/vst-enhancer/id/guide/">
   <link rel="alternate" hreflang="x-default" href="https://masarray.github.io/vst-enhancer/guide/">
+  <link rel="sitemap" type="application/xml" href="https://masarray.github.io/vst-enhancer/sitemap.xml">
+
   <link rel="icon" href="../assets/arsonkupik-vst-favicon.ico" sizes="any">
   <link rel="icon" type="image/png" href="../assets/arsonkupik-vst-favicon-96.png" sizes="96x96">
   <link rel="stylesheet" href="../styles.css">
@@ -22,6 +24,86 @@
   <link rel="stylesheet" href="../typography-v5.css">
   <link rel="stylesheet" href="../hardening-v6.css">
   <link rel="stylesheet" href="../usage-guide.css">
+
+  <!-- SEO-P1-HEAD-BEGIN -->
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="ArSonKuPik">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:locale:alternate" content="id_ID">
+  <meta property="og:title" content="ArSonKuPik Guide – VST3, Standalone and Windows Audio Routing">
+  <meta property="og:description" content="Learn how to use ArSonKuPik as a VST3, Standalone processor, or Windows system-audio enhancer for YouTube and Spotify through VB-CABLE.">
+  <meta property="og:url" content="https://masarray.github.io/vst-enhancer/guide/">
+  <meta property="og:image" content="https://masarray.github.io/vst-enhancer/assets/arsonkupik-guide-social-1200x630.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="ArSonKuPik VST3 audio enhancer interface and guide">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="ArSonKuPik Guide – VST3, Standalone and Windows Audio Routing">
+  <meta name="twitter:description" content="Learn how to use ArSonKuPik as a VST3, Standalone processor, or Windows system-audio enhancer for YouTube and Spotify through VB-CABLE.">
+  <meta name="twitter:image" content="https://masarray.github.io/vst-enhancer/assets/arsonkupik-guide-social-1200x630.png">
+  <meta name="twitter:image:alt" content="ArSonKuPik VST3 audio enhancer interface and guide">
+  <!-- SEO-P1-HEAD-END -->
+  <link rel="stylesheet" href="../seo-authority.css">
+
+  <!-- SEO-P1-SCHEMA-BEGIN -->
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "TechArticle",
+      "@id": "https://masarray.github.io/vst-enhancer/guide/#article",
+      "url": "https://masarray.github.io/vst-enhancer/guide/",
+      "headline": "ArSonKuPik Guide – VST3, Standalone and Windows Audio Routing",
+      "description": "Beginner guide for VST3, Standalone and Windows system-audio routing.",
+      "inLanguage": "en",
+      "image": "https://masarray.github.io/vst-enhancer/assets/arsonkupik-guide-social-1200x630.png",
+      "author": {
+        "@type": "Person",
+        "name": "Mas Ari",
+        "url": "https://github.com/masarray"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "MasArray",
+        "url": "https://github.com/masarray"
+      },
+      "mainEntityOfPage": {
+        "@id": "https://masarray.github.io/vst-enhancer/guide/#webpage"
+      }
+    },
+    {
+      "@type": "WebPage",
+      "@id": "https://masarray.github.io/vst-enhancer/guide/#webpage",
+      "url": "https://masarray.github.io/vst-enhancer/guide/",
+      "name": "ArSonKuPik Guide",
+      "inLanguage": "en",
+      "isPartOf": {
+        "@id": "https://masarray.github.io/vst-enhancer/#website"
+      },
+      "primaryImageOfPage": "https://masarray.github.io/vst-enhancer/assets/arsonkupik-guide-social-1200x630.png"
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "ArSonKuPik",
+          "item": "https://masarray.github.io/vst-enhancer/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "ArSonKuPik Guide",
+          "item": "https://masarray.github.io/vst-enhancer/guide/"
+        }
+      ]
+    }
+  ]
+}
+  </script>
+  <!-- SEO-P1-SCHEMA-END -->
 </head>
 <body class="guide-page">
   <a class="skip-link" href="#main">Skip to main content</a>
@@ -48,7 +130,22 @@
 
     <section id="troubleshooting" class="guide-section"><div class="container"><div class="section-heading centered compact"><span class="eyebrow">Fast troubleshooting</span><h2>When there is no sound, check the route before the DSP.</h2><p class="section-lead">Most first-run problems come from selecting the wrong input, output or Windows playback device.</p></div><div class="troubleshooting-grid"><details><summary>Standalone opens but no meter moves</summary><p>Confirm the selected input actually carries audio. For laptop sound through VB-CABLE, Windows output must be CABLE Input and ArSonKuPik input must be CABLE Output.</p></details><details><summary>Meters move but I hear nothing</summary><p>Check ArSonKuPik's output device and its volume. The output should be the real speaker, soundcard, audio interface, headphones or TWS—not CABLE Input or CABLE Output.</p></details><details><summary>I hear dry and processed audio together</summary><p>Disable any extra Windows “Listen to this device” monitoring path and make sure only ArSonKuPik sends the virtual-cable signal to the listening device.</p></details><details><summary>Clicks, dropouts or unstable playback</summary><p>Match sample rates where possible, close competing exclusive-mode applications and increase the audio buffer until playback is stable.</p></details><details><summary>TWS sounds thin or telephone-like</summary><p>Select the Stereo/A2DP output and avoid using the TWS microphone simultaneously. Hands-Free/Headset mode has lower playback quality.</p></details><details><summary>The VST3 does not appear in my DAW</summary><p>Confirm you installed the VST3 package, open the DAW plug-in manager and perform a full rescan. Compatibility still depends on the specific host and system.</p></details></div></div></section>
 
-    <section class="guide-final"><div class="container guide-final-card"><div><span class="eyebrow">Ready to listen</span><h2>Download once, then choose the workflow that matches your source.</h2><p>The Windows installer includes VST3 and Standalone. macOS packages are available from the same official download section.</p></div><div class="actions"><a class="button primary large" href="../#download">Open official downloads</a><a class="button secondary large" href="../">Back to product page</a></div></div></section>
+    
+  <!-- SEO-P2-HUB-BEGIN -->
+  <section class="section authority-hub" aria-labelledby="authority-title">
+    <div class="container">
+      <div class="section-heading centered compact"><span class="eyebrow">Evidence, method and transparency</span><h2 id="authority-title">See how the product is tested and judged.</h2><p class="section-lead">These resources separate product claims, measurement method, listening comparison and developer context so ArSonKuPik can be evaluated more objectively.</p></div>
+      <div class="authority-grid">
+        <a href="../measurements/"><strong>Measurement method</strong><span>Level, peak safety, sample rate and interpretation limits.</span></a>
+        <a href="../audio-comparisons/"><strong>Audio comparisons</strong><span>How to run an A/B test without loudness bias.</span></a>
+        <a href="../use-cases/windows-system-audio/"><strong>Windows system audio</strong><span>YouTube and Spotify routing through VB-CABLE.</span></a>
+        <a href="../about/"><strong>About the project</strong><span>Design principles, authorship and official sources.</span></a>
+      </div>
+    </div>
+  </section>
+  <!-- SEO-P2-HUB-END -->
+
+<section class="guide-final"><div class="container guide-final-card"><div><span class="eyebrow">Ready to listen</span><h2>Download once, then choose the workflow that matches your source.</h2><p>The Windows installer includes VST3 and Standalone. macOS packages are available from the same official download section.</p></div><div class="actions"><a class="button primary large" href="../#download">Open official downloads</a><a class="button secondary large" href="../">Back to product page</a></div></div></section>
   </main>
 
   <footer><div class="container footer-grid"><div><a class="brand footer-brand" href="../"><img src="../assets/arsonkupik-vst-favicon-96.png" width="28" height="28" alt=""><span class="brand-lockup"><b>ARSON<em>KUPIK</em></b><small>Musical VST3 audio enhancer</small></span></a><p>Beginner-friendly guidance for VST3, Standalone and Windows laptop-audio routing.</p></div><div class="footer-links"><strong>Guide</strong><a href="#vst3">VST3</a><a href="#standalone">Standalone</a><a href="#laptop-audio">Laptop audio</a><a href="#troubleshooting">Troubleshooting</a></div><div class="footer-links"><strong>Product</strong><a href="../#download">Official downloads</a><a href="../activation/">Optional activation</a><a href="https://github.com/masarray/vst-enhancer/blob/main/SUPPORT.md">Support guide</a></div></div><div class="container footer-bottom"><span>© 2026 Tutorial Mas Ari / MasArray. All rights reserved.</span><span>VB-CABLE is a third-party product; its own terms and documentation apply.</span></div></footer>

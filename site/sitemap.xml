@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://masarray.github.io/vst-enhancer/</loc>
@@ -23,5 +23,37 @@
   <url>
     <loc>https://masarray.github.io/vst-enhancer/id/activation/</loc>
     <lastmod>2026-08-01</lastmod>
+  </url>
+  <url>
+    <loc>https://masarray.github.io/vst-enhancer/about/</loc>
+    <lastmod>2026-08-02</lastmod>
+  </url>
+  <url>
+    <loc>https://masarray.github.io/vst-enhancer/id/about/</loc>
+    <lastmod>2026-08-02</lastmod>
+  </url>
+  <url>
+    <loc>https://masarray.github.io/vst-enhancer/measurements/</loc>
+    <lastmod>2026-08-02</lastmod>
+  </url>
+  <url>
+    <loc>https://masarray.github.io/vst-enhancer/id/measurements/</loc>
+    <lastmod>2026-08-02</lastmod>
+  </url>
+  <url>
+    <loc>https://masarray.github.io/vst-enhancer/audio-comparisons/</loc>
+    <lastmod>2026-08-02</lastmod>
+  </url>
+  <url>
+    <loc>https://masarray.github.io/vst-enhancer/id/audio-comparisons/</loc>
+    <lastmod>2026-08-02</lastmod>
+  </url>
+  <url>
+    <loc>https://masarray.github.io/vst-enhancer/use-cases/windows-system-audio/</loc>
+    <lastmod>2026-08-02</lastmod>
+  </url>
+  <url>
+    <loc>https://masarray.github.io/vst-enhancer/id/use-cases/windows-system-audio/</loc>
+    <lastmod>2026-08-02</lastmod>
   </url>
 </urlset>

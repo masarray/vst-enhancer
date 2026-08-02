@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en" data-site-base="..">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>ArSonKuPik Measurement Method | Level, Peak and Sample-Rate Checks</title>
+  <meta name="description" content="Review the reproducible method used to separate loudness from tone, check peak safety, compare sample rates, and interpret ArSonKuPik measurements responsibly.">
+  <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
+  <meta name="author" content="Tutorial Mas Ari / MasArray">
+  <meta name="theme-color" content="#0b0910">
+  <meta name="color-scheme" content="dark">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <link rel="canonical" href="https://masarray.github.io/vst-enhancer/measurements/">
+  <link rel="alternate" hreflang="en" href="https://masarray.github.io/vst-enhancer/measurements/">
+  <link rel="alternate" hreflang="id" href="https://masarray.github.io/vst-enhancer/id/measurements/">
+  <link rel="alternate" hreflang="x-default" href="https://masarray.github.io/vst-enhancer/measurements/">
+  <link rel="sitemap" type="application/xml" href="https://masarray.github.io/vst-enhancer/sitemap.xml">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="ArSonKuPik">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:locale:alternate" content="id_ID">
+  <meta property="og:title" content="ArSonKuPik Measurement Method | Level, Peak and Sample-Rate Checks">
+  <meta property="og:description" content="Review the reproducible method used to separate loudness from tone, check peak safety, compare sample rates, and interpret ArSonKuPik measurements responsibly.">
+  <meta property="og:url" content="https://masarray.github.io/vst-enhancer/measurements/">
+  <meta property="og:image" content="https://masarray.github.io/vst-enhancer/assets/arsonkupik-guide-social-1200x630.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="ArSonKuPik technical guide and audio enhancer interface">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="ArSonKuPik Measurement Method | Level, Peak and Sample-Rate Checks">
+  <meta name="twitter:description" content="Review the reproducible method used to separate loudness from tone, check peak safety, compare sample rates, and interpret ArSonKuPik measurements responsibly.">
+  <meta name="twitter:image" content="https://masarray.github.io/vst-enhancer/assets/arsonkupik-guide-social-1200x630.png">
+  <meta name="twitter:image:alt" content="ArSonKuPik technical guide and audio enhancer interface">
+  <link rel="icon" href="../assets/arsonkupik-vst-favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" href="../assets/arsonkupik-vst-favicon-96.png" sizes="96x96">
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="stylesheet" href="../trial.css">
+  <link rel="stylesheet" href="../hardening-v6.css">
+  <link rel="stylesheet" href="../seo-authority.css">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "TechArticle",
+      "@id": "https://masarray.github.io/vst-enhancer/measurements/#content",
+      "url": "https://masarray.github.io/vst-enhancer/measurements/",
+      "name": "ArSonKuPik Measurement Method",
+      "headline": "ArSonKuPik Measurement Method",
+      "description": "Review the reproducible method used to separate loudness from tone, check peak safety, compare sample rates, and interpret ArSonKuPik measurements responsibly.",
+      "inLanguage": "en",
+      "image": "https://masarray.github.io/vst-enhancer/assets/arsonkupik-guide-social-1200x630.png",
+      "author": {
+        "@type": "Person",
+        "name": "Mas Ari",
+        "url": "https://github.com/masarray"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "MasArray",
+        "url": "https://github.com/masarray"
+      },
+      "mainEntityOfPage": {
+        "@id": "https://masarray.github.io/vst-enhancer/measurements/#webpage"
+      }
+    },
+    {
+      "@type": "WebPage",
+      "@id": "https://masarray.github.io/vst-enhancer/measurements/#webpage",
+      "url": "https://masarray.github.io/vst-enhancer/measurements/",
+      "name": "ArSonKuPik Measurement Method",
+      "inLanguage": "en",
+      "isPartOf": {
+        "@id": "https://masarray.github.io/vst-enhancer/#website"
+      },
+      "primaryImageOfPage": "https://masarray.github.io/vst-enhancer/assets/arsonkupik-guide-social-1200x630.png"
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "ArSonKuPik",
+          "item": "https://masarray.github.io/vst-enhancer/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "ArSonKuPik Measurement Method",
+          "item": "https://masarray.github.io/vst-enhancer/measurements/"
+        }
+      ]
+    }
+  ]
+}
+  </script>
+</head>
+<body class="authority-page">
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <header class="nav landing-nav"><div class="container nav-inner">
+    <a class="brand" href="../" aria-label="ArSonKuPik home"><img src="../assets/arsonkupik-vst-favicon-96.png" width="32" height="32" alt=""><span class="brand-lockup"><b>ARSON<em>KUPIK</em></b><small>ArSonKuPik technical resource</small></span></a>
+    <nav aria-label="Resource navigation"><a href="../guide/">Usage guide</a><a href="../measurements/">Measurement method</a><a href="../about/">About the project</a></nav>
+    <div class="nav-actions"><div class="language-switch" aria-label="Language / Bahasa"><a href="../id/measurements/" hreflang="id" lang="id">ID</a><a href="./" hreflang="en" lang="en" aria-current="page">EN</a></div><a class="nav-release" href="../#download">Download</a></div>
+  </div></header>
+  <main id="main">
+    <section class="authority-hero"><div class="container"><span class="eyebrow">ArSonKuPik technical resource</span><h1>Measure the signal path before turning a listening preference into a technical claim.</h1><p class="lead">A useful measurement page must explain the source, route, level, sample rate, capture method and uncertainty. This page defines that protocol without fabricating results that have not been reproduced.</p><div class="actions"><a class="button primary" href="../">Back to product page</a><a class="button secondary" href="../guide/">Usage guide</a></div></div></section>
+    <section class="section"><div class="container authority-article-grid"><article><span>Stage 1</span><h2>Establish the reference</h2><ul><li>Capture a loopback or digital reference before inserting the processor.</li><li>Record sample rate, bit depth, interface gain and operating-system enhancements.</li><li>Keep the same file and route for every comparison.</li></ul></article>
+        <article><span>Stage 2</span><h2>Separate tone from loudness</h2><ul><li>Use normal mode to judge intended impact.</li><li>Use Gain Match for level-equal tonal comparison.</li><li>Report both states instead of treating one as the only valid answer.</li></ul></article>
+        <article><span>Stage 3</span><h2>Check safety and stability</h2><ul><li>Measure true peak and sample peak at the output.</li><li>Repeat at supported sample rates and practical buffer sizes.</li><li>Look for clipping, denormals, dropouts or unstable gain movement.</li></ul></article>
+        <article><span>Interpretation</span><h2>State what the test cannot prove</h2><ul><li>A frequency plot does not fully describe perceived depth or transient behaviour.</li><li>One song or one interface cannot establish universal performance.</li><li>A result should include the preset, control values and software version.</li></ul></article></div></section>
+    <section class="section alt"><div class="container authority-source"><div><span class="eyebrow">Official sources and verification</span><h2>Official sources and verification</h2><p>Download only from official GitHub Releases, verify SHA-256, and use public documentation to review product changes and limitations.</p></div><div class="authority-source-links"><a href="https://github.com/masarray/vst-enhancer/releases/latest">Open official releases</a><a href="https://github.com/masarray/vst-enhancer/blob/main/CHANGELOG.md">Read the changelog</a><a href="https://github.com/masarray/vst-enhancer/blob/main/RELEASE-PROVENANCE.md">Security and provenance</a></div></div></section>
+  </main>
+  <footer><div class="container footer-bottom"><span>© 2026 Tutorial Mas Ari / MasArray.</span><a href="../">Back to product page</a></div></footer>
+</body>
+</html>
