@@ -5,7 +5,6 @@ from __future__ import annotations
 import json
 import re
 import struct
-import sys
 from collections import Counter, defaultdict
 from datetime import date
 from html.parser import HTMLParser
@@ -204,11 +203,6 @@ def validate_page(root: Path, spec, global_types: Counter[str]) -> None:
             f"WebPage isPartOf mismatch: {url}",
         )
 
-    if relative == "site/activation/index.html":
-        require("../hardening-v6.css" in parser.stylesheets, "EN activation lacks hardening-v6.css")
-    elif relative == "site/id/activation/index.html":
-        require("../../hardening-v6.css" in parser.stylesheets, "ID activation lacks hardening-v6.css")
-
 
 def validate_sitemaps(root: Path) -> None:
     raw = read(root / "site/sitemap.xml")
@@ -242,6 +236,15 @@ def validate_png(root: Path) -> None:
     width, height, bit_depth, colour_type = struct.unpack(">IIBB", raw[16:26])
     require((width, height) == (1200, 630), f"social PNG dimensions are {width}x{height}")
     require(bit_depth == 8 and colour_type in {2, 6}, "social PNG must be 8-bit RGB/RGBA")
+
+
+def validate_activation_styles(root: Path) -> None:
+    css = read(root / "site/seo-authority.css")
+    for selector in (
+        ".activation-page .language-switch a",
+        ".activation-page .language-switch a[aria-current=\"page\"]",
+    ):
+        require(selector in css, f"activation language-switch styling missing: {selector}")
 
 
 def validate_runtime_safety(root: Path) -> None:
@@ -289,6 +292,7 @@ def main() -> int:
         require(global_types["WebSite"] == 1, f"expected one WebSite entity, got {global_types['WebSite']}")
         validate_sitemaps(root)
         validate_png(root)
+        validate_activation_styles(root)
         validate_runtime_safety(root)
         validate_release(root)
     except (AssertionError, UnicodeDecodeError, ElementTree.ParseError, json.JSONDecodeError, ValueError, struct.error) as exc:
