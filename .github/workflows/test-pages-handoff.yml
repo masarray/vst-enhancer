@@ -1,0 +1,86 @@
+name: Temporary Pages handoff test
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/test-pages-handoff.yml"
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+      - name: Dispatch and verify exact Pages handoff
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PUBLIC_REPO: masarray/vst-enhancer
+          PAGES_WORKFLOW: pages.yml
+        run: |
+          set -euo pipefail
+          version="$(python3 - <<'PY'
+          import json
+          from pathlib import Path
+          print(json.loads(Path('site/release.json').read_text())['version'])
+          PY
+          )"
+          dispatch_started="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          gh workflow run "$PAGES_WORKFLOW" \
+            --repo "$PUBLIC_REPO" \
+            --ref main \
+            -f site_ref="$GITHUB_SHA" \
+            -f expected_version="$version"
+
+          run_id=""
+          for _ in $(seq 1 60); do
+            runs="$(gh run list \
+              --repo "$PUBLIC_REPO" \
+              --workflow "$PAGES_WORKFLOW" \
+              --branch main \
+              --event workflow_dispatch \
+              --limit 30 \
+              --json databaseId,headSha,status,conclusion,createdAt,url)"
+            run_id="$(jq -r \
+              --arg sha "$GITHUB_SHA" \
+              --arg started "$dispatch_started" \
+              '[.[] | select(.headSha == $sha and .createdAt >= $started)]
+               | sort_by(.createdAt)
+               | last
+               | .databaseId // empty' <<<"$runs")"
+            [[ -n "$run_id" ]] && break
+            sleep 5
+          done
+          [[ -n "$run_id" ]] || {
+            echo "Pages run was not found." >&2
+            exit 1
+          }
+
+          for _ in $(seq 1 120); do
+            result="$(gh run view "$run_id" \
+              --repo "$PUBLIC_REPO" \
+              --json status,conclusion,headSha,url)"
+            status="$(jq -r '.status' <<<"$result")"
+            [[ "$status" == completed ]] && break
+            sleep 5
+          done
+          conclusion="$(jq -r '.conclusion // ""' <<<"$result")"
+          head_sha="$(jq -r '.headSha' <<<"$result")"
+          url="$(jq -r '.url' <<<"$result")"
+          [[ "$status" == completed && "$conclusion" == success ]] || {
+            echo "Pages run failed: $url" >&2
+            exit 1
+          }
+          [[ "$head_sha" == "$GITHUB_SHA" ]] || {
+            echo "Pages run did not use the exact requested commit." >&2
+            exit 1
+          }
+          echo "Verified exact Pages handoff: $url"
