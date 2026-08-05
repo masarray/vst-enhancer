@@ -52,11 +52,17 @@ jobs:
       PRIVATE_REPO: masarray/askp-vst
       APPROVED_WORKFLOW: .github/workflows/build-macos-and-publish.yml
       APPROVED_PAGES_WORKFLOW: .github/workflows/pages.yml
-      REQUEST_PATH: ${{ runner.temp }}/approved-release-request.json
-      MAC_DIST: ${{ runner.temp }}/askp-mac-dist
-      HANDOFF_DIR: ${{ runner.temp }}/publish-handoff
 
     steps:
+      - name: Initialize build paths
+        run: |
+          set -euo pipefail
+          {
+            echo "REQUEST_PATH=$RUNNER_TEMP/approved-release-request.json"
+            echo "MAC_DIST=$RUNNER_TEMP/askp-mac-dist"
+            echo "HANDOFF_DIR=$RUNNER_TEMP/publish-handoff"
+          } >>"$GITHUB_ENV"
+
       - name: Resolve and verify release boundary
         id: boundary
         env:
@@ -526,9 +532,13 @@ jobs:
       RELEASE_REPAIR: ${{ needs.build-macos.outputs.release_repair }}
       SOURCE_COMMIT: ${{ needs.build-macos.outputs.source_commit }}
       HELPER_COMMIT: ${{ needs.build-macos.outputs.helper_commit }}
-      MAC_DIST: ${{ runner.temp }}/publish-handoff
 
     steps:
+      - name: Initialize publish path
+        run: |
+          set -euo pipefail
+          echo "MAC_DIST=$RUNNER_TEMP/publish-handoff" >>"$GITHUB_ENV"
+
       - name: Download source-free handoff
         uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
         with:
@@ -665,7 +675,7 @@ jobs:
             -f expected_version="$RELEASE_TAG"
 
           pages_run_id=""
-          for attempt in $(seq 1 60); do
+          for _ in $(seq 1 60); do
             runs="$(gh run list \
               --repo "$PUBLIC_REPO" \
               --workflow "$PAGES_WORKFLOW" \
@@ -692,7 +702,7 @@ jobs:
           pages_conclusion=""
           pages_head_sha=""
           pages_url=""
-          for attempt in $(seq 1 120); do
+          for _ in $(seq 1 120); do
             run_json="$(gh run view "$pages_run_id" \
               --repo "$PUBLIC_REPO" \
               --json status,conclusion,headSha,url)"
