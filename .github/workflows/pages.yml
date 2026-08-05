@@ -1,0 +1,100 @@
+name: Deploy GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "site/**"
+      - "tools/validate-seo.py"
+      - "tools/validate-live-seo.py"
+      - ".github/workflows/pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: arsonkupik-github-pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Validate and deploy audited static site
+    if: >-
+      github.repository == 'masarray/vst-enhancer' &&
+      github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Check out exact site source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Validate static site and indexing contract
+        id: site
+        run: |
+          set -euo pipefail
+
+          for required in \
+            site/.nojekyll \
+            site/index.html \
+            site/robots.txt \
+            site/sitemap.xml \
+            site/sitemap.txt \
+            site/release.json
+          do
+            [[ -f "$required" ]] || {
+              echo "Required Pages file is missing: $required" >&2
+              exit 1
+            }
+          done
+
+          if find site -type l -print -quit | grep -q .; then
+            echo "Symlinks are not allowed in the Pages artifact." >&2
+            exit 1
+          fi
+
+          python3 tools/validate-seo.py
+
+          version="$(python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          payload = json.loads(
+              Path("site/release.json").read_text(encoding="utf-8")
+          )
+          version = payload.get("version")
+          if not isinstance(version, str) or not version:
+              raise SystemExit("site/release.json has no valid version.")
+          print(version)
+          PY
+          )"
+          echo "version=$version" >>"$GITHUB_OUTPUT"
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
+
+      - name: Upload audited Pages artifact
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: ./site
+          include-hidden-files: true
+
+      - name: Deploy GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5.0.0
+
+      - name: Verify live indexing and release contract
+        run: |
+          set -euo pipefail
+          python3 tools/validate-live-seo.py \
+            --expected-version "${{ steps.site.outputs.version }}"
