@@ -1,3 +1,4 @@
+# Validated by the Pages and release-boundary workflow.
 User-agent: *
 Allow: /
 
