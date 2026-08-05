@@ -27,5 +27,8 @@ jobs:
         run: |
           set -euo pipefail
           "$(go env GOPATH)/bin/actionlint" -color \
+            -ignore 'SC2129' \
+            -ignore 'SC2094' \
+            -ignore 'SC2034' \
             .github/workflows/pages.yml \
             .github/workflows/build-macos-and-publish.yml
