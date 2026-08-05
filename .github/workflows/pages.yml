@@ -1,4 +1,7 @@
 name: Deploy GitHub Pages
+run-name: >-
+  Deploy GitHub Pages
+  ${{ github.event_name == 'workflow_dispatch' && inputs.expected_version || github.sha }}
 
 on:
   push:
@@ -10,6 +13,15 @@ on:
       - "tools/validate-live-seo.py"
       - ".github/workflows/pages.yml"
   workflow_dispatch:
+    inputs:
+      site_ref:
+        description: Exact main commit containing the audited site
+        required: false
+        type: string
+      expected_version:
+        description: Expected version in site/release.json
+        required: false
+        type: string
 
 permissions:
   contents: read
@@ -36,13 +48,29 @@ jobs:
       - name: Check out exact site source
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.site_ref || github.sha }}
           persist-credentials: false
           fetch-depth: 1
 
       - name: Validate static site and indexing contract
         id: site
+        env:
+          REQUESTED_SITE_REF: ${{ github.event_name == 'workflow_dispatch' && inputs.site_ref || '' }}
+          EXPECTED_VERSION: ${{ github.event_name == 'workflow_dispatch' && inputs.expected_version || '' }}
         run: |
           set -euo pipefail
+
+          actual_commit="$(git rev-parse HEAD)"
+          if [[ -n "$REQUESTED_SITE_REF" ]]; then
+            [[ "$REQUESTED_SITE_REF" =~ ^[0-9a-f]{40}$ ]] || {
+              echo "site_ref must be an exact 40-character commit SHA." >&2
+              exit 1
+            }
+            [[ "$actual_commit" == "$REQUESTED_SITE_REF" ]] || {
+              echo "Checked-out Pages source does not match site_ref." >&2
+              exit 1
+            }
+          fi
 
           for required in \
             site/.nojekyll \
@@ -78,6 +106,13 @@ jobs:
           print(version)
           PY
           )"
+
+          if [[ -n "$EXPECTED_VERSION" && "$version" != "$EXPECTED_VERSION" ]]; then
+            echo "Pages version $version does not match $EXPECTED_VERSION." >&2
+            exit 1
+          fi
+
+          echo "commit=$actual_commit" >>"$GITHUB_OUTPUT"
           echo "version=$version" >>"$GITHUB_OUTPUT"
 
       - name: Configure GitHub Pages
