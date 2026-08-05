@@ -51,6 +51,7 @@ jobs:
       PUBLIC_REPO: masarray/vst-enhancer
       PRIVATE_REPO: masarray/askp-vst
       APPROVED_WORKFLOW: .github/workflows/build-macos-and-publish.yml
+      APPROVED_PAGES_WORKFLOW: .github/workflows/pages.yml
       REQUEST_PATH: ${{ runner.temp }}/approved-release-request.json
       MAC_DIST: ${{ runner.temp }}/askp-mac-dist
       HANDOFF_DIR: ${{ runner.temp }}/publish-handoff
@@ -66,10 +67,18 @@ jobs:
           set -euo pipefail
 
           workflow_files="$(gh api "repos/$PUBLIC_REPO/git/trees/main?recursive=1" \
-            --jq '.tree[] | select(.type == "blob" and (.path | startswith(".github/workflows/"))) | .path')"
-          workflow_count="$(printf '%s\n' "$workflow_files" | sed '/^$/d' | wc -l | tr -d ' ')"
-          [[ "$workflow_count" == 1 && "$workflow_files" == "$APPROVED_WORKFLOW" ]] || {
-            echo "The public repository must contain exactly one approved manual workflow." >&2
+            --jq '.tree[] | select(.type == "blob" and (.path | startswith(".github/workflows/"))) | .path' \
+            | LC_ALL=C sort)"
+          approved_workflows="$(printf '%s\n' \
+            "$APPROVED_WORKFLOW" \
+            "$APPROVED_PAGES_WORKFLOW" \
+            | LC_ALL=C sort)"
+          [[ "$workflow_files" == "$approved_workflows" ]] || {
+            echo "The public repository workflow allowlist is invalid." >&2
+            echo "Expected:" >&2
+            printf '%s\n' "$approved_workflows" >&2
+            echo "Actual:" >&2
+            printf '%s\n' "$workflow_files" >&2
             exit 1
           }
 
@@ -505,12 +514,13 @@ jobs:
     needs: build-macos
     if: needs.build-macos.result == 'success'
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     permissions:
-      actions: read
+      actions: write
       contents: write
     env:
       PUBLIC_REPO: masarray/vst-enhancer
+      PAGES_WORKFLOW: pages.yml
       RELEASE_TAG: ${{ needs.build-macos.outputs.release_tag }}
       RELEASE_NUMBER: ${{ needs.build-macos.outputs.release_number }}
       RELEASE_REPAIR: ${{ needs.build-macos.outputs.release_repair }}
@@ -586,6 +596,7 @@ jobs:
             --clobber
 
       - name: Update public metadata from public tooling
+        id: public_metadata
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -620,73 +631,95 @@ jobs:
               -m "Publish ArSonKuPik VST $RELEASE_TAG cross-platform metadata"
             git -C public push origin HEAD:main
           fi
-          echo "PUBLIC_METADATA_COMMIT=$(git -C public rev-parse HEAD)" \
-            >>"$GITHUB_ENV"
 
-      - name: Deploy and verify exact gh-pages source
+          metadata_commit="$(git -C public rev-parse HEAD)"
+          [[ "$metadata_commit" =~ ^[0-9a-f]{40}$ ]] || {
+            echo "Public metadata commit is invalid." >&2
+            exit 1
+          }
+          echo "PUBLIC_METADATA_COMMIT=$metadata_commit" >>"$GITHUB_ENV"
+          echo "commit=$metadata_commit" >>"$GITHUB_OUTPUT"
+
+      - name: Dispatch and verify exact Pages workflow source
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          page_branch="$(gh api "repos/$PUBLIC_REPO/pages" --jq '.source.branch')"
-          page_path="$(gh api "repos/$PUBLIC_REPO/pages" --jq '.source.path')"
-          [[ "$page_branch" == gh-pages && "$page_path" == / ]] || {
-            echo "GitHub Pages must be configured for gh-pages:/." >&2
+
+          [[ "$PUBLIC_METADATA_COMMIT" =~ ^[0-9a-f]{40}$ ]] || {
+            echo "PUBLIC_METADATA_COMMIT is not an exact commit SHA." >&2
             exit 1
           }
 
-          site_copy="$RUNNER_TEMP/askp-site-copy"
-          pages_dir="$RUNNER_TEMP/askp-public-pages"
-          rm -rf "$site_copy" "$pages_dir"
-          cp -R public/site "$site_copy"
-          git -C public fetch origin gh-pages
-          git -C public worktree add -B release-gh-pages \
-            "$pages_dir" origin/gh-pages
-          find "$pages_dir" -mindepth 1 -maxdepth 1 ! -name .git \
-            -exec rm -rf {} +
-          cp -R "$site_copy"/. "$pages_dir"/
-          touch "$pages_dir/.nojekyll"
-          git -C "$pages_dir" config user.name "Mas Ari Release Automation"
-          git -C "$pages_dir" config user.email \
-            "258017373+masarray@users.noreply.github.com"
-          git -C "$pages_dir" add -A
-          if ! git -C "$pages_dir" diff --cached --quiet; then
-            git -C "$pages_dir" commit \
-              -m "Deploy ArSonKuPik $RELEASE_TAG landing"
-            git -C "$pages_dir" push origin HEAD:gh-pages
-          fi
-
-          pages_commit="$(git -C "$pages_dir" rev-parse HEAD)"
-          remote_commit="$(gh api "repos/$PUBLIC_REPO/git/ref/heads/gh-pages" \
-            --jq '.object.sha')"
-          [[ "$remote_commit" == "$pages_commit" ]] || {
-            echo "Remote gh-pages ref does not match the staged site commit." >&2
+          build_type="$(gh api "repos/$PUBLIC_REPO/pages" --jq '.build_type')"
+          [[ "$build_type" == workflow ]] || {
+            echo "GitHub Pages must use GitHub Actions workflow deployment." >&2
             exit 1
           }
 
-          python3 - "$pages_dir/release.json" "$RELEASE_TAG" <<'PY'
-          import json
-          import pathlib
-          import sys
+          dispatch_started="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          gh workflow run "$PAGES_WORKFLOW" \
+            --repo "$PUBLIC_REPO" \
+            --ref main \
+            -f site_ref="$PUBLIC_METADATA_COMMIT" \
+            -f expected_version="$RELEASE_TAG"
 
-          payload = json.loads(
-              pathlib.Path(sys.argv[1]).read_text(encoding="utf-8")
-          )
-          if payload.get("version") != sys.argv[2]:
-              raise SystemExit(
-                  "gh-pages release manifest does not match the release tag."
-              )
-          if payload.get("platforms") != [
-              "windows-x64",
-              "macos-universal",
-          ]:
-              raise SystemExit(
-                  "gh-pages release manifest is not cross-platform."
-              )
-          print("[PASS] Exact gh-pages ref and manifest verified.")
-          PY
+          pages_run_id=""
+          for attempt in $(seq 1 60); do
+            runs="$(gh run list \
+              --repo "$PUBLIC_REPO" \
+              --workflow "$PAGES_WORKFLOW" \
+              --branch main \
+              --event workflow_dispatch \
+              --limit 30 \
+              --json databaseId,headSha,status,conclusion,createdAt,url)"
+            pages_run_id="$(jq -r \
+              --arg sha "$PUBLIC_METADATA_COMMIT" \
+              --arg started "$dispatch_started" \
+              '[.[] | select(.headSha == $sha and .createdAt >= $started)]
+               | sort_by(.createdAt)
+               | last
+               | .databaseId // empty' <<<"$runs")"
+            [[ -n "$pages_run_id" ]] && break
+            sleep 5
+          done
+          [[ -n "$pages_run_id" ]] || {
+            echo "The exact Pages workflow run did not appear." >&2
+            exit 1
+          }
+
+          pages_status=""
+          pages_conclusion=""
+          pages_head_sha=""
+          pages_url=""
+          for attempt in $(seq 1 120); do
+            run_json="$(gh run view "$pages_run_id" \
+              --repo "$PUBLIC_REPO" \
+              --json status,conclusion,headSha,url)"
+            pages_status="$(jq -r '.status' <<<"$run_json")"
+            pages_conclusion="$(jq -r '.conclusion // ""' <<<"$run_json")"
+            pages_head_sha="$(jq -r '.headSha' <<<"$run_json")"
+            pages_url="$(jq -r '.url' <<<"$run_json")"
+            [[ "$pages_status" == completed ]] && break
+            sleep 5
+          done
+
+          [[ "$pages_status" == completed ]] || {
+            echo "Pages workflow did not complete before timeout: $pages_url" >&2
+            exit 1
+          }
+          [[ "$pages_head_sha" == "$PUBLIC_METADATA_COMMIT" ]] || {
+            echo "Pages workflow head SHA does not match public metadata." >&2
+            exit 1
+          }
+          [[ "$pages_conclusion" == success ]] || {
+            echo "Pages workflow failed: $pages_url" >&2
+            exit 1
+          }
+
           python3 public/tools/validate-live-seo.py \
             --expected-version "$RELEASE_TAG"
+          echo "Verified Pages workflow: $pages_url"
 
       - name: Publish and verify the complete release
         env:
