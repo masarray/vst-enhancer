@@ -1,5 +1,5 @@
 name: Deploy GitHub Pages
-run-name: Pages ${{ github.event_name == 'workflow_dispatch' && format('{0} [{1}]', inputs.expected_version || 'manual', inputs.handoff_id || 'direct') || github.event_name == 'pull_request' && format('validation PR #{0}', github.event.pull_request.number) || github.sha }}
+run-name: Pages ${{ github.event_name == 'pull_request' && format('PR-{0}', github.event.pull_request.number) || github.sha }}
 
 on:
   pull_request:
@@ -10,8 +10,7 @@ on:
       - "tools/validate-seo.py"
       - "tools/validate-live-seo.py"
       - "tools/validate-p0-release-boundary.py"
-      - ".github/workflows/pages.yml"
-      - ".github/workflows/build-macos-and-publish.yml"
+      - ".github/workflows/**"
   push:
     branches:
       - main
@@ -20,8 +19,7 @@ on:
       - "tools/validate-seo.py"
       - "tools/validate-live-seo.py"
       - "tools/validate-p0-release-boundary.py"
-      - ".github/workflows/pages.yml"
-      - ".github/workflows/build-macos-and-publish.yml"
+      - ".github/workflows/**"
   workflow_dispatch:
     inputs:
       site_ref:
@@ -32,16 +30,12 @@ on:
         description: Expected version in site/release.json
         required: false
         type: string
-      handoff_id:
-        description: Unique release handoff identifier
-        required: false
-        type: string
 
 permissions:
   contents: read
 
 concurrency:
-  group: arsonkupik-pages-${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.pull_request.number) || 'deploy' }}
+  group: arsonkupik-pages-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
