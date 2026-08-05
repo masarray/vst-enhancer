@@ -5,8 +5,6 @@ on:
 
 permissions:
   contents: write
-  pages: write
-  id-token: write
 
 concurrency:
   group: arsonkupik-pages-migration
@@ -14,16 +12,13 @@ concurrency:
 
 jobs:
   migrate:
-    name: Patch, deploy, and verify Pages
+    name: Patch and commit Pages migration
     if: >-
       github.repository == 'masarray/vst-enhancer' &&
       github.ref == 'refs/heads/main' &&
       github.actor == 'masarray'
     runs-on: ubuntu-latest
-    timeout-minutes: 20
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+    timeout-minutes: 15
 
     steps:
       - name: Check out main
@@ -41,14 +36,20 @@ jobs:
           path = Path(".github/workflows/build-macos-and-publish.yml")
           text = path.read_text(encoding="utf-8")
 
-          old_header = """name: Build macOS and publish cross-platform release
-          run-name: macOS release ${{ inputs.release_tag }}
+          expression_open = "$" + "{" + "{"
+          expression_close = "}" + "}"
 
-          on:
-            workflow_dispatch:
-          """
+          def expression(body: str) -> str:
+              return expression_open + " " + body + " " + expression_close
+
+          old_header = (
+              "name: Build macOS and publish cross-platform release\n"
+              "run-name: macOS release "
+              + expression("inputs.release_tag")
+              + "\n\non:\n  workflow_dispatch:\n"
+          )
           new_header = """name: Build macOS and publish cross-platform release
-          run-name: ${{ github.event_name == 'workflow_dispatch' && format('macOS release {0}', inputs.release_tag) || 'Deploy GitHub Pages' }}
+          run-name: @@RUN_NAME@@
 
           on:
             push:
@@ -60,7 +61,14 @@ jobs:
                 - "tools/validate-live-seo.py"
                 - ".github/workflows/build-macos-and-publish.yml"
             workflow_dispatch:
-          """
+          """.replace(
+              "@@RUN_NAME@@",
+              expression(
+                  "github.event_name == 'workflow_dispatch' && "
+                  "format('macOS release {0}', inputs.release_tag) || "
+                  "'Deploy GitHub Pages'"
+              ),
+          )
 
           old_publish_header = """    permissions:
                 actions: read
@@ -71,9 +79,12 @@ jobs:
                 actions: read
                 contents: write
               outputs:
-                public_metadata_commit: ${{ steps.public_metadata.outputs.commit }}
+                public_metadata_commit: @@METADATA_OUTPUT@@
               env:
-          """
+          """.replace(
+              "@@METADATA_OUTPUT@@",
+              expression("steps.public_metadata.outputs.commit"),
+          )
 
           old_metadata_step = """      - name: Update public metadata from public tooling
                   env:
@@ -167,20 +178,20 @@ jobs:
                 id-token: write
               environment:
                 name: github-pages
-                url: ${{ steps.deployment.outputs.page_url }}
+                url: @@DEPLOYMENT_URL@@
 
               steps:
                 - name: Check out exact audited site source
                   uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
                   with:
-                    ref: ${{ github.event_name == 'workflow_dispatch' && needs.publish-release.outputs.public_metadata_commit || github.sha }}
+                    ref: @@SITE_REF@@
                     persist-credentials: false
                     fetch-depth: 1
 
                 - name: Validate static site and release manifest
                   id: site
                   env:
-                    EXPECTED_RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && needs.build-macos.outputs.release_tag || '' }}
+                    EXPECTED_RELEASE_TAG: @@EXPECTED_TAG@@
                   run: |
                     set -euo pipefail
 
@@ -243,28 +254,56 @@ jobs:
                   run: |
                     set -euo pipefail
                     python3 tools/validate-live-seo.py \
-                      --expected-version "${{ steps.site.outputs.version }}"
+                      --expected-version "@@SITE_VERSION@@"
           """
-          path.write_text(text.rstrip() + deploy_job.rstrip() + "\n", encoding="utf-8")
+          deploy_job = deploy_job.replace(
+              "@@DEPLOYMENT_URL@@",
+              expression("steps.deployment.outputs.page_url"),
+          ).replace(
+              "@@SITE_REF@@",
+              expression(
+                  "github.event_name == 'workflow_dispatch' && "
+                  "needs.publish-release.outputs.public_metadata_commit || "
+                  "github.sha"
+              ),
+          ).replace(
+              "@@EXPECTED_TAG@@",
+              expression(
+                  "github.event_name == 'workflow_dispatch' && "
+                  "needs.build-macos.outputs.release_tag || ''"
+              ),
+          ).replace(
+              "@@SITE_VERSION@@",
+              expression("steps.site.outputs.version"),
+          )
+
+          text = text.rstrip() + deploy_job.rstrip() + "\n"
+          path.write_text(text, encoding="utf-8")
           PY
 
           python3 - <<'PY'
           from pathlib import Path
+
           text = Path(
               ".github/workflows/build-macos-and-publish.yml"
           ).read_text(encoding="utf-8")
           required = (
               "push:",
-              "deploy-pages:",
+              "  deploy-pages:\n",
               "actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d",
               "actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9",
               "actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128",
+              "public_metadata_commit:",
           )
           for marker in required:
               if marker not in text:
                   raise SystemExit(f"Missing migration marker: {marker}")
+          if text.count("  deploy-pages:\n") != 1:
+              raise SystemExit("Pages deployment job count is invalid.")
           if "Deploy and verify exact gh-pages source" in text:
               raise SystemExit("Legacy gh-pages deployment still exists.")
+          if "@@" in text:
+              raise SystemExit("An unresolved migration placeholder remains.")
           print("[PASS] Pages workflow migration patch is structurally complete.")
           PY
 
@@ -281,41 +320,3 @@ jobs:
             ".github/workflows/migrate-pages-bootstrap.yml"
           git commit -m "Migrate GitHub Pages to audited Actions deployment"
           git push origin HEAD:main
-
-      - name: Resolve site version
-        id: site
-        run: |
-          set -euo pipefail
-          version="$(python3 - <<'PY'
-          import json
-          from pathlib import Path
-
-          payload = json.loads(
-              Path("site/release.json").read_text(encoding="utf-8")
-          )
-          version = payload.get("version")
-          if not isinstance(version, str) or not version:
-              raise SystemExit("site/release.json has no valid version.")
-          print(version)
-          PY
-          )"
-          echo "version=$version" >>"$GITHUB_OUTPUT"
-
-      - name: Configure GitHub Pages
-        uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
-
-      - name: Upload audited Pages artifact
-        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
-        with:
-          path: ./site
-          include-hidden-files: true
-
-      - name: Deploy GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5.0.0
-
-      - name: Verify live indexing
-        run: |
-          set -euo pipefail
-          python3 tools/validate-live-seo.py \
-            --expected-version "${{ steps.site.outputs.version }}"
