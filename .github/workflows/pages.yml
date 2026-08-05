@@ -1,9 +1,17 @@
 name: Deploy GitHub Pages
-run-name: >-
-  Deploy GitHub Pages
-  ${{ github.event_name == 'workflow_dispatch' && inputs.expected_version || github.sha }}
+run-name: Pages ${{ github.event_name == 'workflow_dispatch' && format('{0} [{1}]', inputs.expected_version || 'manual', inputs.handoff_id || 'direct') || github.event_name == 'pull_request' && format('validation PR #{0}', github.event.pull_request.number) || github.sha }}
 
 on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "site/**"
+      - "tools/validate-seo.py"
+      - "tools/validate-live-seo.py"
+      - "tools/validate-p0-release-boundary.py"
+      - ".github/workflows/pages.yml"
+      - ".github/workflows/build-macos-and-publish.yml"
   push:
     branches:
       - main
@@ -11,7 +19,9 @@ on:
       - "site/**"
       - "tools/validate-seo.py"
       - "tools/validate-live-seo.py"
+      - "tools/validate-p0-release-boundary.py"
       - ".github/workflows/pages.yml"
+      - ".github/workflows/build-macos-and-publish.yml"
   workflow_dispatch:
     inputs:
       site_ref:
@@ -22,38 +32,37 @@ on:
         description: Expected version in site/release.json
         required: false
         type: string
+      handoff_id:
+        description: Unique release handoff identifier
+        required: false
+        type: string
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
-  group: arsonkupik-github-pages
+  group: arsonkupik-pages-${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.pull_request.number) || 'deploy' }}
   cancel-in-progress: false
 
 jobs:
-  deploy:
-    name: Validate and deploy audited static site
-    if: >-
-      github.repository == 'masarray/vst-enhancer' &&
-      github.ref == 'refs/heads/main'
+  validate:
+    name: Validate Pages and release boundary
     runs-on: ubuntu-latest
-    timeout-minutes: 20
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+    timeout-minutes: 10
+    outputs:
+      commit: ${{ steps.contract.outputs.commit }}
+      version: ${{ steps.contract.outputs.version }}
 
     steps:
-      - name: Check out exact site source
+      - name: Check out exact candidate source
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.event_name == 'workflow_dispatch' && inputs.site_ref || github.sha }}
           persist-credentials: false
           fetch-depth: 1
 
-      - name: Validate static site and indexing contract
-        id: site
+      - name: Validate workflow, static-site and indexing contracts
+        id: contract
         env:
           REQUESTED_SITE_REF: ${{ github.event_name == 'workflow_dispatch' && inputs.site_ref || '' }}
           EXPECTED_VERSION: ${{ github.event_name == 'workflow_dispatch' && inputs.expected_version || '' }}
@@ -91,6 +100,7 @@ jobs:
             exit 1
           fi
 
+          python3 tools/validate-p0-release-boundary.py
           python3 tools/validate-seo.py
 
           version="$(python3 - <<'PY'
@@ -115,6 +125,31 @@ jobs:
           echo "commit=$actual_commit" >>"$GITHUB_OUTPUT"
           echo "version=$version" >>"$GITHUB_OUTPUT"
 
+  deploy:
+    name: Deploy audited static site
+    needs: validate
+    if: >-
+      github.event_name != 'pull_request' &&
+      github.repository == 'masarray/vst-enhancer' &&
+      github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Check out validated site source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ needs.validate.outputs.commit }}
+          persist-credentials: false
+          fetch-depth: 1
+
       - name: Configure GitHub Pages
         uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
 
@@ -132,4 +167,4 @@ jobs:
         run: |
           set -euo pipefail
           python3 tools/validate-live-seo.py \
-            --expected-version "${{ steps.site.outputs.version }}"
+            --expected-version "${{ needs.validate.outputs.version }}"
