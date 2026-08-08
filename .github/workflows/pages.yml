@@ -11,6 +11,7 @@ on:
       - "tools/validate-seo.py"
       - "tools/validate-live-seo.py"
       - "tools/validate-global-discovery-p1.py"
+      - "tools/validate-global-discovery-p2.py"
       - "tools/validate-p0-release-boundary.py"
       - ".github/workflows/**"
   push:
@@ -22,6 +23,7 @@ on:
       - "tools/validate-seo.py"
       - "tools/validate-live-seo.py"
       - "tools/validate-global-discovery-p1.py"
+      - "tools/validate-global-discovery-p2.py"
       - "tools/validate-p0-release-boundary.py"
       - ".github/workflows/**"
   workflow_dispatch:
@@ -88,9 +90,20 @@ jobs:
             site/sitemap.txt \
             site/sitemap-discovery.xml \
             site/sitemap-discovery.txt \
+            site/sitemap-evidence.xml \
+            site/sitemap-evidence.txt \
+            site/evidence/index.html \
+            site/id/evidence/index.html \
+            site/audio-test-signals/index.html \
+            site/id/audio-test-signals/index.html \
+            site/test-signals.js \
+            site/test-material/test-signal-manifest.json \
+            site/test-material/measurement-log-template.csv \
+            site/test-material/ab-listening-log-template.csv \
             site/release.json \
             tools/render-deployment-seo.py \
-            tools/validate-global-discovery-p1.py
+            tools/validate-global-discovery-p1.py \
+            tools/validate-global-discovery-p2.py
           do
             [[ -f "$required" ]] || {
               echo "Required Pages file is missing: $required" >&2
@@ -106,6 +119,7 @@ jobs:
           python3 tools/validate-p0-release-boundary.py
           python3 tools/validate-seo.py
           python3 tools/validate-global-discovery-p1.py
+          python3 tools/validate-global-discovery-p2.py
 
           version="$(python3 - <<'PY'
           import json
@@ -138,6 +152,7 @@ jobs:
           rm -rf "$rendered"
           cp -a site "$rendered"
           python3 tools/render-deployment-seo.py --site-dir "$rendered"
+          python3 tools/validate-global-discovery-p2.py
           python3 tools/validate-live-seo.py \
             --static-dir "$rendered" \
             --expected-version "$EXPECTED_VERSION"
@@ -180,6 +195,7 @@ jobs:
           PY
           python3 tools/validate-seo.py
           python3 tools/validate-global-discovery-p1.py
+          python3 tools/validate-global-discovery-p2.py
 
       - name: Persist canonical source when migration is needed
         run: |
@@ -225,6 +241,7 @@ jobs:
           set -euo pipefail
           python3 tools/render-deployment-seo.py --site-dir site
           python3 tools/validate-global-discovery-p1.py
+          python3 tools/validate-global-discovery-p2.py
           python3 tools/validate-live-seo.py \
             --static-dir site \
             --expected-version "${{ needs.validate.outputs.version }}"
