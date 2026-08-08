@@ -11,7 +11,7 @@ from html.parser import HTMLParser
 from pathlib import Path
 from xml.etree import ElementTree
 
-ROOT = "https://masarray.github.io/vst-enhancer/"
+ROOT = "https://arsonkupik.pages.dev/"
 SOCIAL = ROOT + "assets/arsonkupik-guide-social-1200x630.png"
 WEBSITE_ID = ROOT + "#website"
 NS = "http://www.sitemaps.org/schemas/sitemap/0.9"

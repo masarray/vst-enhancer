@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const ROOT_URL = 'https://masarray.github.io/vst-enhancer/';
+  const ROOT_URL = 'https://arsonkupik.pages.dev/';
   const ID_URL = `${ROOT_URL}id/`;
   const siteBase = document.documentElement.dataset.siteBase || (location.pathname.includes('/id/') ? '..' : '.');
   const pageLanguage = location.pathname.includes('/id/') ? 'id' : 'en';
