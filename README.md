@@ -10,6 +10,10 @@
 
 **ArSonKuPik** adalah audio enhancer VST3 dan aplikasi standalone untuk Windows serta macOS. Produk ini membantu musisi, kreator, produser, dan audio engineer menghasilkan body yang lebih berisi, presence yang lebih jelas, dimensi stereo yang lebih dalam, serta detail yang polished tanpa membangun rangkaian plug-in yang panjang.
 
+**Canonical product website:** https://arsonkupik.pages.dev/
+
+The historical GitHub Pages site remains available as a compatibility mirror, but Cloudflare Pages is the preferred public and search-engine identity.
+
 <p align="center">
   <a href="https://arsonkupik.pages.dev/">
     <img src="site/assets/arsonkupik-vst-ui-v050.webp" width="1080" alt="ArSonKuPik VST3 audio enhancer interface showing the Mas Ari Signature engine, professional preset selector, six musical controls, A/B comparison and level meters">
@@ -48,8 +52,6 @@ Factory presets include Signature Balanced, Transparent Polish, Open & Detailed,
 ## Current public release
 
 The reviewed public manifest records **v0.5.23** for Windows x64 and macOS Universal. The product website resolves the latest supported GitHub Release and routes downloads only to official assets from this repository.
-
-**Canonical product website:** `https://arsonkupik.pages.dev/`. The GitHub Pages copy remains available as a compatibility mirror, while search and social metadata consolidate on the Cloudflare Pages identity.
 
 - [Open the product website](https://arsonkupik.pages.dev/)
 - [Download the latest supported release](https://github.com/masarray/vst-enhancer/releases/latest)
@@ -176,6 +178,7 @@ Never publish activation codes, Computer Request IDs, customer audio, private pr
 - [Bahasa Indonesia website](https://arsonkupik.pages.dev/id/)
 - [Latest supported release](https://github.com/masarray/vst-enhancer/releases/latest)
 - [Optional support and activation](https://arsonkupik.pages.dev/activation/)
+- [GitHub Pages compatibility mirror](https://masarray.github.io/vst-enhancer/)
 - [Public changelog](CHANGELOG.md)
 - [End User Licence Agreement](EULA.txt)
 - [Purchase Terms](PURCHASE_TERMS.txt)
