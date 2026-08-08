@@ -1,9 +1,7 @@
-# Cloudflare Pages production-only SEO headers.
-# Absolute production-host rules do not match branch preview hostnames, so
-# Cloudflare's default X-Robots-Tag: noindex remains intact on previews.
-
 https://arsonkupik.pages.dev/
   Link: <https://arsonkupik.pages.dev/>; rel="canonical"
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
 
 https://arsonkupik.pages.dev/id/
   Link: <https://arsonkupik.pages.dev/id/>; rel="canonical"
@@ -43,12 +41,3 @@ https://arsonkupik.pages.dev/use-cases/windows-system-audio/
 
 https://arsonkupik.pages.dev/id/use-cases/windows-system-audio/
   Link: <https://arsonkupik.pages.dev/id/use-cases/windows-system-audio/>; rel="canonical"
-
-https://arsonkupik.pages.dev/release.json
-  Cache-Control: no-store
-
-https://arsonkupik.pages.dev/sitemap.xml
-  Cache-Control: public, max-age=300
-
-https://arsonkupik.pages.dev/sitemap.txt
-  Cache-Control: public, max-age=300
