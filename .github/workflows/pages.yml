@@ -10,6 +10,7 @@ on:
       - "tools/render-deployment-seo.py"
       - "tools/validate-seo.py"
       - "tools/validate-live-seo.py"
+      - "tools/validate-global-discovery-p1.py"
       - "tools/validate-p0-release-boundary.py"
       - ".github/workflows/**"
   push:
@@ -20,6 +21,7 @@ on:
       - "tools/render-deployment-seo.py"
       - "tools/validate-seo.py"
       - "tools/validate-live-seo.py"
+      - "tools/validate-global-discovery-p1.py"
       - "tools/validate-p0-release-boundary.py"
       - ".github/workflows/**"
   workflow_dispatch:
@@ -84,8 +86,11 @@ jobs:
             site/robots.txt \
             site/sitemap.xml \
             site/sitemap.txt \
+            site/sitemap-discovery.xml \
+            site/sitemap-discovery.txt \
             site/release.json \
-            tools/render-deployment-seo.py
+            tools/render-deployment-seo.py \
+            tools/validate-global-discovery-p1.py
           do
             [[ -f "$required" ]] || {
               echo "Required Pages file is missing: $required" >&2
@@ -100,6 +105,7 @@ jobs:
 
           python3 tools/validate-p0-release-boundary.py
           python3 tools/validate-seo.py
+          python3 tools/validate-global-discovery-p1.py
 
           version="$(python3 - <<'PY'
           import json
@@ -173,6 +179,7 @@ jobs:
               raise SystemExit("validate-seo.py has an unexpected canonical ROOT")
           PY
           python3 tools/validate-seo.py
+          python3 tools/validate-global-discovery-p1.py
 
       - name: Persist canonical source when migration is needed
         run: |
@@ -217,6 +224,7 @@ jobs:
         run: |
           set -euo pipefail
           python3 tools/render-deployment-seo.py --site-dir site
+          python3 tools/validate-global-discovery-p1.py
           python3 tools/validate-live-seo.py \
             --static-dir site \
             --expected-version "${{ needs.validate.outputs.version }}"
