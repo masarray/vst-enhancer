@@ -21,6 +21,8 @@ SOURCE_ROOT = "https://masarray.github.io/vst-enhancer/"
 PRIMARY_ROOT = "https://arsonkupik.pages.dev/"
 TEXT_SUFFIXES = {".html", ".xml", ".txt", ".json", ".js", ".css"}
 SPECIAL_TEXT_FILES = {"_headers", "_redirects"}
+CORE_SITEMAPS = ("sitemap.xml", "sitemap.txt")
+DISCOVERY_SITEMAPS = ("sitemap-discovery.xml", "sitemap-discovery.txt")
 
 
 def normalized_root(value: str) -> str:
@@ -54,6 +56,19 @@ def require(condition: bool, message: str) -> None:
         raise AssertionError(message)
 
 
+def sitemap_names(site_dir: Path) -> tuple[str, ...]:
+    """Return canonical sitemap files that exist and must remain discoverable."""
+    for name in CORE_SITEMAPS:
+        require((site_dir / name).is_file(), f"Required sitemap is missing: {name}")
+
+    discovery_present = [(site_dir / name).is_file() for name in DISCOVERY_SITEMAPS]
+    require(
+        all(discovery_present) or not any(discovery_present),
+        "Discovery sitemap XML/TXT files must be present as a pair",
+    )
+    return CORE_SITEMAPS + (DISCOVERY_SITEMAPS if all(discovery_present) else ())
+
+
 def validate_rendered_identity(site_dir: Path, source_root: str, primary_root: str) -> None:
     indexed_pages = sorted(site_dir.rglob("index.html"))
     require(indexed_pages, "No index.html pages were found")
@@ -63,16 +78,17 @@ def validate_rendered_identity(site_dir: Path, source_root: str, primary_root: s
         require(source_root not in text, f"Legacy host remained in {path}")
         require(primary_root in text, f"Primary host is missing from {path}")
 
+    names = sitemap_names(site_dir)
     robots = (site_dir / "robots.txt").read_text(encoding="utf-8")
     require(source_root not in robots, "Legacy host remained in robots.txt")
-    require(f"Sitemap: {primary_root}sitemap.xml" in robots, "Primary XML sitemap is missing from robots.txt")
-    require(f"Sitemap: {primary_root}sitemap.txt" in robots, "Primary text sitemap is missing from robots.txt")
-
-    sitemap_xml = (site_dir / "sitemap.xml").read_text(encoding="utf-8")
-    sitemap_txt = (site_dir / "sitemap.txt").read_text(encoding="utf-8")
-    require(source_root not in sitemap_xml, "Legacy host remained in sitemap.xml")
-    require(source_root not in sitemap_txt, "Legacy host remained in sitemap.txt")
-    require(primary_root in sitemap_xml and primary_root in sitemap_txt, "Primary host is missing from sitemaps")
+    for name in names:
+        require(
+            f"Sitemap: {primary_root}{name}" in robots,
+            f"Primary sitemap is missing from robots.txt: {name}",
+        )
+        sitemap_text = (site_dir / name).read_text(encoding="utf-8")
+        require(source_root not in sitemap_text, f"Legacy host remained in {name}")
+        require(primary_root in sitemap_text, f"Primary host is missing from {name}")
 
 
 def main() -> int:
@@ -97,15 +113,20 @@ def main() -> int:
             files_changed += 1
             replacements += count
 
-    # Keep discovery authoritative even if a future source edit changes wording
-    # around the sitemap declarations.
-    robots_path = site_dir / "robots.txt"
-    robots_path.write_text(
-        "# Cloudflare Pages is the canonical SEO authority; GitHub Pages remains a mirror.\n"
-        "User-agent: *\n"
-        "Allow: /\n\n"
-        f"Sitemap: {primary_root}sitemap.xml\n"
-        f"Sitemap: {primary_root}sitemap.txt\n",
+    # Keep every reviewed sitemap authoritative even if a future source edit
+    # changes wording around discovery declarations. P1 discovery sitemaps are
+    # included automatically when their XML/TXT pair exists.
+    names = sitemap_names(site_dir)
+    robots_lines = [
+        "# Cloudflare Pages is the canonical SEO authority; GitHub Pages remains a mirror.",
+        "User-agent: *",
+        "Allow: /",
+        "",
+        *(f"Sitemap: {primary_root}{name}" for name in names),
+        "",
+    ]
+    (site_dir / "robots.txt").write_text(
+        "\n".join(robots_lines),
         encoding="utf-8",
         newline="\n",
     )
@@ -113,7 +134,8 @@ def main() -> int:
     validate_rendered_identity(site_dir, source_root, primary_root)
     print(
         f"[PASS] Canonical SEO authority {primary_root} verified across the site; "
-        f"{files_changed} files changed in this run ({replacements} host references rewritten)."
+        f"{files_changed} files changed in this run ({replacements} host references rewritten); "
+        f"{len(names)} sitemap files advertised."
     )
     return 0
 
