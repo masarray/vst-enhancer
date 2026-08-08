@@ -1,0 +1,46 @@
+name: Global Discovery P1
+run-name: Discovery P1 ${{ github.event_name == 'pull_request' && format('PR-{0}', github.event.pull_request.number) || github.sha }}
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "site/**"
+      - "tools/validate-global-discovery-p1.py"
+      - "tools/validate-seo.py"
+      - ".github/workflows/global-discovery-p1.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "site/**"
+      - "tools/validate-global-discovery-p1.py"
+      - "tools/validate-seo.py"
+      - ".github/workflows/global-discovery-p1.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: global-discovery-p1-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Validate search-intent cluster
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out candidate
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Preserve canonical P0 contract
+        run: python3 tools/validate-seo.py
+
+      - name: Validate Global Discovery P1
+        run: python3 tools/validate-global-discovery-p1.py
