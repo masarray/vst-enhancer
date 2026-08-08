@@ -3,6 +3,12 @@
 
 Cloudflare Pages is the canonical public host. GitHub Pages remains an
 accessible mirror and must advertise the same Cloudflare canonical URLs.
+
+Cloudflare Pages permanently normalizes direct ``*.html`` requests to clean
+URLs. Google Search Console's HTML verification file is therefore checked as a
+special case: either an exact 200 response or a same-origin 301/308 to the
+expected extensionless route is accepted, and the final target must still
+return 200. No other unexpected live redirect is accepted.
 """
 from __future__ import annotations
 
@@ -248,7 +254,7 @@ def get(opener, url: str, accept: str = "text/html,*/*;q=0.8") -> tuple[dict[str
     request = urllib.request.Request(
         url,
         headers={
-            "User-Agent": "ArSonKuPik-Canonical-SEO-Gate/4.0",
+            "User-Agent": "ArSonKuPik-Canonical-SEO-Gate/4.1",
             "Accept": accept,
             "Cache-Control": "no-cache",
         },
@@ -256,6 +262,22 @@ def get(opener, url: str, accept: str = "text/html,*/*;q=0.8") -> tuple[dict[str
     with opener.open(request, timeout=25) as response:
         require(response.status == 200, f"{url} returned HTTP {response.status}")
         return {key.lower(): value for key, value in response.headers.items()}, response.read()
+
+
+def verify_search_console_file(opener, served_root: str) -> None:
+    """Verify Cloudflare's clean-URL normalization for the Search Console file."""
+    source = served_root + VERIFY_PATH
+    expected_target = served_root + VERIFY_PATH.removesuffix(".html")
+    try:
+        get(opener, source, "text/plain,text/html,*/*;q=0.8")
+        return
+    except urllib.error.HTTPError as exc:
+        require(exc.code in {301, 308}, f"Search Console verification route returned HTTP {exc.code}: {source}")
+        target = urllib.parse.urljoin(source, exc.headers.get("location", ""))
+        require(target == expected_target, f"unexpected Search Console verification redirect: {source} -> {target}")
+    _, raw = get(opener, expected_target, "text/plain,text/html,*/*;q=0.8")
+    text = raw.decode("utf-8").strip()
+    require(text.startswith("google-site-verification:"), "Search Console verification payload is invalid")
 
 
 def verify_live_host(served_root: str, canonical_root: str, expected_version: str, primary: bool) -> None:
@@ -290,14 +312,14 @@ def verify_live_host(served_root: str, canonical_root: str, expected_version: st
     require(social_urls == {canonical_root + SOCIAL_PATH}, f"unexpected social URLs at {served_root}")
 
     if primary:
-        get(opener, served_root + VERIFY_PATH, "text/plain,*/*;q=0.8")
+        verify_search_console_file(opener, served_root)
 
 
 def verify_index_normalization(primary_root: str) -> None:
     opener = urllib.request.build_opener(NoRedirect())
     for path in ("index.html", "id/index.html", "guide/index.html"):
         url = primary_root + path
-        request = urllib.request.Request(url, headers={"User-Agent": "ArSonKuPik-Canonical-SEO-Gate/4.0"})
+        request = urllib.request.Request(url, headers={"User-Agent": "ArSonKuPik-Canonical-SEO-Gate/4.1"})
         try:
             opener.open(request, timeout=25)
         except urllib.error.HTTPError as exc:
@@ -349,7 +371,7 @@ def main() -> int:
             last_error = exc
             if attempt == args.attempts:
                 break
-            print(f"[WAIT] Canonical SEO verification attempt {attempt}/{args.attempts} did not pass yet: {exc}")
+            print(f"[WAIT] Canonical SEO verification attempt {attempt}/{args.attempts} did not pass yet: {exc}", flush=True)
             time.sleep(args.delay_seconds)
             continue
         target = "Cloudflare primary and GitHub Pages mirror" if not args.skip_mirror else "Cloudflare primary"
