@@ -6,3 +6,5 @@ Sitemap: https://arsonkupik.pages.dev/sitemap.xml
 Sitemap: https://arsonkupik.pages.dev/sitemap.txt
 Sitemap: https://arsonkupik.pages.dev/sitemap-discovery.xml
 Sitemap: https://arsonkupik.pages.dev/sitemap-discovery.txt
+Sitemap: https://arsonkupik.pages.dev/sitemap-evidence.xml
+Sitemap: https://arsonkupik.pages.dev/sitemap-evidence.txt

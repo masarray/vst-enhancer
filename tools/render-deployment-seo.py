@@ -23,6 +23,8 @@ TEXT_SUFFIXES = {".html", ".xml", ".txt", ".json", ".js", ".css"}
 SPECIAL_TEXT_FILES = {"_headers", "_redirects"}
 CORE_SITEMAPS = ("sitemap.xml", "sitemap.txt")
 DISCOVERY_SITEMAPS = ("sitemap-discovery.xml", "sitemap-discovery.txt")
+EVIDENCE_SITEMAPS = ("sitemap-evidence.xml", "sitemap-evidence.txt")
+OPTIONAL_SITEMAP_PAIRS = (DISCOVERY_SITEMAPS, EVIDENCE_SITEMAPS)
 
 
 def normalized_root(value: str) -> str:
@@ -61,12 +63,16 @@ def sitemap_names(site_dir: Path) -> tuple[str, ...]:
     for name in CORE_SITEMAPS:
         require((site_dir / name).is_file(), f"Required sitemap is missing: {name}")
 
-    discovery_present = [(site_dir / name).is_file() for name in DISCOVERY_SITEMAPS]
-    require(
-        all(discovery_present) or not any(discovery_present),
-        "Discovery sitemap XML/TXT files must be present as a pair",
-    )
-    return CORE_SITEMAPS + (DISCOVERY_SITEMAPS if all(discovery_present) else ())
+    names = list(CORE_SITEMAPS)
+    for pair in OPTIONAL_SITEMAP_PAIRS:
+        present = [(site_dir / name).is_file() for name in pair]
+        require(
+            all(present) or not any(present),
+            f"Optional sitemap XML/TXT files must be present as a pair: {pair}",
+        )
+        if all(present):
+            names.extend(pair)
+    return tuple(names)
 
 
 def validate_rendered_identity(site_dir: Path, source_root: str, primary_root: str) -> None:
@@ -114,8 +120,8 @@ def main() -> int:
             replacements += count
 
     # Keep every reviewed sitemap authoritative even if a future source edit
-    # changes wording around discovery declarations. P1 discovery sitemaps are
-    # included automatically when their XML/TXT pair exists.
+    # changes wording around discovery declarations. P1 discovery and P2
+    # evidence sitemap pairs are included automatically when present.
     names = sitemap_names(site_dir)
     robots_lines = [
         "# Cloudflare Pages is the canonical SEO authority; GitHub Pages remains a mirror.",

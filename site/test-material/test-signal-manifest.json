@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "generatorVersion": "p2-1",
+  "generatedLocally": true,
+  "defaultPeakCeilingDbfs": -24,
+  "maximumAllowedPeakCeilingDbfs": -6,
+  "sampleRatesHz": [44100, 48000, 96000],
+  "pcmBitDepth": 16,
+  "signals": {
+    "sine1k": "1 kHz mono sine wave with 20 ms edge fades",
+    "sweep": "Mono logarithmic sweep from 20 Hz to min(20 kHz, 0.45 x sample rate) with 20 ms edge fades",
+    "pink": "Deterministic seeded pink-noise approximation normalized to the selected peak ceiling",
+    "channels": "Stereo 440 Hz sequence: both, left, right, both",
+    "phase": "Stereo 440 Hz sequence: first half in phase, second half with right-channel polarity inverted"
+  },
+  "levelMeaning": "The selected dBFS value is a digital peak ceiling, not a calibrated SPL, LUFS or RMS reference.",
+  "safety": "No signal auto-plays. Start with monitor volume low. High-frequency or continuous test signals can be uncomfortable. These files are not hearing tests or medical diagnostic material.",
+  "privacy": "Generation is performed in the browser. The generator does not intentionally upload generated audio or measurement notes."
+}
