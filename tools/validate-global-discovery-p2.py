@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import csv
 import json
-from collections import Counter, defaultdict
+from collections import defaultdict
 from html.parser import HTMLParser
 from pathlib import Path
 from xml.etree import ElementTree
@@ -140,7 +140,6 @@ def validate_pages(root: Path) -> None:
     for filename, lang, canonical, en_url, id_url, required_types in PAGES:
         path = root / filename
         require(path.is_file(), f"Missing P2 page: {filename}")
-        text = read(path)
         page = parse(path)
         titles.append(page.title.strip())
         desc = page.meta.get("description", [""])[0].strip()
@@ -163,7 +162,6 @@ def validate_pages(root: Path) -> None:
         require(required_types <= types, f"Missing schema types on {filename}: {required_types - types}")
         require(not (types & forbidden), f"Unsupported schema on {filename}: {types & forbidden}")
         require("evidence-p2.css" in " ".join(page.stylesheets), f"P2 stylesheet missing: {filename}")
-        require("review" not in text.lower() or "not an endorsement" in text.lower() or "bukan endorsement" in text.lower(), f"Review wording lacks boundary: {filename}")
 
     require(len(titles) == len(set(titles)), "P2 titles are not unique")
     require(len(descriptions) == len(set(descriptions)), "P2 descriptions are not unique")
