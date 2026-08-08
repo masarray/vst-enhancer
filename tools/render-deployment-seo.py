@@ -1,17 +1,16 @@
 #!/usr/bin/env python3
-"""Render the deploy-time SEO identity for ArSonKuPik static hosting.
+"""Render the canonical SEO identity for ArSonKuPik static hosting.
 
-The repository keeps one reviewed static-site source tree. Production hosting is
-split intentionally:
+ArSonKuPik intentionally keeps two public hosts:
 
 * Cloudflare Pages is the canonical public SEO authority.
-* GitHub Pages remains an accessible mirror.
+* GitHub Pages remains an accessible compatibility mirror.
 
-Both deployed copies must advertise the Cloudflare URL as canonical so search
-engines consolidate duplicate-host signals instead of making the two hosts
-compete. Cloudflare runs this script as its build command. The GitHub Pages
-workflow runs the same script in its ephemeral checkout before uploading the
-mirror artifact.
+The migration workflow uses this renderer once to promote the repository's
+historical GitHub Pages URLs to the Cloudflare identity. It also remains useful
+as an idempotent deployment guard for GitHub Pages and release validation.
+Cloudflare itself stays a plain static Pages deployment (`exit 0`) after the
+source has been promoted.
 """
 from __future__ import annotations
 
@@ -113,8 +112,8 @@ def main() -> int:
 
     validate_rendered_identity(site_dir, source_root, primary_root)
     print(
-        f"[PASS] Rendered SEO authority {primary_root} across {files_changed} files "
-        f"({replacements} host references rewritten)."
+        f"[PASS] Canonical SEO authority {primary_root} verified across the site; "
+        f"{files_changed} files changed in this run ({replacements} host references rewritten)."
     )
     return 0
 
