@@ -1,6 +1,6 @@
 # ArSonKuPik VST3 Audio Enhancer for Windows and macOS
 
-[![Website](https://img.shields.io/badge/Product%20website-ArSonKuPik-8f72ff)](https://masarray.github.io/vst-enhancer/)
+[![Website](https://img.shields.io/badge/Product%20website-ArSonKuPik-8f72ff)](https://arsonkupik.pages.dev/)
 [![Latest release](https://img.shields.io/github/v/release/masarray/vst-enhancer?label=Latest%20release)](https://github.com/masarray/vst-enhancer/releases/latest)
 [![Platforms](https://img.shields.io/badge/Platforms-Windows%20x64%20%7C%20macOS%20Universal-5577dd)](#compatibility)
 [![Formats](https://img.shields.io/badge/Formats-VST3%20%7C%20Standalone-b896ff)](#downloads)
@@ -10,8 +10,12 @@
 
 **ArSonKuPik** adalah audio enhancer VST3 dan aplikasi standalone untuk Windows serta macOS. Produk ini membantu musisi, kreator, produser, dan audio engineer menghasilkan body yang lebih berisi, presence yang lebih jelas, dimensi stereo yang lebih dalam, serta detail yang polished tanpa membangun rangkaian plug-in yang panjang.
 
+**Canonical product website:** https://arsonkupik.pages.dev/
+
+The historical GitHub Pages site remains available as a compatibility mirror, but Cloudflare Pages is the preferred public and search-engine identity.
+
 <p align="center">
-  <a href="https://masarray.github.io/vst-enhancer/">
+  <a href="https://arsonkupik.pages.dev/">
     <img src="site/assets/arsonkupik-vst-ui-v050.webp" width="1080" alt="ArSonKuPik VST3 audio enhancer interface showing the Mas Ari Signature engine, professional preset selector, six musical controls, A/B comparison and level meters">
   </a>
 </p>
@@ -49,7 +53,7 @@ Factory presets include Signature Balanced, Transparent Polish, Open & Detailed,
 
 The reviewed public manifest records **v0.5.23** for Windows x64 and macOS Universal. The product website resolves the latest supported GitHub Release and routes downloads only to official assets from this repository.
 
-- [Open the product website](https://masarray.github.io/vst-enhancer/)
+- [Open the product website](https://arsonkupik.pages.dev/)
 - [Download the latest supported release](https://github.com/masarray/vst-enhancer/releases/latest)
 - [Read the public changelog](CHANGELOG.md)
 - [Review release provenance](RELEASE-PROVENANCE.md)
@@ -170,10 +174,11 @@ Never publish activation codes, Computer Request IDs, customer audio, private pr
 
 ## Official links
 
-- [Product website](https://masarray.github.io/vst-enhancer/)
-- [Bahasa Indonesia website](https://masarray.github.io/vst-enhancer/id/)
+- [Product website](https://arsonkupik.pages.dev/)
+- [Bahasa Indonesia website](https://arsonkupik.pages.dev/id/)
 - [Latest supported release](https://github.com/masarray/vst-enhancer/releases/latest)
-- [Optional support and activation](https://masarray.github.io/vst-enhancer/activation/)
+- [Optional support and activation](https://arsonkupik.pages.dev/activation/)
+- [GitHub Pages compatibility mirror](https://masarray.github.io/vst-enhancer/)
 - [Public changelog](CHANGELOG.md)
 - [End User Licence Agreement](EULA.txt)
 - [Purchase Terms](PURCHASE_TERMS.txt)

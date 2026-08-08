@@ -7,6 +7,7 @@ on:
       - main
     paths:
       - "site/**"
+      - "tools/render-deployment-seo.py"
       - "tools/validate-seo.py"
       - "tools/validate-live-seo.py"
       - "tools/validate-p0-release-boundary.py"
@@ -16,6 +17,7 @@ on:
       - main
     paths:
       - "site/**"
+      - "tools/render-deployment-seo.py"
       - "tools/validate-seo.py"
       - "tools/validate-live-seo.py"
       - "tools/validate-p0-release-boundary.py"
@@ -77,11 +79,13 @@ jobs:
 
           for required in \
             site/.nojekyll \
+            site/_headers \
             site/index.html \
             site/robots.txt \
             site/sitemap.xml \
             site/sitemap.txt \
-            site/release.json
+            site/release.json \
+            tools/render-deployment-seo.py
           do
             [[ -f "$required" ]] || {
               echo "Required Pages file is missing: $required" >&2
@@ -119,15 +123,80 @@ jobs:
           echo "commit=$actual_commit" >>"$GITHUB_OUTPUT"
           echo "version=$version" >>"$GITHUB_OUTPUT"
 
+      - name: Render and validate canonical deployment artifact
+        env:
+          EXPECTED_VERSION: ${{ steps.contract.outputs.version }}
+        run: |
+          set -euo pipefail
+          rendered="$RUNNER_TEMP/arsonkupik-rendered-site"
+          rm -rf "$rendered"
+          cp -a site "$rendered"
+          python3 tools/render-deployment-seo.py --site-dir "$rendered"
+          python3 tools/validate-live-seo.py \
+            --static-dir "$rendered" \
+            --expected-version "$EXPECTED_VERSION"
+
+  promote-source:
+    name: Promote Cloudflare canonical source
+    needs: validate
+    if: >-
+      github.event_name == 'push' &&
+      github.repository == 'masarray/vst-enhancer' &&
+      github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+
+    steps:
+      - name: Check out validated main source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ needs.validate.outputs.commit }}
+          fetch-depth: 1
+
+      - name: Promote source SEO identity to Cloudflare
+        run: |
+          set -euo pipefail
+          python3 tools/render-deployment-seo.py --site-dir site
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path("tools/validate-seo.py")
+          text = path.read_text(encoding="utf-8")
+          old = 'ROOT = "https://masarray.github.io/vst-enhancer/"'
+          new = 'ROOT = "https://arsonkupik.pages.dev/"'
+          if old in text:
+              text = text.replace(old, new, 1)
+              path.write_text(text, encoding="utf-8", newline="\n")
+          elif new not in text:
+              raise SystemExit("validate-seo.py has an unexpected canonical ROOT")
+          PY
+          python3 tools/validate-seo.py
+
+      - name: Persist canonical source when migration is needed
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- site tools/validate-seo.py; then
+            echo "Canonical source is already promoted."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add site tools/validate-seo.py
+          git commit -m "Promote Cloudflare canonical SEO source"
+          git push origin HEAD:main
+
   deploy:
-    name: Deploy audited static site
+    name: Deploy audited GitHub mirror
     needs: validate
     if: >-
       github.event_name != 'pull_request' &&
       github.repository == 'masarray/vst-enhancer' &&
       github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
     permissions:
       contents: read
       pages: write
@@ -144,6 +213,17 @@ jobs:
           persist-credentials: false
           fetch-depth: 1
 
+      - name: Render GitHub mirror with Cloudflare canonical authority
+        run: |
+          set -euo pipefail
+          python3 tools/render-deployment-seo.py --site-dir site
+          python3 tools/validate-live-seo.py \
+            --static-dir site \
+            --expected-version "${{ needs.validate.outputs.version }}"
+          # _headers is a Cloudflare-only build artifact. GitHub Pages does not
+          # need to expose it; HTML and discovery files already cross-canonicalize.
+          rm -f site/_headers
+
       - name: Configure GitHub Pages
         uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
 
@@ -157,8 +237,10 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5.0.0
 
-      - name: Verify live indexing and release contract
+      - name: Verify Cloudflare primary and GitHub mirror
         run: |
           set -euo pipefail
           python3 tools/validate-live-seo.py \
-            --expected-version "${{ needs.validate.outputs.version }}"
+            --expected-version "${{ needs.validate.outputs.version }}" \
+            --attempts 36 \
+            --delay-seconds 10
