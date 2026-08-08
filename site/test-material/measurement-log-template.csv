@@ -1,0 +1,1 @@
+timestamp_utc,software_version,build_or_release,host_or_standalone,operating_system,sample_rate_hz,buffer_samples,source_signal,source_level_dbfs_peak,preset,enhance,smart_bass,smart_treble,vocal,stereo,smart_protect,gain_match,input_peak_dbfs,output_peak_dbfs,true_peak_dbtp,integrated_lufs,notes
