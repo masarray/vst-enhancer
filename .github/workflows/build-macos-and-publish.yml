@@ -94,37 +94,26 @@ jobs:
             exit 1
           }
 
-          release_json="$(gh release view "$tag" --repo "$PUBLIC_REPO" \
-            --json isDraft,isPrerelease,assets)"
-          is_draft="$(jq -r '.isDraft' <<<"$release_json")"
-          is_prerelease="$(jq -r '.isPrerelease' <<<"$release_json")"
-          [[ "$is_prerelease" == false ]] || {
-            echo "$tag is a prerelease; production repair is forbidden." >&2
-            exit 1
-          }
-
+          # A read-only GITHUB_TOKEN cannot see draft releases in a public repo.
+          # Normal production staging therefore validates the draft and Windows
+          # assets only after the source-free handoff reaches the write-scoped
+          # publish job. Published repair remains visible here and is verified.
           repair=false
-          if [[ "$is_draft" != true ]]; then
-            [[ "$INPUT_REPAIR" == true ]] || {
-              echo "$tag is already published; repair_published_release must be explicitly true." >&2
+          if [[ "$INPUT_REPAIR" == true ]]; then
+            release_json="$(gh release view "$tag" --repo "$PUBLIC_REPO" \
+              --json isDraft,isPrerelease)"
+            is_draft="$(jq -r '.isDraft' <<<"$release_json")"
+            is_prerelease="$(jq -r '.isPrerelease' <<<"$release_json")"
+            [[ "$is_prerelease" == false ]] || {
+              echo "$tag is a prerelease; production repair is forbidden." >&2
+              exit 1
+            }
+            [[ "$is_draft" == false ]] || {
+              echo "$tag is still a draft; published repair is not applicable." >&2
               exit 1
             }
             repair=true
           fi
-
-          assets="$(jq -r '.assets[].name' <<<"$release_json")"
-          for required in \
-            "ArSonKuPik-$tag-Windows-x64-Setup.exe" \
-            "ArSonKuPik-$tag-Windows-x64-VST3.zip" \
-            "ArSonKuPik-$tag-Windows-x64-Standalone.zip" \
-            "SHA256SUMS-Windows.txt" \
-            "BUILDINFO-Windows.json"
-          do
-            grep -Fxq "$required" <<<"$assets" || {
-              echo "Required audited Windows asset is missing: $required" >&2
-              exit 1
-            }
-          done
 
           number="${tag#v}"
           echo "RELEASE_TAG=$tag" >>"$GITHUB_ENV"
@@ -393,24 +382,9 @@ jobs:
           print("[PASS] macOS build provenance matches approved inputs.")
           PY
 
-      - name: Create combined checksums and release notes
-        env:
-          GH_TOKEN: ${{ github.token }}
+      - name: Create final release notes
         run: |
           set -euo pipefail
-          gh release download "$RELEASE_TAG" \
-            --repo "$PUBLIC_REPO" \
-            --pattern SHA256SUMS-Windows.txt \
-            --dir "$MAC_DIST" \
-            --clobber
-          cat "$MAC_DIST/SHA256SUMS-Windows.txt" \
-              "$MAC_DIST/SHA256SUMS-macOS.txt" \
-            | LC_ALL=C sort >"$MAC_DIST/SHA256SUMS.txt"
-          [[ "$(wc -l <"$MAC_DIST/SHA256SUMS.txt" | tr -d ' ')" == 8 ]] || {
-            echo "Combined checksum inventory must contain exactly 8 entries." >&2
-            exit 1
-          }
-
           cat >"$MAC_DIST/release-notes-final.md" <<EOF_NOTES
           # ArSonKuPik VST $RELEASE_TAG - Windows and macOS
 
@@ -461,7 +435,6 @@ jobs:
           ArSonKuPik-$RELEASE_TAG-macOS-Universal.dmg
           BUILDINFO-macOS.json
           SHA256SUMS-macOS.txt
-          SHA256SUMS.txt
           release-notes-final.md
           EOF_EXPECTED
           sed -i '' 's/^          //' "$expected"
@@ -566,7 +539,6 @@ jobs:
           BUILDINFO-macOS.json
           HANDOFF-SHA256SUMS.txt
           SHA256SUMS-macOS.txt
-          SHA256SUMS.txt
           release-notes-final.md
           EOF_EXPECTED
           sed -i 's/^          //' "$expected"
@@ -589,6 +561,67 @@ jobs:
               exit 1
             fi
           done
+
+      - name: Resolve staged release and create combined checksums
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+
+          release_json="$(gh api "repos/$PUBLIC_REPO/releases?per_page=100" \
+            | jq -ce --arg tag "$RELEASE_TAG" \
+              '[.[] | select(.tag_name == $tag)]
+               | if length == 1 then .[0]
+                 elif length == 0 then error("release not found")
+                 else error("duplicate release tag") end')"
+          is_draft="$(jq -r '.draft' <<<"$release_json")"
+          is_prerelease="$(jq -r '.prerelease' <<<"$release_json")"
+          [[ "$is_prerelease" == false ]] || {
+            echo "$RELEASE_TAG is a prerelease; production publication is forbidden." >&2
+            exit 1
+          }
+
+          if [[ "$RELEASE_REPAIR" == true ]]; then
+            [[ "$is_draft" == false ]] || {
+              echo "Published repair requested but $RELEASE_TAG is still a draft." >&2
+              exit 1
+            }
+          else
+            [[ "$is_draft" == true ]] || {
+              echo "$RELEASE_TAG is already published; normal production staging refuses replacement." >&2
+              exit 1
+            }
+          fi
+
+          assets="$(jq -r '.assets[].name' <<<"$release_json")"
+          for required in \
+            "ArSonKuPik-$RELEASE_TAG-Windows-x64-Setup.exe" \
+            "ArSonKuPik-$RELEASE_TAG-Windows-x64-VST3.zip" \
+            "ArSonKuPik-$RELEASE_TAG-Windows-x64-Standalone.zip" \
+            "SHA256SUMS-Windows.txt" \
+            "BUILDINFO-Windows.json"
+          do
+            grep -Fxq "$required" <<<"$assets" || {
+              echo "Required audited Windows asset is missing: $required" >&2
+              exit 1
+            }
+          done
+
+          checksum_asset_id="$(jq -er \
+            '.assets[] | select(.name == "SHA256SUMS-Windows.txt") | .id' \
+            <<<"$release_json")"
+          gh api \
+            -H 'Accept: application/octet-stream' \
+            "repos/$PUBLIC_REPO/releases/assets/$checksum_asset_id" \
+            >"$MAC_DIST/SHA256SUMS-Windows.txt"
+
+          cat "$MAC_DIST/SHA256SUMS-Windows.txt" \
+              "$MAC_DIST/SHA256SUMS-macOS.txt" \
+            | LC_ALL=C sort >"$MAC_DIST/SHA256SUMS.txt"
+          [[ "$(wc -l <"$MAC_DIST/SHA256SUMS.txt" | tr -d ' ')" == 8 ]] || {
+            echo "Combined checksum inventory must contain exactly 8 entries." >&2
+            exit 1
+          }
 
       - name: Upload approved macOS assets
         env:
