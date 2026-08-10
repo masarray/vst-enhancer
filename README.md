@@ -51,7 +51,7 @@ Factory presets include Signature Balanced, Transparent Polish, Open & Detailed,
 
 ## Current public release
 
-The reviewed public manifest records **v0.5.23** for Windows x64 and macOS Universal. The product website resolves the latest supported GitHub Release and routes downloads only to official assets from this repository.
+The reviewed public manifest records **v0.5.24** for Windows x64 and macOS Universal. The product website resolves the latest supported GitHub Release and routes downloads only to official assets from this repository.
 
 - [Open the product website](https://arsonkupik.pages.dev/)
 - [Download the latest supported release](https://github.com/masarray/vst-enhancer/releases/latest)
