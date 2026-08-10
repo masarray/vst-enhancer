@@ -1,6 +1,26 @@
 # Public Distribution Changelog
 
+## Unreleased
+
+No unreleased public distribution changes are currently documented after v0.5.24.
+
 ## v0.5.24 - 10 August 2026
+
+### Sound and A/B reliability
+
+- Refined the approved Mas Ari Signature balance with warmer vocal-body support and polished upper-air behaviour while preserving the established musical character.
+- Corrected the production Gain Match controller so its level-equal comparison target can remain current while Gain Match is OFF and during the intentional engagement transition, then holds after settling to avoid long-term comparison-level breathing.
+- Kept Gain Match **OFF by default** for normal listening; enabling it remains the explicit level-equal A/B comparison mode rather than a hidden loudness correction in the normal creative path.
+- Preserved the independent peak-safety path and verified Gain Match enable, settled match, OFF recovery and transition behaviour without widening the approved release thresholds.
+- Passed the release stability gate across the reviewed 48/96 kHz and 32/64/128-sample realtime matrices with the high-stress 96 kHz / 32-sample cases retained as diagnostic trend checks.
+
+### Public website and documentation
+
+- Synchronized the English and Bahasa Indonesia landing surfaces with v0.5.24, Windows x64 and macOS Universal distribution, the current evaluation model and the intended Gain Match workflow.
+- Kept every public download CTA resolved through the official `masarray/vst-enhancer` GitHub Release surface and kept SHA-256 verification visible.
+- Kept Cloudflare Pages at `https://arsonkupik.pages.dev/` as the canonical public/search identity while the GitHub Pages deployment remains a compatibility mirror with Cloudflare canonical URLs.
+- Published release metadata for source identity, platform packages, signing status, evaluation behaviour and official download URLs in the bilingual public manifests.
+- Updated the public release-provenance document to the exact v0.5.24 source, macOS helper and successful release-workflow identity.
 
 ### Cross-platform distribution
 
@@ -45,39 +65,6 @@
 - GitHub Actions was used only by the public binary repository for the macOS build; Actions remained disabled in the private source repository.
 
 This changelog covers the public product website, distribution metadata, legal notices, supported packages and public support surface. Proprietary DSP implementation details are not published in this repository.
-
-## Unreleased
-
-### Cross-platform product copy and release integrity
-
-- Aligned README and public release documentation with the shipped Windows x64 and macOS Universal packages.
-- Corrected the v0.5.20 provenance description: Windows was built and audited locally, while macOS Universal was built and audited by the approved manual workflow in the public binary repository using the exact private source tag.
-- Added an explicit public provenance document and validation gate for platform, signing and source-disclosure consistency.
-- Normalised legacy changelog punctuation and moved unreleased work above published versions.
-
-### Latest-release direct downloads
-
-- Changed every public installer CTA to resolve the latest published GitHub Release dynamically.
-- Selects the official Windows installer `.exe` from the latest release assets instead of relying on a version-pinned `release.json` URL.
-- Updates the visible version, installer checksum command, package links, release links and structured download metadata from the resolved release.
-- Applies the same latest-installer behaviour to the main landing, mobile sticky CTA, final CTA, download card, navigation CTA and optional-activation page.
-- Rejects portable executables, activation utilities, key tools, non-HTTPS URLs and assets outside this repository's official release-download path.
-- Locks installer `href` values so a late response from older local metadata cannot overwrite the latest installer.
-- Falls back only to the repository's `/releases/latest` page when the API cannot be resolved; it does not fall back to an older version-specific installer.
-- Added regression checks for the latest-release endpoint, official `browser_download_url` use, direct `.exe` selection, stale-link protection, safe fallback behaviour and activation-page coverage.
-
-### Trial-first public landing
-
-- Reduced the public landing to ten major sections with a compact four-audience strip, one three-minute evaluation flow, a combined controls-and-presets section and a merged technical download and installation journey.
-- Reduced the FAQ to eight essential questions and moved legal documents into one optional disclosure.
-- Added a viewport-aware mobile sticky download CTA that appears after the hero action leaves view.
-- Kept Inter as the primary font and formalised a 10 px, 11 px and 12 px compact typography scale.
-- Kept price and payment details outside the free-evaluation journey.
-- Standardised development-support wording to “may help sustain” so it does not imply that individual payments are earmarked for a vendor or expense.
-- Added future checkout safeguards requiring HTTPS, an exact hostname allowlist, seller and provider identity, currency, tax and refund disclosures and explicit page-indexing readiness before a payment link can appear.
-- Kept paid checkout disabled and the activation page `noindex,follow` until those requirements are met.
-- Kept the product on one deterministic canonical URL and removed query-language URLs from the sitemap.
-- Added validation for mobile CTA behaviour, the Inter 10/11/12 px scale, consistent funding language, trusted checkout fields, URL allowlisting and owner-controlled local validation.
 
 ## v0.5.20 — 27 July 2026
 
