@@ -25,7 +25,7 @@
   "offlineActivation": true,
   "keyActivatorDistributedPublicly": false,
   "activationCodeProvider": "Mas Ari",
-  "publishedAt": "2026-08-10T00:16:48Z",
+  "publishedAt": "2026-08-10T00:28:28Z",
   "sourceCommit": "2c764f82b0fc99eaff04d918cef4f839db7509e5",
   "releaseUrl": "https://github.com/masarray/vst-enhancer/releases/tag/v0.5.24",
   "installerUrl": "https://github.com/masarray/vst-enhancer/releases/download/v0.5.24/ArSonKuPik-v0.5.24-Windows-x64-Setup.exe",
