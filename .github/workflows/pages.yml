@@ -252,11 +252,31 @@ jobs:
       - name: Configure GitHub Pages
         uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
 
+      # The approved immutable upload-pages-artifact v5 pin below is retained
+      # in the exact-SHA policy for compatibility/audit inventory:
+      # actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9
+      # That revision internally invokes upload-artifact@bbbca2dd..., which is
+      # intentionally not allowed. Reproduce its transparent tar+upload steps
+      # directly with the already-approved upload-artifact v7.0.1 SHA instead.
+      - name: Archive audited Pages artifact
+        run: |
+          set -euo pipefail
+          tar \
+            --dereference --hard-dereference \
+            --directory ./site \
+            -cvf "$RUNNER_TEMP/artifact.tar" \
+            --exclude=.git \
+            --exclude=.github \
+            .
+
       - name: Upload audited Pages artifact
-        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          path: ./site
-          include-hidden-files: true
+          name: github-pages
+          path: ${{ runner.temp }}/artifact.tar
+          retention-days: 1
+          if-no-files-found: error
+          compression-level: 0
 
       - name: Deploy GitHub Pages
         id: deployment
