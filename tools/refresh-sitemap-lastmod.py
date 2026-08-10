@@ -8,7 +8,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from xml.etree import ElementTree
 
-ROOT = "https://masarray.github.io/vst-enhancer/"
+ROOT = "https://arsonkupik.pages.dev/"
 NS = "http://www.sitemaps.org/schemas/sitemap/0.9"
 RELEASE_UPDATED_URLS = {ROOT, ROOT + "id/"}
 
