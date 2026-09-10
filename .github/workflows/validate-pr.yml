@@ -1,0 +1,50 @@
+name: Public Release PR Validation
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'AGENTS.md'
+      - 'site/**'
+      - 'tools/**'
+      - '.github/workflows/**'
+      - 'README.md'
+      - 'CHANGELOG.md'
+      - 'RELEASE-PROVENANCE.md'
+      - 'EULA.txt'
+      - 'PRIVACY.txt'
+      - 'PURCHASE_TERMS.txt'
+      - 'SECURITY.md'
+      - 'SUPPORT.md'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vst-enhancer-pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  validate-public-surface:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Compile validation tooling
+        shell: pwsh
+        run: |
+          Get-ChildItem tools -Filter '*.py' | ForEach-Object {
+            python -m py_compile $_.FullName
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          }
+
+      - name: Validate public release surface
+        shell: pwsh
+        run: ./tools/validate-public-release.ps1
