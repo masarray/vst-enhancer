@@ -14,6 +14,8 @@ from xml.etree import ElementTree
 ROOT = "https://arsonkupik.pages.dev/"
 SOCIAL = ROOT + "assets/arsonkupik-guide-social-1200x630.png"
 WEBSITE_ID = ROOT + "#website"
+SITE_NAME = "ArSonKuPik"
+SITE_NAME_ALTERNATES = ["ArSonKuPik VST", "ArSonKuPik Audio Enhancer", "arsonkupik.pages.dev"]
 NS = "http://www.sitemaps.org/schemas/sitemap/0.9"
 
 PAGES = [
@@ -180,8 +182,9 @@ def validate_page(root: Path, spec, global_types: Counter[str]) -> None:
     }
     for key, expected in expected_props.items():
         require(one(parser.props.get(key, []), key, url) == expected, f"{key} mismatch: {url}")
-    for key in ("og:title", "og:description", "og:image:alt", "og:site_name", "og:locale"):
+    for key in ("og:title", "og:description", "og:image:alt", "og:locale"):
         require(bool(one(parser.props.get(key, []), key, url)), f"empty {key}: {url}")
+    require(one(parser.props.get("og:site_name", []), "og:site_name", url) == SITE_NAME, f"og:site_name mismatch: {url}")
 
     expected_meta = {
         "twitter:card": "summary_large_image",
@@ -195,6 +198,17 @@ def validate_page(root: Path, spec, global_types: Counter[str]) -> None:
     types = node_types(parser.json_ld)
     global_types.update(types)
     require(required_types.issubset(types), f"schema {sorted(required_types)} missing at {url}; got {sorted(types)}")
+
+    website_nodes = nodes_of_type(parser.json_ld, "WebSite")
+    if url == ROOT:
+        require(len(website_nodes) == 1, f"expected one WebSite node on homepage, got {len(website_nodes)}")
+        website = website_nodes[0]
+        require(website.get("@id") == WEBSITE_ID, "WebSite @id mismatch")
+        require(website.get("url") == ROOT, "WebSite url mismatch")
+        require(website.get("name") == SITE_NAME, "WebSite name mismatch")
+        require(website.get("alternateName") == SITE_NAME_ALTERNATES, "WebSite alternateName preference mismatch")
+    else:
+        require(not website_nodes, f"WebSite entity must only exist on the domain root: {url}")
 
     for node in nodes_of_type(parser.json_ld, "WebPage"):
         is_part_of = node.get("isPartOf")
@@ -301,7 +315,7 @@ def main() -> int:
 
     print(
         "[PASS] 14 canonical pages satisfy P0 indexing/runtime guards and P1/P2 "
-        "metadata, schema, social-image, sitemap and release contracts."
+        "metadata, schema, site-name, social-image, sitemap and release contracts."
     )
     return 0
 
