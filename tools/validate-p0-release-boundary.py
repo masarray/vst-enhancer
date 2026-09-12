@@ -247,19 +247,48 @@ def validate_platform_cta_contract() -> None:
         'id="installer-link-bottom"' in landing_id and "Unduh gratis untuk Windows" in landing_id,
         "Indonesian Windows hero CTA is missing.",
     )
-    require("ensureHeroMacCta" in loader, "Mac hero CTA bootstrap is missing from the lightweight loader.")
-    require("mac-dmg-link-hero" in loader, "Mac hero CTA stable id is missing from the lightweight loader.")
-    require("Download free for Mac" in loader, "English Mac hero CTA label is missing.")
-    require("Unduh gratis untuk Mac" in loader, "Indonesian Mac hero CTA label is missing.")
-    require("link.hidden" not in loader, "Mac hero CTA must not be hidden by the bootstrap loader.")
+
+    require(
+        'id="mac-dmg-link-hero"' in landing_en
+        and 'href="#download"' in landing_en
+        and "Download free for Mac" in landing_en,
+        "English Mac hero CTA must exist in static HTML with a safe fallback.",
+    )
+    require(
+        'id="mac-dmg-link-hero"' in landing_id
+        and 'href="#download"' in landing_id
+        and "Unduh gratis untuk Mac" in landing_id,
+        "Indonesian Mac hero CTA must exist in static HTML with a safe fallback.",
+    )
+    require(
+        "ensureHeroMacCta" not in loader and "mac-dmg-link-hero" not in loader,
+        "Mac hero CTA must not depend on runtime DOM creation.",
+    )
+
     require(
         "document.getElementById('mac-dmg-link-hero')" in core
         and "setLink(heroMac, state.macDmgUrl, true)" in core,
-        "Release runtime does not upgrade the Mac hero CTA to the reviewed DMG URL.",
+        "Release runtime does not upgrade the static Mac hero CTA to the reviewed DMG URL.",
     )
     require("heroMac.href = '#download'" in core, "Mac hero CTA has no resilient download-section fallback.")
     require(".button.secondary.hero-mac-download" in css, "Mac hero CTA visual treatment is missing.")
     require('"macos-universal"' in manifest and '"macDmgUrl"' in manifest, "macOS release manifest contract is missing.")
+
+    mobile_en = section(landing_en, '<div id="mobile-download-bar"', "</div>\n  <noscript>")
+    mobile_id = section(landing_id, '<div id="mobile-download-bar"', "</div>\n  <noscript>")
+    require('href="#download"' in mobile_en and "Choose download" in mobile_en, "English mobile CTA must be platform-neutral.")
+    require('href="#download"' in mobile_id and "Pilih unduhan" in mobile_id, "Indonesian mobile CTA must be platform-neutral.")
+    require("data-installer-cta" not in mobile_en and "data-installer-cta" not in mobile_id, "Mobile CTA must not be rebound to Windows-only installer.")
+
+    workflow_routes = (
+        "stereo-enhancer-vst3/",
+        "vocal-enhancer-vst3/",
+        "mix-bus-enhancer/",
+        "mastering-audio-enhancer/",
+    )
+    for route in workflow_routes:
+        require(f'href="{route}"' in landing_en, f"English homepage lacks direct workflow link: {route}")
+        require(f'href="{route}"' in landing_id, f"Indonesian homepage lacks direct workflow link: {route}")
 
 
 def main() -> int:
@@ -274,7 +303,8 @@ def main() -> int:
 
     print(
         "[PASS] Public build is read-only; publish is source-free; Pages is exact-source validated; "
-        "workflow inventory is allowlisted; Windows and Mac hero CTAs are regression-guarded."
+        "workflow inventory is allowlisted; static Windows/Mac CTAs, neutral mobile download and "
+        "homepage workflow discovery links are regression-guarded."
     )
     return 0
 
