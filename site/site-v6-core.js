@@ -105,6 +105,18 @@
     setLink(document.getElementById('mac-dmg-link'), state.macDmgUrl, Boolean(state.macDmgUrl));
     setLink(document.getElementById('mac-vst3-link'), state.macVst3Url, Boolean(state.macVst3Url));
     setLink(document.getElementById('mac-standalone-link'), state.macStandaloneUrl, Boolean(state.macStandaloneUrl));
+
+    const heroMac = document.getElementById('mac-dmg-link-hero');
+    if (heroMac && state.macDmgUrl) {
+      setLink(heroMac, state.macDmgUrl, true);
+    } else if (heroMac) {
+      // Never regress to a missing Mac action: retain a useful static fallback
+      // even when release metadata is temporarily unavailable.
+      heroMac.href = '#download';
+      heroMac.removeAttribute('aria-disabled');
+      heroMac.removeAttribute('data-release-pending');
+    }
+
     setLink(document.getElementById('checksums-link'), state.checksumsUrl, Boolean(state.checksumsUrl));
     setLink(document.getElementById('release-link'), state.releaseUrl || RELEASE_FALLBACK, true);
     setLink(document.getElementById('distribution-link'), state.releaseUrl || RELEASE_FALLBACK, true);

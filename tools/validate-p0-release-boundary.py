@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the public release and GitHub Pages security boundary."""
+"""Validate the public release, Pages security boundary and platform CTA contract."""
 
 from __future__ import annotations
 
@@ -11,6 +11,12 @@ WORKFLOWS = ROOT / ".github" / "workflows"
 RELEASE_WORKFLOW = WORKFLOWS / "build-macos-and-publish.yml"
 PAGES_WORKFLOW = WORKFLOWS / "pages.yml"
 UPDATER = ROOT / "tools" / "update-public-crossplatform-release.py"
+LANDING_EN = ROOT / "site" / "index.html"
+LANDING_ID = ROOT / "site" / "id" / "index.html"
+SITE_LOADER = ROOT / "site" / "site-v6.js"
+SITE_CORE = ROOT / "site" / "site-v6-core.js"
+HARDENING_CSS = ROOT / "site" / "hardening-v6.css"
+RELEASE_MANIFEST = ROOT / "site" / "release.json"
 
 APPROVED_WORKFLOWS = [
     ".github/workflows/build-macos-and-publish.yml",
@@ -222,6 +228,40 @@ def validate_pages_workflow(text: str) -> None:
     )
 
 
+def validate_platform_cta_contract() -> None:
+    for path in (LANDING_EN, LANDING_ID, SITE_LOADER, SITE_CORE, HARDENING_CSS, RELEASE_MANIFEST):
+        require(path.is_file(), f"Platform CTA contract file is missing: {path.relative_to(ROOT)}")
+
+    landing_en = LANDING_EN.read_text(encoding="utf-8")
+    landing_id = LANDING_ID.read_text(encoding="utf-8")
+    loader = SITE_LOADER.read_text(encoding="utf-8")
+    core = SITE_CORE.read_text(encoding="utf-8")
+    css = HARDENING_CSS.read_text(encoding="utf-8")
+    manifest = RELEASE_MANIFEST.read_text(encoding="utf-8")
+
+    require(
+        'id="installer-link-bottom"' in landing_en and "Download free for Windows" in landing_en,
+        "English Windows hero CTA is missing.",
+    )
+    require(
+        'id="installer-link-bottom"' in landing_id and "Unduh gratis untuk Windows" in landing_id,
+        "Indonesian Windows hero CTA is missing.",
+    )
+    require("ensureHeroMacCta" in loader, "Mac hero CTA bootstrap is missing from the lightweight loader.")
+    require("mac-dmg-link-hero" in loader, "Mac hero CTA stable id is missing from the lightweight loader.")
+    require("Download free for Mac" in loader, "English Mac hero CTA label is missing.")
+    require("Unduh gratis untuk Mac" in loader, "Indonesian Mac hero CTA label is missing.")
+    require("link.hidden" not in loader, "Mac hero CTA must not be hidden by the bootstrap loader.")
+    require(
+        "document.getElementById('mac-dmg-link-hero')" in core
+        and "setLink(heroMac, state.macDmgUrl, true)" in core,
+        "Release runtime does not upgrade the Mac hero CTA to the reviewed DMG URL.",
+    )
+    require("heroMac.href = '#download'" in core, "Mac hero CTA has no resilient download-section fallback.")
+    require(".button.secondary.hero-mac-download" in css, "Mac hero CTA visual treatment is missing.")
+    require('"macos-universal"' in manifest and '"macDmgUrl"' in manifest, "macOS release manifest contract is missing.")
+
+
 def main() -> int:
     require(RELEASE_WORKFLOW.is_file(), "Approved public release workflow is missing.")
     require(PAGES_WORKFLOW.is_file(), "Approved Pages workflow is missing.")
@@ -230,10 +270,11 @@ def main() -> int:
     validate_workflow_inventory()
     validate_release_workflow(RELEASE_WORKFLOW.read_text(encoding="utf-8"))
     validate_pages_workflow(PAGES_WORKFLOW.read_text(encoding="utf-8"))
+    validate_platform_cta_contract()
 
     print(
-        "[PASS] Public build is read-only; publish is source-free; "
-        "Pages is exact-source validated; workflow inventory is allowlisted."
+        "[PASS] Public build is read-only; publish is source-free; Pages is exact-source validated; "
+        "workflow inventory is allowlisted; Windows and Mac hero CTAs are regression-guarded."
     )
     return 0
 
