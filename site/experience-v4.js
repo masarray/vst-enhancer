@@ -1,9 +1,8 @@
 (() => {
   'use strict';
 
-  const language = document.documentElement.lang === 'id' ? 'id' : 'en';
-  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  const root = document.documentElement;
+  const language = root.lang === 'id' ? 'id' : 'en';
   const text = language === 'id'
     ? {
         preview: 'Buka tampilan aplikasi ukuran besar',
@@ -22,89 +21,10 @@
         visible: (count) => `${count} presets shown`
       };
 
-  const setMeta = (selector, value) => {
-    const element = document.querySelector(selector);
-    if (element) element.setAttribute('content', value);
-  };
-
-  const setText = (selector, value) => {
-    const element = document.querySelector(selector);
-    if (element) element.textContent = value;
-  };
-
-  const setupCrossPlatformCopy = () => {
-    const isId = language === 'id';
-    document.title = isId
-      ? 'ArSonKuPik — VST3 Audio Enhancer Musikal untuk Windows dan macOS'
-      : 'ArSonKuPik — Musical VST3 Audio Enhancer for Windows and macOS';
-
-    const description = isId
-      ? 'Hasilkan suara lebih berisi, jernih, dan berdimensi tanpa rangkaian plug-in rumit. ArSonKuPik tersedia sebagai VST3 dan Standalone untuk Windows dan macOS.'
-      : 'Achieve fuller, clearer and more dimensional sound without a complex plug-in chain. ArSonKuPik is available as VST3 and Standalone for Windows and macOS.';
-    setMeta('meta[name="description"]', description);
-    setMeta('meta[property="og:description"]', description);
-    setMeta('meta[name="twitter:description"]', description);
-
-    setText('.landing-hero .hero-copy > .eyebrow', isId
-      ? 'VST3 audio enhancer musikal untuk Windows dan macOS'
-      : 'Musical VST3 audio enhancer for Windows and macOS');
-
-    const trustFormat = document.querySelector('.trust-grid > div:first-child span');
-    if (trustFormat) {
-      trustFormat.textContent = isId
-        ? 'Di dalam DAW kompatibel atau sebagai aplikasi terpisah di Windows maupun macOS.'
-        : 'Inside a compatible DAW or as a separate application on Windows or macOS.';
-    }
-
-    setText('#download .section-heading .eyebrow', isId
-      ? 'Unduhan resmi Windows dan macOS'
-      : 'Official Windows and macOS downloads');
-
-    const downloadLead = document.querySelector('#download .section-heading .section-lead');
-    if (downloadLead) {
-      downloadLead.textContent = isId
-        ? 'Gunakan installer Windows untuk pemasangan paling mudah, atau pilih paket VST3, Standalone, dan DMG resmi sesuai sistem operasi Anda.'
-        : 'Use the Windows installer for the simplest setup, or choose the official VST3, Standalone and DMG package for your operating system.';
-    }
-
-    const standaloneHint = document.querySelector('#technical span:nth-child(2) small');
-    if (standaloneHint) {
-      standaloneHint.textContent = isId
-        ? 'Aplikasi terpisah untuk workflow audio device yang didukung di Windows atau macOS'
-        : 'A separate application for supported audio-device workflows on Windows or macOS';
-    }
-
-    const macCard = document.getElementById('mac-download-option');
-    if (macCard) {
-      const heading = macCard.querySelector('h3');
-      const paragraph = macCard.querySelector('p');
-      const dmg = macCard.querySelector('#mac-dmg-link');
-      if (heading) heading.textContent = isId ? 'Paket Mac' : 'Mac package';
-      if (paragraph) paragraph.textContent = isId
-        ? 'Universal untuk Apple Silicon dan Intel. Ad-hoc signed, tanpa Developer ID dan tanpa notarization.'
-        : 'Universal for Apple Silicon and Intel. Ad-hoc signed, without Developer ID signing or notarization.';
-      if (dmg) dmg.textContent = isId ? 'Unduh DMG Mac' : 'Download Mac DMG';
-    }
-
-    const faqStandalone = [...document.querySelectorAll('.faq-grid details')]
-      .find((item) => /VST3 (or|atau) Standalone\?/i.test(item.querySelector('summary')?.textContent || ''));
-    const faqParagraph = faqStandalone?.querySelector('p');
-    if (faqParagraph) {
-      faqParagraph.textContent = isId
-        ? 'VST3 berjalan di dalam DAW kompatibel. Standalone berjalan sebagai aplikasi terpisah di Windows atau macOS untuk workflow audio device yang didukung.'
-        : 'VST3 runs inside a compatible DAW. Standalone runs as a separate Windows or macOS application for supported audio-device workflows.';
-    }
-
-    setText('#mobile-download-bar strong', isId
-      ? 'ArSonKuPik untuk Windows dan macOS'
-      : 'ArSonKuPik for Windows and macOS');
-
-    document.documentElement.setAttribute('data-crossplatform-copy', 'windows-macos-v0520');
-  };
-
   const setupProductPreview = () => {
     const source = document.querySelector('.product-stage img');
     if (!source || typeof HTMLDialogElement === 'undefined') return;
+
     source.setAttribute('role', 'button');
     source.setAttribute('tabindex', '0');
     source.setAttribute('aria-label', text.preview);
@@ -113,6 +33,7 @@
     const dialog = document.createElement('dialog');
     dialog.className = 'product-preview-dialog';
     dialog.setAttribute('aria-label', text.preview);
+
     const shell = document.createElement('div');
     shell.className = 'product-preview-shell';
     const preview = document.createElement('img');
@@ -120,6 +41,8 @@
     preview.alt = source.alt;
     preview.width = source.width || 1080;
     preview.height = source.height || 612;
+    preview.decoding = 'async';
+
     const footer = document.createElement('div');
     footer.className = 'product-preview-footer';
     const caption = document.createElement('span');
@@ -129,6 +52,7 @@
     closeButton.className = 'product-preview-close';
     closeButton.textContent = text.close;
     closeButton.addEventListener('click', () => dialog.close());
+
     footer.append(caption, closeButton);
     shell.append(preview, footer);
     dialog.append(shell);
@@ -155,10 +79,11 @@
     const universe = document.querySelector('.preset-universe');
     const groupsContainer = universe?.querySelector('.preset-groups');
     const groups = groupsContainer ? [...groupsContainer.querySelectorAll('.preset-group')] : [];
-    if (!universe || !groupsContainer || groups.length === 0 || universe.dataset.explorerReady === 'true') return;
+    if (!universe || !groupsContainer || !groups.length || universe.dataset.explorerReady === 'true') return;
 
     universe.dataset.explorerReady = 'true';
     universe.classList.add('preset-explorer-ready');
+
     const categories = groups.map((group, index) => {
       const heading = group.querySelector('header strong')?.textContent?.trim() || `Group ${index + 1}`;
       const key = heading.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
@@ -194,32 +119,9 @@
     const result = document.createElement('span');
     result.className = 'preset-result-count';
     result.setAttribute('aria-live', 'polite');
+
     const total = groups.reduce((sum, group) => sum + Number(group.dataset.presetCount || 0), 0);
     result.textContent = text.visible(total);
-
-    const showGroup = (group, visible) => {
-      group.getAnimations?.().forEach((animation) => animation.cancel());
-      group.dataset.filterTarget = visible ? 'visible' : 'hidden';
-      if (reducedMotion || typeof group.animate !== 'function') {
-        group.hidden = !visible;
-        return;
-      }
-      if (visible) {
-        group.hidden = false;
-        group.animate(
-          [{ opacity: 0, transform: 'translateY(8px) scale(.995)' }, { opacity: 1, transform: 'translateY(0) scale(1)' }],
-          { duration: 240, easing: 'cubic-bezier(.22, 1, .36, 1)' }
-        );
-      } else if (!group.hidden) {
-        const animation = group.animate(
-          [{ opacity: 1, transform: 'translateY(0) scale(1)' }, { opacity: 0, transform: 'translateY(5px) scale(.995)' }],
-          { duration: 140, easing: 'ease-out' }
-        );
-        animation.addEventListener('finish', () => {
-          if (group.dataset.filterTarget === 'hidden') group.hidden = true;
-        }, { once: true });
-      }
-    };
 
     [{ key: 'all', heading: text.all }, ...categories].forEach((choice, index) => {
       const button = document.createElement('button');
@@ -229,11 +131,13 @@
       button.textContent = choice.heading;
       button.setAttribute('aria-pressed', String(index === 0));
       button.addEventListener('click', () => {
-        filters.querySelectorAll('.preset-filter').forEach((item) => item.setAttribute('aria-pressed', String(item === button)));
+        filters.querySelectorAll('.preset-filter').forEach((item) => {
+          item.setAttribute('aria-pressed', String(item === button));
+        });
         let visibleCount = 0;
         groups.forEach((group) => {
           const visible = choice.key === 'all' || group.dataset.presetCategory === choice.key;
-          showGroup(group, visible);
+          group.hidden = !visible;
           if (visible) visibleCount += Number(group.dataset.presetCount || 0);
         });
         result.textContent = text.visible(visibleCount);
@@ -246,137 +150,60 @@
     browser.append(toolbar, groupsContainer);
   };
 
-  const setupSignalAccent = () => {
-    const title = document.querySelector('.signature-title');
-    const badge = title?.querySelector(':scope > span');
-    if (!title || !badge || title.querySelector('.signal-accent')) return;
-    const row = document.createElement('div');
-    row.className = 'signature-status-row';
-    const meter = document.createElement('span');
-    meter.className = 'signal-accent';
-    meter.setAttribute('aria-hidden', 'true');
-    for (let index = 0; index < 7; index += 1) {
-      const bar = document.createElement('i');
-      bar.style.setProperty('--bar-index', String(index));
-      meter.append(bar);
-    }
-    badge.before(row);
-    row.append(badge, meter);
-  };
-
-  const setupScrollReveals = () => {
-    const targets = [
-      ...document.querySelectorAll('.trust-grid > div'),
-      document.querySelector('.signature-copy'),
-      document.querySelector('.signature-panel'),
-      ...document.querySelectorAll('.outcome-grid > article'),
-      ...document.querySelectorAll('.test-flow > article'),
-      ...document.querySelectorAll('.listening-controls > article'),
-      document.querySelector('.preset-intro'),
-      document.querySelector('.preset-browser'),
-      ...document.querySelectorAll('.download-option'),
-      document.querySelector('.freedom-copy'),
-      document.querySelector('.freedom-facts'),
-      ...document.querySelectorAll('.faq-grid > details'),
-      document.querySelector('.cta-card')
-    ].filter(Boolean);
-    if (reducedMotion || !('IntersectionObserver' in window)) {
-      targets.forEach((target) => target.classList.add('is-visible'));
-      return;
-    }
-    targets.forEach((target, index) => {
-      target.dataset.reveal = '';
-      target.style.setProperty('--reveal-delay', `${(index % 4) * 55}ms`);
-    });
-    document.documentElement.classList.add('motion-ready');
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) return;
-        entry.target.classList.add('is-visible');
-        observer.unobserve(entry.target);
-      });
-    }, { rootMargin: '0px 0px -9% 0px', threshold: .08 });
-    targets.forEach((target) => observer.observe(target));
-  };
-
-  const setupHeroEntrance = () => {
-    if (reducedMotion || typeof Element.prototype.animate !== 'function') return;
-    const items = [...document.querySelectorAll('.landing-hero .hero-copy > *'), document.querySelector('.landing-hero .product-stage')].filter(Boolean);
-    items.forEach((item, index) => item.animate(
-      [{ opacity: 0, transform: 'translateY(12px)' }, { opacity: 1, transform: 'translateY(0)' }],
-      { duration: index === items.length - 1 ? 720 : 520, delay: 45 + index * 65, easing: 'cubic-bezier(.22, 1, .36, 1)', fill: 'both' }
-    ));
-  };
-
   const setupNavigationState = () => {
     const nav = document.querySelector('.landing-nav');
     const links = [...document.querySelectorAll('.landing-nav nav a[href^="#"]')];
-    const sections = links.map((link) => ({ link, section: document.querySelector(link.getAttribute('href')) })).filter((item) => item.section);
-    if (!nav || sections.length === 0) return;
-    let scheduled = false;
-    const update = () => {
-      scheduled = false;
+    if (!nav) return;
+
+    let frame = 0;
+    const updateScrolledState = () => {
+      frame = 0;
       nav.classList.toggle('is-scrolled', window.scrollY > 18);
-      const probe = window.scrollY + Math.min(window.innerHeight * .34, 320);
-      let active = sections[0];
-      sections.forEach((item) => { if (item.section.offsetTop <= probe) active = item; });
-      sections.forEach((item) => {
-        const selected = item === active;
-        item.link.classList.toggle('is-active', selected);
-        if (selected) item.link.setAttribute('aria-current', 'location');
-        else item.link.removeAttribute('aria-current');
+    };
+    window.addEventListener('scroll', () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(updateScrolledState);
+    }, { passive: true });
+    updateScrolledState();
+
+    if (!('IntersectionObserver' in window) || !links.length) return;
+    const sections = links
+      .map((link) => ({ link, section: document.querySelector(link.getAttribute('href')) }))
+      .filter((item) => item.section);
+    if (!sections.length) return;
+
+    const byId = new Map(sections.map((item) => [item.section.id, item.link]));
+    const setActive = (id) => {
+      sections.forEach(({ link, section }) => {
+        const selected = section.id === id;
+        link.classList.toggle('is-active', selected);
+        if (selected) link.setAttribute('aria-current', 'location');
+        else link.removeAttribute('aria-current');
       });
     };
-    const requestUpdate = () => {
-      if (scheduled) return;
-      scheduled = true;
-      requestAnimationFrame(update);
-    };
-    window.addEventListener('scroll', requestUpdate, { passive: true });
-    window.addEventListener('resize', requestUpdate, { passive: true });
-    update();
+
+    const observer = new IntersectionObserver((entries) => {
+      const visible = entries
+        .filter((entry) => entry.isIntersecting && byId.has(entry.target.id))
+        .sort((a, b) => Math.abs(a.boundingClientRect.top) - Math.abs(b.boundingClientRect.top));
+      if (visible[0]) setActive(visible[0].target.id);
+    }, { rootMargin: '-18% 0px -70% 0px', threshold: 0 });
+
+    sections.forEach(({ section }) => observer.observe(section));
   };
 
-  const setupPointerDepth = () => {
-    if (!finePointer || reducedMotion) return;
-    const stage = document.querySelector('.product-stage');
-    const spotlights = [stage, document.querySelector('.signature-panel'), document.querySelector('.download-option.recommended'), document.querySelector('.cta-card')].filter(Boolean);
-    spotlights.forEach((element) => {
-      let frame = 0;
-      element.addEventListener('pointermove', (event) => {
-        if (frame) cancelAnimationFrame(frame);
-        frame = requestAnimationFrame(() => {
-          const rect = element.getBoundingClientRect();
-          const x = Math.min(1, Math.max(0, (event.clientX - rect.left) / rect.width));
-          const y = Math.min(1, Math.max(0, (event.clientY - rect.top) / rect.height));
-          element.style.setProperty('--spot-x', `${x * 100}%`);
-          element.style.setProperty('--spot-y', `${y * 100}%`);
-          if (element === stage) {
-            element.style.setProperty('--tilt-y', `${(x - .5) * 1.5}deg`);
-            element.style.setProperty('--tilt-x', `${(.5 - y) * 1.1}deg`);
-            element.dataset.depthActive = 'true';
-          }
-        });
-      }, { passive: true });
-      element.addEventListener('pointerleave', () => {
-        element.style.removeProperty('--spot-x');
-        element.style.removeProperty('--spot-y');
-        if (element === stage) {
-          element.style.setProperty('--tilt-y', '0deg');
-          element.style.setProperty('--tilt-x', '0deg');
-          delete element.dataset.depthActive;
-        }
-      }, { passive: true });
-    });
+  const initializeEnhancements = () => {
+    setupPresetExplorer();
+    setupProductPreview();
+    setupNavigationState();
+    root.setAttribute('data-experience-layer', 'v7-static-first');
   };
 
-  setupCrossPlatformCopy();
-  setupPresetExplorer();
-  setupProductPreview();
-  setupSignalAccent();
-  setupScrollReveals();
-  setupHeroEntrance();
-  setupNavigationState();
-  setupPointerDepth();
-  document.documentElement.setAttribute('data-experience-layer', 'v6-static-audio-motion');
+  // All critical copy, SEO metadata and the LCP image are already present in
+  // HTML. Keep enhancement work out of the initial rendering path.
+  if ('requestIdleCallback' in window) {
+    window.requestIdleCallback(initializeEnhancements, { timeout: 1600 });
+  } else {
+    window.requestAnimationFrame(() => window.setTimeout(initializeEnhancements, 0));
+  }
 })();
