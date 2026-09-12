@@ -298,6 +298,26 @@ html[data-global-shell="v6"] {
   box-shadow: none;
 }
 
+/* Skip layout/paint for long below-the-fold sections until they approach the
+   viewport. The intrinsic fallback keeps scroll geometry stable and preserves
+   static HTML/SEO/accessibility while reducing initial rendering work. */
+@supports (content-visibility: auto) {
+  main > .section {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 760px;
+  }
+
+  .support-strip {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 90px;
+  }
+
+  footer {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 360px;
+  }
+}
+
 @media (max-width: 860px) {
   .landing-nav nav[aria-label] {
     display: none;
