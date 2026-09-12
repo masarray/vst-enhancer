@@ -25,8 +25,23 @@
 
   const source = currentScript?.src
     || new URL(`${root.dataset.siteBase || '.'}/site-v6.js`, location.href).href;
-  const core = document.createElement('script');
-  core.src = source.replace(/site-v6\.js(?:\?.*)?$/, 'site-v6-core.js');
-  core.async = false;
-  document.head.appendChild(core);
+
+  let coreRequested = false;
+  const loadCore = () => {
+    if (coreRequested) return;
+    coreRequested = true;
+    const core = document.createElement('script');
+    core.src = source.replace(/site-v6\.js(?:\?.*)?$/, 'site-v6-core.js');
+    core.async = true;
+    document.head.appendChild(core);
+  };
+
+  // Release enrichment is useful but not required for the first paint. The
+  // reviewed static HTML already routes users to the official GitHub Release,
+  // so let LCP/rendering finish before parsing the larger enhancement runtime.
+  if ('requestIdleCallback' in window) {
+    window.requestIdleCallback(loadCore, { timeout: 1400 });
+  } else {
+    window.requestAnimationFrame(() => window.setTimeout(loadCore, 0));
+  }
 })();
